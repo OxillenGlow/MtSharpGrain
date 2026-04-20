@@ -17,7 +17,7 @@ public final class WorldAccess {
         return Useful.get(pos);
     }
 
-    public BufferedChunk ensureChunk(ChunkPos pos,int fillId){
+    public BufferedChunk ensureChunk(ChunkPos pos){
 
         BufferedChunk c = Useful.get(pos);
         if(c!=null) return c;
@@ -29,7 +29,7 @@ public final class WorldAccess {
             return loaded;
         }
 
-        BufferedChunk created = new BufferedChunk(fillId);
+        BufferedChunk created = new BufferedChunk(pos);
 
         Useful.put(pos,created);
 

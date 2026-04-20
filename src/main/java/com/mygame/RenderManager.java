@@ -14,7 +14,6 @@ public final class RenderManager {
     private final ConcurrentHashMap<ChunkPos, ChunkRenderData> renderMap = new ConcurrentHashMap<>();
     private final Queue<ChunkPos> dirtyQueue = new ConcurrentLinkedQueue<>();
     private final Set<ChunkPos> pendingChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
-//test github
     private int viewDistance = 1;
     private static final double CHUNK_METERS = BufferedChunk.SIZE * 0.5;
     private int viewHeight = -1;
@@ -41,7 +40,7 @@ public final class RenderManager {
                 for (int dz = -viewDistance; dz <= viewDistance; dz++) {
                     ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
 
-                    worldAccess.ensureChunk(pos, 1);
+                    worldAccess.ensureChunk(pos);
 
                     // FIX: If this is the FIRST time we see this chunk, mark it dirty
                     renderMap.computeIfAbsent(pos, p -> {

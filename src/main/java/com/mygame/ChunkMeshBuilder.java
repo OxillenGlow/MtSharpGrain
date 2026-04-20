@@ -23,9 +23,17 @@ public class ChunkMeshBuilder {
             for (int y = 0; y < 16; y++) {
                 for (int z = 0; z < 16; z++) {
                     int block = chunk.get(x, y, z);
-                    if (block == 0) continue;
+                    if (block == 0 || block == 1) continue;
 
-                    Mesh mesh = PyBallJmeMesh.getMesh(true, false, false, false, false, false);
+                    // Check adjacent blocks to determine which faces to render
+                    boolean px = isAir(chunk, x + 1, y, z); // positive x
+                    boolean nx = isAir(chunk, x - 1, y, z); // negative x
+                    boolean py = isAir(chunk, x, y + 1, z); // positive y
+                    boolean ny = isAir(chunk, x, y - 1, z); // negative y
+                    boolean pz = isAir(chunk, x, y, z + 1); // positive z
+                    boolean nz = isAir(chunk, x, y, z - 1); // negative z
+
+                    Mesh mesh = PyBallJmeMesh.getMesh(px, py, pz, nx, ny, nz);
                     Geometry geo = new Geometry("Geo" + x + y + z, mesh);
                     
                     Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -45,6 +53,21 @@ public class ChunkMeshBuilder {
         Spatial batched = GeometryBatchFactory.optimize(tempNode);
         batched.setName(cnkName);
         return batched;
+    }
+
+    /**
+     * Checks if the block at the given position is air (0 or 1).
+     * If the position is out of bounds (at chunk edge), returns true, so faces render.
+     */
+    private static boolean isAir(BufferedChunk chunk, int x, int y, int z) {
+        // If out of bounds, default to true (render the face)
+        if (x < 0 || x >= 16 || y < 0 || y >= 16 || z < 0 || z >= 16) {
+            return true;
+        }
+        
+        int blockId = chunk.get(x, y, z);
+        // Return true if the adjacent block is air (0 or 1)
+        return blockId == 0 || blockId == 1;
     }
 }
 
