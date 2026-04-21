@@ -7,3 +7,5 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 
 > i also hope that one day this can support scripts and mods in the future for easy modding.
 > Multiplayer is also very important (Currently not implemented).
+# Screenshots
+![My image](IMG_20260421_191629.png)
