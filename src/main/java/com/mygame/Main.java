@@ -1,85 +1,85 @@
 package com.mygame;
 
-
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import com.jme3.input.RawInputListener;
 
-
-
-/**
- * This is the Main Class of your Game. You should only do initialization here.
- * Move your Logic into AppStates or Controls
- * @author normenhansen
- */
 public class Main extends SimpleApplication {
     private com.mygame.RenderManager renderManagermg;
     private BlockSelector blockSelector;
-    WorldAccess worldAccess;
+    private WorldAccess worldAccess;
+    private MouseListener mouseListener;
+
     public static void main(String[] args) {
         Main app = new Main();
         app.start();
     }
-    
+
     @Override
     public void simpleInitApp() {
-        // Your existing init
-        
+        // Your existing initialization logic
         TestInit.init(rootNode, flyCam, assetManager);
 
-        // 1. Initialize WorldAccess (points to a folder for saving/loading)
+        // Initialize the MouseListener first
+        mouseListener = new MouseListener();
+
+        // Ensure camera and rootNode are available before initializing BlockSelector
+        blockSelector = new BlockSelector(cam, rootNode, mouseListener);
+
+        // Register the MouseListener with the input manager
+        inputManager.addRawInputListener(mouseListener);
+
+        // Initialize WorldAccess and RenderManager
         worldAccess = new WorldAccess("worlds/my_world");
         var player = new Player();
-        player.setWorldPosition(new Vector3f(1,1,1));
-        // 2. Initialize RenderManager
-        // Pass the worldAccess, the node to attach chunks to (rootNode), and the assetManager
-        
-        this.renderManagermg = new com.mygame.RenderManager(worldAccess, rootNode, assetManager, player, this);
-        this.blockSelector = new BlockSelector(cam, inputManager, rootNode);
+        player.setWorldPosition(new Vector3f(1, 1, 1));
 
-        // Optional: Configure view distance (default was 8)
-        // renderManager.setViewDistance(5);
-        
+        // Initialize RenderManager
+        this.renderManagermg = new com.mygame.RenderManager(worldAccess, rootNode, assetManager, player, this);
+
+        // Chunk setup (optional, for testing)
         try {
             ChunkPos firstChunk = new ChunkPos(0, 0, 3);
             worldAccess.createChunkAt(firstChunk, 1);
-        
-            
-            // This tells the RenderManager:build the mesh!"
             renderManagermg.markDirty(firstChunk);
+        } catch (Exception e) {
+            System.out.println("Error creating chunk");
         }
-        catch (Exception e) { System.out.println("er at mk chunk");
-        
-        }
-        
     }
+
     @Override
     public void simpleUpdate(float tpf) {
-        // 3. Update the RenderManager every frame
-        // This calculates which chunks should be loaded based on camera position
+        // Update the RenderManager
         renderManagermg.tick(
             cam.getLocation().x, 
             cam.getLocation().y, 
             cam.getLocation().z
         );
-        
-        Object[] blockCoords = blockSelector.getBlockCoords();
-        
-    }
 
+        // Check for block coordinates from BlockSelector
+        Object[] blockCoords = blockSelector.getBlockCoords();
+        if (blockCoords != null) {
+            // Handle block coordinates here (e.g., block placement or destruction)
+            System.out.println(blockCoords[0].toString());
+            System.out.println(blockCoords[1].toString());
+            System.out.println(blockCoords[2].toString());
+            System.out.println("60fps");
+        }
+        else {System.out.println("Error getting imput");}
+    }
 
     @Override
     public void simpleRender(RenderManager rm) {
-        //TODO: add render code
+        // Optional: Render logic
     }
+
     @Override
     public void destroy() {
-        // Assuming worldAccess is accessible here
+        // Save world if needed
         if (worldAccess != null) {
             worldAccess.saveAll();
         }
-        super.destroy(); // Continue with standard shutdown
+        super.destroy(); // Standard shutdown
     }
-
 }
-
