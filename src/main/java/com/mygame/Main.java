@@ -46,6 +46,7 @@ public class Main extends SimpleApplication {
         } catch (Exception e) {
             System.out.println("Error creating chunk");
         }
+        
     }
 
     @Override

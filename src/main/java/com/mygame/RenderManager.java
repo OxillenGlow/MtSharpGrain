@@ -133,4 +133,8 @@ public final class RenderManager {
         public ChunkPos pos;
         public ChunkRenderData(ChunkPos pos) { this.pos = pos; }
     }
+    private static ChunkPos worldToChunk(int x, int y, int z) {
+        return new ChunkPos(worldToChunk((double)x), worldToChunk((double)y), worldToChunk((double)z));
+    }
+
 }
