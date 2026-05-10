@@ -20,7 +20,7 @@ public final class BufferedChunk {
     public BufferedChunk(ChunkPos pos){
         blocks = new int[SIZE][SIZE][SIZE];
         
-        var fill = (pos.getY() > 0) ? 1 : 2;
+        var fill = (pos.getY() > -1) ? 1 : 2;
         if(pos.getY()>-1){
             
         

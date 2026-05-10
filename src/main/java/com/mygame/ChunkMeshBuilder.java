@@ -33,7 +33,7 @@ public class ChunkMeshBuilder {
                     boolean pz = isAir(chunk, x, y, z + 1); // positive z
                     boolean nz = isAir(chunk, x, y, z - 1); // negative z
 
-                    Mesh mesh = PyBallJmeMesh.getMesh(px, py, pz, nx, ny, nz);
+                    Mesh mesh = PyBallJmeMesh.getMesh(!px, !py, !pz, !nx, !ny, !nz, false );
                     Geometry geo = new Geometry("Geo" + x + y + z, mesh);
                     
                     Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -70,4 +70,3 @@ public class ChunkMeshBuilder {
         return blockId == 0 || blockId == 1;
     }
 }
-

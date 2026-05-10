@@ -92,8 +92,10 @@ public final class WorldAccess {
     }
 
     private ChunkPos worldToChunk(int worldX, int worldY, int worldZ) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    // Shifts coordinates by 4 (divides by 16) to find the chunk index
+    return new ChunkPos(worldX >> 4, worldY >> 4, worldZ >> 4);
+}
+
 
     
     

@@ -38,7 +38,7 @@ import com.jme3.scene.Node;
         Vector3f hitPoint = closest.getContactPoint();
 
         // Direction from cam to hit
-        Vector3f direction = hitPoint.subtract(cam.getLocation()).normalize();
+        Vector3f direction = hitPoint.subtract(cam.getLocation());//.normalize();
 
         Vector3f adjustedPoint;
         boolean placeAction;

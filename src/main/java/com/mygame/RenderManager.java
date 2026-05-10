@@ -83,13 +83,14 @@ public final class RenderManager {
         // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
         CompletableFuture.runAsync(() -> {
             try {
-                // 1. Heavy Building (Background Thread)
-                Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                newMesh.addControl(ctr);
-
-                // 2. Scene Graph Sync (Back to Main JME Thread)
                 app.enqueue(() -> {
+                        
+                    // Building (Background Thread in enqueue)
+                    Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
+                    ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
+                    newMesh.addControl(ctr);
+
+                
                     Spatial oldCk = nd.getChild(newMesh.getName());
                     if (oldCk != null) oldCk.removeFromParent();
                     
@@ -104,6 +105,7 @@ public final class RenderManager {
             } catch (Exception e) {
                 e.printStackTrace();
                 pendingChunks.remove(pos);
+                System.out.println("AHHH");
             }
         });
     }

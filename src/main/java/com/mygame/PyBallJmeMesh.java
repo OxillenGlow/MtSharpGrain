@@ -4,7 +4,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
-
+import com.jme3.scene.shape.Box;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +34,8 @@ public class PyBallJmeMesh {
             boolean pz,
             boolean nx,
             boolean ny,
-            boolean nz
+            boolean nz,
+            boolean exception
     ) {
 
         int total =
@@ -44,22 +45,19 @@ public class PyBallJmeMesh {
                 (nx ? 1 : 0) +
                 (ny ? 1 : 0) +
                 (nz ? 1 : 0);
-
+        int index = 0;
         // Completely hidden
-        if (total == 6) {
-            return EMPTY_MESH;
+        if (total < 5 && exception) {
+            if (px) index |= 1;
+            if (py) index |= (1 << 1);
+            if (pz) index |= (1 << 2);
+            if (nx) index |= (1 << 3);
+            if (ny) index |= (1 << 4);
+            if (nz) index |= (1 << 5);
+            return meshArray[index];
+        } else {return new Box(0.5f,0.5f,0.5f); 
         }
 
-        int index = 0;
-
-        if (px) index |= 1;
-        if (py) index |= (1 << 1);
-        if (pz) index |= (1 << 2);
-        if (nx) index |= (1 << 3);
-        if (ny) index |= (1 << 4);
-        if (nz) index |= (1 << 5);
-
-        return meshArray[index];
     }
 
     private static Mesh buildMesh(boolean[] faces) {
@@ -91,13 +89,7 @@ public class PyBallJmeMesh {
                     new Vector3f(0.5f,-0.5f,0.5f)
             );
 
-            addQuad(
-                    verts, norms, indices,
-                    new Vector3f(0.5f,0.5f,0.5f),
-                    new Vector3f(0.5f,-0.5f,0.5f),
-                    new Vector3f(0.5f,-0.5f,-0.5f),
-                    new Vector3f(0.5f,0.5f,-0.5f)
-            );
+            
         }
 
         // px
@@ -110,13 +102,7 @@ public class PyBallJmeMesh {
                     new Vector3f(-0.5f,-0.5f,-0.5f)
             );
 
-            addQuad(
-                    verts, norms, indices,
-                    new Vector3f(-0.5f,0.5f,-0.5f),
-                    new Vector3f(-0.5f,-0.5f,-0.5f),
-                    new Vector3f(-0.5f,-0.5f,0.5f),
-                    new Vector3f(-0.5f,0.5f,0.5f)
-            );
+            
         }
 
         // ny
@@ -129,13 +115,7 @@ public class PyBallJmeMesh {
                     new Vector3f(-0.5f,0.5f,-0.5f)
             );
 
-            addQuad(
-                    verts, norms, indices,
-                    new Vector3f(-0.5f,0.5f,0.5f),
-                    new Vector3f(-0.5f,0.5f,-0.5f),
-                    new Vector3f(0.5f,0.5f,-0.5f),
-                    new Vector3f(0.5f,0.5f,0.5f)
-            );
+            
         }
 
         // py
@@ -148,13 +128,7 @@ public class PyBallJmeMesh {
                     new Vector3f(-0.5f,-0.5f,0.5f)
             );
 
-            addQuad(
-                    verts, norms, indices,
-                    new Vector3f(-0.5f,-0.5f,-0.5f),
-                    new Vector3f(-0.5f,-0.5f,0.5f),
-                    new Vector3f(0.5f,-0.5f,0.5f),
-                    new Vector3f(0.5f,-0.5f,-0.5f)
-            );
+            
         }
 
         // nz
@@ -167,13 +141,7 @@ public class PyBallJmeMesh {
                     new Vector3f(0.5f,0.5f,0.5f)
             );
 
-            addQuad(
-                    verts, norms, indices,
-                    new Vector3f(-0.5f,0.5f,0.5f),
-                    new Vector3f(0.5f,0.5f,0.5f),
-                    new Vector3f(0.5f,-0.5f,0.5f),
-                    new Vector3f(-0.5f,-0.5f,0.5f)
-            );
+            
         }
 
         // pz

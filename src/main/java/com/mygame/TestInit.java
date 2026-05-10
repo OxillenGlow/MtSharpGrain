@@ -38,7 +38,7 @@ class TestInit {
         PyBallJmeMesh.init();
         flyCam.setEnabled(true);// AHHHhHHHHH
         // Example: Get a mesh with a pyramid pointing in the +X direction and a ball at the center
-        Mesh mesh = PyBallJmeMesh.getMesh(true, false, false, true, false, false);  // Pyramid pointing toward +X
+        Mesh mesh = PyBallJmeMesh.getMesh(true, true, true, true, true, true, true);  // Pyramid pointing toward +X
 
         // Create the Geometry for the mesh
         Geometry meshGeometry = new Geometry("PyBallMesh", mesh);
