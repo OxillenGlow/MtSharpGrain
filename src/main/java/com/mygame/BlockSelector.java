@@ -6,54 +6,49 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
-    public class BlockSelector {
-        private com.jme3.renderer.Camera cam;
-        private Node rootNode;
-        private MouseListener mouseListener;
+public class BlockSelector {
+    private com.jme3.renderer.Camera cam;
+    private Node rootNode;
+    private MouseListener mouseListener;
 
-        public BlockSelector(com.jme3.renderer.Camera cam, Node rootNode, MouseListener mouseListener) {
-            this.cam = cam;
-            this.rootNode = rootNode;
-            this.mouseListener = mouseListener;
-        }
-
-    public BlockSelection getSelection() {
+    public BlockSelector(com.jme3.renderer.Camera cam, Node rootNode, MouseListener mouseListener) {
+        this.cam = cam;
+        this.rootNode = rootNode;
+        this.mouseListener = mouseListener;
+    }
+        public BlockSelection getSelection() {
         boolean leftPressed = mouseListener.leftPressed;
         boolean rightPressed = mouseListener.rightPressed;
 
-        if (!leftPressed && !rightPressed) {
-            return null;
-        }
+        if (!leftPressed && !rightPressed) return null;
 
-        // Create ray from camera
         Ray ray = new Ray(cam.getLocation(), cam.getDirection());
         CollisionResults results = new CollisionResults();
         rootNode.collideWith(ray, results);
 
-        if (results.size() == 0) {
-            return null;
-        }
+        if (results.size() == 0) return null;
 
         CollisionResult closest = results.getClosestCollision();
         Vector3f hitPoint = closest.getContactPoint();
+        Vector3f normal = closest.getContactNormal(); // The magic fix
+        
+        Vector3f adjustedPoint = new Vector3f(hitPoint);
 
-        // Direction from cam to hit
-        Vector3f direction = hitPoint.subtract(cam.getLocation());//.normalize();
-
-        Vector3f adjustedPoint;
-        boolean placeAction;
         if (leftPressed) {
-            adjustedPoint = hitPoint.add(direction.mult(0.3f));
-            placeAction = true; // Left click = place
+            // Shift point SLIGHTLY out of the block face to find the empty space
+           adjustedPoint.addLocal(normal.mult(0.4f));
         } else {
-            adjustedPoint = hitPoint.subtract(direction.mult(0.3f));
-            placeAction = false; // Right click = remove
+            // Shift point SLIGHTLY into the block face to find the block itself
+            adjustedPoint.addLocal(normal.mult(-0.01f));
         }
 
-        int x = (int) Math.floor(adjustedPoint.x);
-        int y = (int) Math.floor(adjustedPoint.y);
-        int z = (int) Math.floor(adjustedPoint.z);
+        // Use Math.floor on all axes for consistent grid alignment
+        int x = (int) Math.floor(adjustedPoint.x + 0.5);
+        int y = (int) Math.floor(adjustedPoint.y + 0.5);
+        int z = (int) Math.floor(adjustedPoint.z + 0.5);
 
-        return new BlockSelection(x, y, z, placeAction);
+        return new BlockSelection(x, y, z, leftPressed);
     }
+
+    
 }

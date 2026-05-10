@@ -4,6 +4,9 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.input.RawInputListener;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
+
 
 public class Main extends SimpleApplication {
     private com.mygame.RenderManager renderManagermg;
@@ -47,6 +50,24 @@ public class Main extends SimpleApplication {
             System.out.println("Error creating chunk");
         }
         
+        // Load the default font
+        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        BitmapText ch = new BitmapText(guiFont, false);
+    
+        // Set properties
+        ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+        ch.setText("+"); // The crosshair shape
+    
+        // Center it on screen
+        float x = settings.getWidth() / 2 - ch.getLineWidth() / 2;
+        float y = settings.getHeight() / 2 + ch.getLineHeight() / 2;
+        ch.setLocalTranslation(x, y, 0);
+    
+        // Attach to the GUI node (2D layer)
+        guiNode.attachChild(ch);
+    
+
+        
     }
 
     @Override
@@ -63,7 +84,7 @@ public class Main extends SimpleApplication {
         if (selection != null) {
             if (selection.placeAction) {
                 // Left click: place block (ID 2)
-                worldAccess.setBlockAt(selection.x, selection.y + 1, selection.z, 2);
+                worldAccess.setBlockAt(selection.x, selection.y , selection.z, 2);
                 System.out.println("Placed block at " + selection);
             } else {
                 // Right click: remove block (set to 0)

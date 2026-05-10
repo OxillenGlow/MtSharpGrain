@@ -47,7 +47,7 @@ public class PyBallJmeMesh {
                 (nz ? 1 : 0);
         int index = 0;
         // Completely hidden
-        if (total < 5 && exception) {
+        if (total < 4) {
             if (px) index |= 1;
             if (py) index |= (1 << 1);
             if (pz) index |= (1 << 2);
