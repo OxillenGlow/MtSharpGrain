@@ -1,6 +1,7 @@
 # Basic idea
 A sand box, non voxel game with slightly smooth interconnected blocks.
 ## Link to [wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
+## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
 ## Special points
 This is a project aimed at making a high graphic and, most importantly, realistic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
