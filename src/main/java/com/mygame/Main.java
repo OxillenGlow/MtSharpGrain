@@ -21,6 +21,11 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        // Maintain default 45-degree FOV, calculate current window aspect ratio, 
+        // and extend the view distance range from 0.1 out to 5000 world units.
+        float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
+        cam.setFrustumPerspective(45.0f, aspectRatio, 0.5f, 5000.0f);
+        
         // Your existing initialization logic
         TestInit.init(rootNode, flyCam, assetManager);
 
@@ -65,8 +70,29 @@ public class Main extends SimpleApplication {
     
         // Attach to the GUI node (2D layer)
         guiNode.attachChild(ch);
-    
+        
+        // 1. Set the solid background canvas color (e.g., Sky Blue)
+        viewPort.setBackgroundColor(new ColorRGBA(0.5f, 0.7f, 1.0f, 1.0f));
 
+        // 2. Create the round ball mesh representing the sun
+        Sphere sunMesh = new Sphere(32, 32, 5.0f); // 32 radial samples, 32 slices, radius 5
+        Geometry sunGeo = new Geometry("SunBall", sunMesh);
+
+        // 3. Make the sun glow using an Unshaded Material definition
+        Material sunMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        sunMat.setColor("Color", ColorRGBA.Yellow); // The basic color of the sun
+    
+        // Optional: Enable a neon glow if you have post-processing filters active
+        sunMat.setColor("GlowColor", ColorRGBA.White); 
+        sunGeo.setMaterial(sunMat);
+        // This forces the object to render behind everything else and bypass standard distance clipping
+        sunGeo.setQueueBucket(com.jme3.renderer.queue.RenderQueue.Bucket.Sky);
+        sunGeo.setCullHint(Spatial.CullHint.Never); // Prevents JME from culling it out
+        
+        // 4. Move the sun ball up into the sky and attach it
+        sunGeo.setLocalTranslation(0, 1000, -2000); 
+        rootNode.attachChild(sunGeo);
+        
         
     }
 
