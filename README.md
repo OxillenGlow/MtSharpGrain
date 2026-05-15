@@ -1,4 +1,4 @@
-# Basic idea
+# Basic idea ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain)![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/Mtsharpgrain) ⬅️please help increase ⭐ 
 A sand box, non voxel game with slightly smooth interconnected blocks.
 ## Link to [wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
 ## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
