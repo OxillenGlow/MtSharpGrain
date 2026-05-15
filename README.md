@@ -11,7 +11,7 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 ## Goal
 > i also hope that one day this can support scripts and mods in the future for easy modding.
 > Multiplayer is also very important (Currently not implemented).
-
+# ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 
 ## Attribs
 
