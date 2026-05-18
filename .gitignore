@@ -3,12 +3,16 @@
 
 # But do NOT ignore these specific files/folders
 !src/
+!src/*/
+!src/**/
 !**/*.java
 !build.gradle
 !settings.gradle
 !gradlew
 !gradlew.bat
 !gradle/
+!gradle/*/
+!gradle/**/
 !.gitignore
 
 # Re-ignore the build folder inside src just in case
