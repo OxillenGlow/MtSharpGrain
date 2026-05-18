@@ -10,13 +10,16 @@ A sand box, non voxel game with slightly smooth interconnected blocks.
 This is a project aimed at making a high graphic and, most importantly, realistic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
 
 # Unimportant but important stuff?
-
+## Soon to be implemented/fixed
+- Scripts, JSE java script engine would soon be added as a dependancy
+- Faces, the are still facing the wrong sides :(
 ## Goal
 > i also hope that one day this can support scripts and mods in the future for easy modding.
+
 > Multiplayer is also very important (Currently not implemented).
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
-
-## Attribs
+[My other projects](https://github.com/OxillenGlow)
+# Attribs
 
 This uses JavaMonkeyEngine (everthing that LWJGL has)
 see > [website](https://www.jmonkeyengine.org)
