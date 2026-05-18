@@ -8,7 +8,7 @@ version '1.0'
 
 application {
     applicationName = 'GradleGame'
-    mainClass = 'com.mygame.Main'
+    mainClass = 'com.mtsharpgrain.Main'
     // Mac OS with LWJGL 3 needs to be started with this JVM argument
     if (System.getProperty("os.name").toLowerCase().contains("mac")) {
         applicationDefaultJvmArgs = ['-XstartOnFirstThread']
@@ -73,7 +73,8 @@ dependencies {
   implementation "com.github.stephengold:Heart:9.2.0"
   implementation "com.epagagames:particlemonkey:1.1.0"
   implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
-
+  implementation files("USERS/tliu/Pictures/ImageBackup/bin/jVisualScripting-editor-1.4.jar")
+  implementation files("${rootProject.projectDir}/bin/jVisualScripting-1.4.jar")
   // Assets sub-project
   runtimeOnly project(':assets')
 }

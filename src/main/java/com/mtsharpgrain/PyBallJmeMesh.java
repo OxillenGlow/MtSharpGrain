@@ -1,5 +1,7 @@
 package com.mtsharpgrain;
 
+import com.jme3.scene.Geometry;
+import jme3tools.optimize.GeometryBatchFactory;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
@@ -54,7 +56,22 @@ public class PyBallJmeMesh {
             if (nx) index |= (1 << 3);
             if (ny) index |= (1 << 4);
             if (nz) index |= (1 << 5);
-            return meshArray[index];
+            Mesh baseMesh = meshArray[index];
+
+            // Small cube in center
+            Mesh cubeMesh = new Box(0.25f, 0.25f, 0.25f);
+
+            Geometry g1 = new Geometry("base", baseMesh);
+            Geometry g2 = new Geometry("cube", cubeMesh);
+
+            Mesh merged = new Mesh();
+            GeometryBatchFactory.mergeGeometries(
+                List.of(g1, g2),
+                merged
+            );
+
+            return merged;
+
         } else {return new Box(0.5f,0.5f,0.5f); 
         }
 
@@ -83,10 +100,11 @@ public class PyBallJmeMesh {
         if (faces[3]) {
             addPyramidNoBase(
                     verts, norms, indices,
-                    new Vector3f(0.5f,0.5f,0.5f),
-                    new Vector3f(0.5f,0.5f,-0.5f),
-                    new Vector3f(0.5f,-0.5f,-0.5f),
-                    new Vector3f(0.5f,-0.5f,0.5f)
+                    new Vector3f(-0.5f,0.5f,0.5f),
+                    new Vector3f(-0.5f,0.5f,-0.5f),
+                    new Vector3f(-0.5f,-0.5f,-0.5f),
+                    new Vector3f(-0.5f,-0.5f,0.5f),
+                    true
             );
 
             
@@ -96,36 +114,38 @@ public class PyBallJmeMesh {
         if (faces[0]) {
             addPyramidNoBase(
                     verts, norms, indices,
-                    new Vector3f(-0.5f,0.5f,-0.5f),
-                    new Vector3f(-0.5f,0.5f,0.5f),
-                    new Vector3f(-0.5f,-0.5f,0.5f),
-                    new Vector3f(-0.5f,-0.5f,-0.5f)
+                    new Vector3f(0.5f,0.5f,-0.5f),
+                    new Vector3f(0.5f,0.5f,0.5f),
+                    new Vector3f(0.5f,-0.5f,0.5f),
+                    new Vector3f(0.5f,-0.5f,-0.5f),
+                    true
             );
 
             
         }
 
         // ny
-        if (faces[4]) {
+        if (faces[1]) {
             addPyramidNoBase(
                     verts, norms, indices,
                     new Vector3f(-0.5f,0.5f,0.5f),
                     new Vector3f(0.5f,0.5f,0.5f),
                     new Vector3f(0.5f,0.5f,-0.5f),
-                    new Vector3f(-0.5f,0.5f,-0.5f)
+                    new Vector3f(-0.5f,0.5f,-0.5f
+                    ),true
             );
 
             
         }
 
         // py
-        if (faces[1]) {
+        if (faces[4]) {
             addPyramidNoBase(
                     verts, norms, indices,
                     new Vector3f(-0.5f,-0.5f,-0.5f),
                     new Vector3f(0.5f,-0.5f,-0.5f),
                     new Vector3f(0.5f,-0.5f,0.5f),
-                    new Vector3f(-0.5f,-0.5f,0.5f)
+                    new Vector3f(-0.5f,-0.5f,0.5f), true
             );
 
             
@@ -135,10 +155,10 @@ public class PyBallJmeMesh {
         if (faces[5]) {
             addPyramidNoBase(
                     verts, norms, indices,
-                    new Vector3f(-0.5f,0.5f,0.5f),
-                    new Vector3f(-0.5f,-0.5f,0.5f),
-                    new Vector3f(0.5f,-0.5f,0.5f),
-                    new Vector3f(0.5f,0.5f,0.5f)
+                    new Vector3f(-0.5f,0.5f,-0.5f),
+                    new Vector3f(-0.5f,-0.5f,-0.5f),
+                    new Vector3f(0.5f,-0.5f,-0.5f),
+                    new Vector3f(0.5f,0.5f,-0.5f),false
             );
 
             
@@ -148,19 +168,13 @@ public class PyBallJmeMesh {
         if (faces[2]) {
             addPyramidNoBase(
                     verts, norms, indices,
-                    new Vector3f(0.5f,0.5f,-0.5f),
-                    new Vector3f(0.5f,-0.5f,-0.5f),
-                    new Vector3f(-0.5f,-0.5f,-0.5f),
-                    new Vector3f(-0.5f,0.5f,-0.5f)
+                    new Vector3f(0.5f,0.5f,0.5f),
+                    new Vector3f(0.5f,-0.5f,0.5f),
+                    new Vector3f(-0.5f,-0.5f,0.5f),
+                    new Vector3f(-0.5f,0.5f,0.5f),false
             );
 
-            addQuad(
-                    verts, norms, indices,
-                    new Vector3f(0.5f,0.5f,-0.5f),
-                    new Vector3f(-0.5f,0.5f,-0.5f),
-                    new Vector3f(-0.5f,-0.5f,-0.5f),
-                    new Vector3f(0.5f,-0.5f,-0.5f)
-            );
+            
         }
 
         Mesh mesh = new Mesh();
@@ -201,15 +215,16 @@ public class PyBallJmeMesh {
             Vector3f b1,
             Vector3f b2,
             Vector3f b3,
-            Vector3f b4
+            Vector3f b4,
+            boolean x
     ) {
 
         Vector3f tip = new Vector3f(0, 0, 0);
 
-        addFace(verts, norms, indices, tip, b1, b2);
-        addFace(verts, norms, indices, tip, b2, b3);
-        addFace(verts, norms, indices, tip, b3, b4);
-        addFace(verts, norms, indices, tip, b4, b1);
+        addFace(verts, norms, indices, tip, b1, b2, x);
+        addFace(verts, norms, indices, tip, b2, b3, x);
+        addFace(verts, norms, indices, tip, b3, b4, x);
+        addFace(verts, norms, indices, tip, b4, b1, x);
     }
 
     private static void addQuad(
@@ -219,11 +234,11 @@ public class PyBallJmeMesh {
             Vector3f v1,
             Vector3f v2,
             Vector3f v3,
-            Vector3f v4
+            Vector3f v4, boolean x
     ) {
 
-        addFace(verts, norms, indices, v1, v2, v3);
-        addFace(verts, norms, indices, v1, v3, v4);
+        addFace(verts, norms, indices, v1, v2, v3,x);
+        addFace(verts, norms, indices, v1, v3, v4,x);
     }
 
     private static void addFace(
@@ -232,16 +247,19 @@ public class PyBallJmeMesh {
             List<Integer> indices,
             Vector3f v1,
             Vector3f v2,
-            Vector3f v3
+            Vector3f v3,
+            boolean normalX
     ) {
 
         int offset = verts.size();
 
+        
+        if(normalX) {
         Vector3f normal =
                 v2.subtract(v1)
                         .crossLocal(v3.subtract(v1))
-                        .normalizeLocal();
-
+                        .normalizeLocal()
+                        .negateLocal();
         verts.add(v1);
         verts.add(v2);
         verts.add(v3);
@@ -249,9 +267,28 @@ public class PyBallJmeMesh {
         norms.add(normal);
         norms.add(normal);
         norms.add(normal);
+        indices.add(offset + 2);
+        indices.add(offset + 1);
+        indices.add(offset);
+        } else {
+        
+        Vector3f normal =
+                v2.subtract(v1)
+                        .crossLocal(v3.subtract(v1))
+                        .normalizeLocal();
+                        //.negateLocal();
+        verts.add(v1);
+        verts.add(v2);
+        verts.add(v3);
 
+        norms.add(normal);
+        norms.add(normal);
+        norms.add(normal);
         indices.add(offset);
         indices.add(offset + 1);
         indices.add(offset + 2);
+        
+        }
+        
     }
 }
