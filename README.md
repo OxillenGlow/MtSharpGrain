@@ -11,8 +11,8 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
-- Scripts, JSE java script engine would soon be added as a dependancy
-- Faces, the are still facing the wrong sides :(
+- Scripts, jVisualScripting java script engine would soon be added as a dependancy ✅ untested 
+- Faces, the are still facing the wrong sides :( 🔄 ...
 ## Goal
 > i also hope that one day this can support scripts and mods in the future for easy modding.
 
