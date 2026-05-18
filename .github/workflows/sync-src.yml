@@ -22,10 +22,14 @@ jobs:
       - name: Clone jVisualScripting src
         run: |
           git clone --depth=1 https://github.com/OxillenGlow/jVisualScripting.git temp-source
+          echo "=== Cloned repo contents ==="
+          ls temp-source/
+          echo "=== src contents (if exists) ==="
+          ls temp-source/src/ || echo "src/ does NOT exist"
 
           if [ -d "temp-source/src" ]; then
-            mkdir -p src/main/java   # 👈 creates the path if it doesn't exist
-            cp -r temp-source/src/. src/main/java/   # 👈 correct destination
+            mkdir -p src/main/java
+            cp -r temp-source/src/. src/main/java/
           else
             echo "src/ not found in jVisualScripting — aborting"
             exit 1
