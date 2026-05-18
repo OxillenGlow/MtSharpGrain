@@ -6,22 +6,30 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write  # 👈 required to push
+  contents: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout MtSharpGrain
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT_TOKEN }}  # 👈 use PAT, not GITHUB_TOKEN
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Clone jVisualScripting src
         run: |
           git clone --depth=1 https://github.com/OxillenGlow/jVisualScripting.git temp-source
-          rm -rf src/
-          cp -r temp-source/src/ src/
+
+          if [ -d "temp-source/src" ]; then
+            cp -r temp-source/src/. src/   # 👈 merges in, never deletes
+          else
+            echo "src/ not found in jVisualScripting — aborting"
+            exit 1
+          fi
+
           rm -rf temp-source
 
       - name: Commit and push if changed
