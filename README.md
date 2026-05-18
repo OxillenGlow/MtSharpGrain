@@ -22,7 +22,7 @@ This uses JavaMonkeyEngine (everthing that LWJGL has)
 see > [website](https://www.jmonkeyengine.org)
 
 #### Screenshots
-![My image](IMG_20260421_191629.png)
+![My image](Sc.png)
 
 ##### Dumb question, how many hashtags can you put here on GitHub for sections? Answer: 6.
 this actually makes the text Gray instead of smaller compared to five hashtags while content stays the same. see ->
