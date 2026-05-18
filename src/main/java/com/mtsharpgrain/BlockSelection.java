@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 /**
  * Represents a selected block position and the intended action.

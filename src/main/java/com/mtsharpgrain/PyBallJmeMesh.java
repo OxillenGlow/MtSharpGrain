@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;

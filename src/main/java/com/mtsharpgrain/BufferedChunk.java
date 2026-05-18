@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 public final class BufferedChunk {
 

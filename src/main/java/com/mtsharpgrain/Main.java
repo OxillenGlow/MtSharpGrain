@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.Vector3f;
@@ -9,7 +9,7 @@ import com.jme3.font.BitmapText;
 
 
 public class Main extends SimpleApplication {
-    private com.mygame.RenderManager renderManagermg;
+    private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
@@ -44,7 +44,7 @@ public class Main extends SimpleApplication {
         player.setWorldPosition(new Vector3f(1, 1, 1));
 
         // Initialize RenderManager
-        this.renderManagermg = new com.mygame.RenderManager(worldAccess, rootNode, assetManager, player, this);
+        this.renderManagermg = new com.mtsharpgrain.RenderManager(worldAccess, rootNode, assetManager, player, this);
 
         // Chunk setup (optional, for testing)
         try {

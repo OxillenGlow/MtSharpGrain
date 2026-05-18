@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 import java.io.*;
 import java.nio.file.*;

@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 import com.jme3.input.RawInputListener;
 import com.jme3.input.event.MouseButtonEvent;

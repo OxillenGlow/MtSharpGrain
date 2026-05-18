@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 import com.jme3.collision.CollisionResults;
 import com.jme3.collision.CollisionResult;

@@ -1,4 +1,4 @@
-package com.mygame;
+package com.mtsharpgrain;
 
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.renderer.ViewPort;
