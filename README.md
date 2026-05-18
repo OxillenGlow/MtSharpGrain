@@ -21,8 +21,12 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 [My other projects](https://github.com/OxillenGlow)
 # Attribs
 
-This uses JavaMonkeyEngine (everthing that LWJGL has)
+JavaMonkeyEngine (everthing that LWJGL has)
 see > [website](https://www.jmonkeyengine.org)
+
+AND
+
+jVisualScripting (no other dependencies) see https://github.com/openconcerto/jVisualScripting for source
 
 #### Screenshots
 ![My image](Sc.png)
