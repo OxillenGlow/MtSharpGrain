@@ -3,7 +3,10 @@ name: Sync src from jVisualScripting
 on:
   repository_dispatch:
     types: [sync-src]
-  workflow_dispatch:  # lets you trigger it manually too
+  workflow_dispatch:
+
+permissions:
+  contents: write  # 👈 required to push
 
 jobs:
   sync:
@@ -12,7 +15,7 @@ jobs:
       - name: Checkout MtSharpGrain
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}  # 👈 use PAT, not GITHUB_TOKEN
 
       - name: Clone jVisualScripting src
         run: |
