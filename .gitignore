@@ -14,6 +14,7 @@
 !gradle/*/
 !gradle/**/
 !.gitignore
+!**/*.png
 
 # Re-ignore the build folder inside src just in case
 src/**/build/
