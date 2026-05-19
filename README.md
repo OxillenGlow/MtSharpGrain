@@ -11,8 +11,10 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
+- Npc with behavior > afterwards, scripts to control npc
+- PBR, idk if it will actually make the game look "better"
 - Scripts, jVisualScripting script engine would soon be added as a dependancy ✅ untested 
-- Faces, the are still facing the wrong sides :( 🔄 ...
+- Faces, the are still facing the wrong sides ✅, but my code is now super messy :(
 ## Goal
 > i also hope that one day this can support scripts and mods in the future for easy modding.
 
