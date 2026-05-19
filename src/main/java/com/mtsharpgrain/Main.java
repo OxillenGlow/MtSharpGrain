@@ -8,6 +8,12 @@ import com.jme3.input.RawInputListener;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jvisualscripting.Engine;
+import com.jvisualscripting.EventGraph;
+import com.jvisualscripting.event.StartEventNode;
+import com.jvisualscripting.function.EndNode;
+import com.jvisualscripting.function.Print;
+import java.io.File;
+import java.io.IOException;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
@@ -15,9 +21,14 @@ public class Main extends SimpleApplication {
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
 
-    public static void main(String[] args) {
         Main app = new Main();
         app.start();
+    public static void main(String[] args) throws IOException {
+        EventGraph graph = new EventGraph();
+        graph.save(new File("new.jvsz"));
+        String[] argy = new String[1];
+        argy[0] = "new.jvsz";
+        Engine.main(argy);
     }
 
     @Override
