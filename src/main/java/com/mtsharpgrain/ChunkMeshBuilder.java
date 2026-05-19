@@ -38,8 +38,8 @@ public class ChunkMeshBuilder {
                     
                     Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
                     mat.setBoolean("UseMaterialColors", true);
-                    mat.setColor("Ambient", ColorRGBA.Green);
-                    mat.setColor("Diffuse", ColorRGBA.Green);
+                    mat.setColor("Ambient", ColorRGBA.Red);
+                    mat.setColor("Diffuse", ColorRGBA.Red);
                     geo.setMaterial(mat);
 
                     // Move relative to world
