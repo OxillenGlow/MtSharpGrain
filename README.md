@@ -21,8 +21,8 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 - PBR, idk if it will actually make the game look "better" 0%
 - Resolution management
 - Scripts, jVisualScripting script engine would soon be added as a dependancy ✅ 20%
-##### Finished but still needs fixing
-- Faces, the are still facing the wrong sides ,  my code is now super messy :( ✅ 90%
+##### Implemented but still needs fixing
+- Faces, PyBallJmeMesh, my code is now super messy :( ✅ 90%
 ## Goal
 > <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />i also hope that one day this can support scripts and mods in the future for easy modding.
 
