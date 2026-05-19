@@ -21,9 +21,9 @@ public class Main extends SimpleApplication {
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
 
-        Main app = new Main();
-        app.start();
     public static void main(String[] args) throws IOException {
+        //Main app = new Main();
+        //app.start();
         EventGraph graph = new EventGraph();
         graph.save(new File("new.jvsz"));
         String[] argy = new String[1];
