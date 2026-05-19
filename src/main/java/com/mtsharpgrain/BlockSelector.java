@@ -36,7 +36,7 @@ public class BlockSelector {
 
         if (leftPressed) {
             // Shift point SLIGHTLY out of the block face to find the empty space
-           adjustedPoint.addLocal(normal.mult(0.4f));
+           adjustedPoint.addLocal(normal.mult(0.6f));
         } else {
             // Shift point SLIGHTLY into the block face to find the block itself
             adjustedPoint.addLocal(normal.mult(-0.01f));
