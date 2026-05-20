@@ -6,27 +6,30 @@
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
 A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks.
 
+---
 **I am excited about:** 
 
 Adding NPC's controled by their brain -> ai mlp and scripts which can "prod" the NPC's to do certain things.
 
 Adding nodes that can interact "physically" nearby nodes making machines
 
+---
 ## Link to [wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
 ## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
+---
 ## Special points
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
 This is a project aimed at making a high graphic and, most importantly, realistic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
 
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
-- GUI > afterwards customisable with scripts
-- Full screen ect
+- GUI > afterwards customisable with scripts 0%
+- Full screen ect 0%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
-- Resolution management
-- Scripts, jVisualScripting script engine would soon be added as a dependancy ✅ 20%
+- Resolution management 0%
+- Scripts, jVisualScripting script engine would soon be added as a dependancy ✅ 50%
 ##### Implemented but still needs fixing
 - Faces, PyBallJmeMesh, my code is now super messy :( ✅ 90%
 ## Goal
