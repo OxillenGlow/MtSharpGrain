@@ -1,5 +1,7 @@
 <img src="Pictures/content.png" align="center"/>
 
+###### _concept image_
+
 # MtSharpGrain ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain)
 
 ###### ![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/Mtsharpgrain) ⬅️ please help increase 
