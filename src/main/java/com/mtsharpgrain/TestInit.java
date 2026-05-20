@@ -15,9 +15,15 @@ import com.jme3.scene.shape.Box;
 import com.jme3.renderer.Camera;
 
 public class TestInit {
+    BlockSelector blockSelector;
+    public static void setup(Main app, Player player, WorldAccess worldAccess, MouseListener mouseListener, BlockSelector blockSelector) {
+        this.blockSelector = blockSelector;
+        blockSelector = new BlockSelector(cam, rootNode, mouseListener);
+        mouseListener = new MouseListener();
+        worldAccess = new WorldAccess("Data/worlds/my_world");
+        player = new Player();
+        player.setWorldPosition(new Vector3f(1, 1, 1));
 
-    public static void setup(Main app, Player player, WorldAccess worldAccess, MouseListener mouseListener) {
-        // --- 1. Camera & Perspective ---
         Camera cam = app.getCamera();
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
         cam.setFrustumPerspective(45.0f, aspectRatio, 0.5f, 5000.0f);

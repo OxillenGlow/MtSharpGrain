@@ -20,6 +20,7 @@ public class Main extends SimpleApplication {
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
+    private Player player;
 
     public static void main(String[] args) throws IOException {
         //Main app = new Main();
@@ -32,16 +33,9 @@ public class Main extends SimpleApplication {
     }
     @Override
     public void simpleInitApp() {
-        // 1. Declarations (The variables remain members of Main as per your setup)
-        blockSelector = new BlockSelector(cam, rootNode, mouseListener);
-        mouseListener = new MouseListener();
-        worldAccess = new WorldAccess("Data/worlds/my_world");
-        var player = new Player();
-        player.setWorldPosition(new Vector3f(1, 1, 1));
-    
-        // 2. Delegate all setup to TestInit
+        
         // We pass 'this' to allow access to settings, inputManager, guiNode, etc.
-        TestInit.setup(this, player, worldAccess, mouseListener);
+        TestInit.setup(this, player, worldAccess, mouseListener, blockSelector);
     
         // 3. Initialize RenderManager (needs the fully prepped worldAccess and player)
         this.renderManagermg = new com.mtsharpgrain.RenderManager(worldAccess, rootNode, assetManager, player, this);
