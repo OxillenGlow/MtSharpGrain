@@ -7,12 +7,15 @@
 A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks.
 
 ---
-**I am excited about:** 
+## <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />I am excited about: 
 
-Adding NPC's controled by their brain -> ai mlp and scripts which can "prod" the NPC's to do certain things.
+> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />Adding NPC's controled by their brain -> Ai MLP and scripts which can "prod" the NPC's to do certain things.
 
-Adding nodes that can interact "physically" nearby nodes making machines
+> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />Adding nodes that can interact "physically" nearby nodes making machines
 
+> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" /> I also hope that one day this can support visual scripts and mods in the future for easy modding.
+
+> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />Multiplayer is also very important (Currently not implemented).
 ---
 ## Link to [wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
 ## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
@@ -32,10 +35,7 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 - Scripts, jVisualScripting script engine would soon be added as a dependancy ✅ 50%
 ##### Implemented but still needs fixing
 - Faces, PyBallJmeMesh, my code is now super messy :( ✅ 90%
-## Goal
-> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />i also hope that one day this can support scripts and mods in the future for easy modding.
 
-> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />Multiplayer is also very important (Currently not implemented).
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
 # Attribs
