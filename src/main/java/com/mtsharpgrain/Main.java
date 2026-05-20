@@ -33,8 +33,9 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         // 1. Declarations (The variables remain members of Main as per your setup)
+        blockSelector = new BlockSelector(cam, rootNode, mouseListener);
         mouseListener = new MouseListener();
-        worldAccess = new WorldAccess("worlds/my_world");
+        worldAccess = new WorldAccess("Data/worlds/my_world");
         var player = new Player();
         player.setWorldPosition(new Vector3f(1, 1, 1));
     
