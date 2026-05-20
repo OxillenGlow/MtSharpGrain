@@ -30,63 +30,31 @@ public class Main extends SimpleApplication {
         argy[0] = "new.jvsz";
         Engine.main(argy);
     }
-
     @Override
     public void simpleInitApp() {
-        // Maintain default 45-degree FOV, calculate current window aspect ratio, 
-        // and extend the view distance range from 0.1 out to 5000 world units.
-        float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
-        cam.setFrustumPerspective(45.0f, aspectRatio, 0.5f, 5000.0f);
-        
-        // Your existing initialization logic
-        TestInit.init(rootNode, flyCam, assetManager);
-
-        // Initialize the MouseListener first
+        // 1. Declarations (The variables remain members of Main as per your setup)
         mouseListener = new MouseListener();
-
-        // Ensure camera and rootNode are available before initializing BlockSelector
-        blockSelector = new BlockSelector(cam, rootNode, mouseListener);
-
-        // Register the MouseListener with the input manager
-        inputManager.addRawInputListener(mouseListener);
-
-        // Initialize WorldAccess and RenderManager
         worldAccess = new WorldAccess("worlds/my_world");
         var player = new Player();
         player.setWorldPosition(new Vector3f(1, 1, 1));
-
-        // Initialize RenderManager
+    
+        // 2. Delegate all setup to TestInit
+        // We pass 'this' to allow access to settings, inputManager, guiNode, etc.
+        TestInit.setup(this, player, worldAccess, mouseListener);
+    
+        // 3. Initialize RenderManager (needs the fully prepped worldAccess and player)
         this.renderManagermg = new com.mtsharpgrain.RenderManager(worldAccess, rootNode, assetManager, player, this);
 
-        // Chunk setup (optional, for testing)
+        // Initial Chunk setup
         try {
             ChunkPos firstChunk = new ChunkPos(0, 0, 3);
             worldAccess.createChunkAt(firstChunk, 1);
             renderManagermg.markDirty(firstChunk);
         } catch (Exception e) {
-            System.out.println("Error creating chunk");
+            System.out.println("Error creating chunk: " + e.getMessage());
         }
-        
-        // Load the default font
-        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-        BitmapText ch = new BitmapText(guiFont, false);
-    
-        // Set properties
-        ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
-        ch.setText("+"); // The crosshair shape
-    
-        // Center it on screen
-        float x = settings.getWidth() / 2 - ch.getLineWidth() / 2;
-        float y = settings.getHeight() / 2 + ch.getLineHeight() / 2;
-        ch.setLocalTranslation(x, y, 0);
-    
-        // Attach to the GUI node (2D layer)
-        guiNode.attachChild(ch);
-        
-        
-        
-        
     }
+    
 
     @Override
     public void simpleUpdate(float tpf) {
