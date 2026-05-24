@@ -17,14 +17,9 @@ public class Main extends SimpleApplication {
     private MouseListener mouseListener;
 
     public static void main(String[] args) throws IOException {
-        //Main app = new Main();
-        //app.start();
-        VisualScriptingEditor.main(args);
-        //EventGraph graph = new EventGraph();
-        //graph.save(new File("new.jvsz"));
-        //String[] argy = new String[1];
-        //argy[0] = "new.jvsz";
-        //Engine.main(argy);
+        Main app = new Main();
+        app.start();
+        
     }
 
     @Override

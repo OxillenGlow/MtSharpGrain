@@ -16,15 +16,20 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.jvisualscripting.Engine;
+import java.util.concurrent.CompletableFuture;
 
 public class VisualScriptingEditor extends JFrame {
 
     VisualScriptingEditorMainPanel visualEditorPanel;
 
     public VisualScriptingEditor(Engine engine) {
-        setTitle("jVisualScripting Editor");
+        System.out.println("herears");
+        //setTitle("jVisualScripting Editor");
+        System.out.println("here");
         this.visualEditorPanel = new VisualScriptingEditorMainPanel(engine);
+        System.out.println("here");
         setContentPane(this.visualEditorPanel);
+        System.out.println("here");
         JMenuBar menubar = createJMenuBar();
         setJMenuBar(menubar);
     }
@@ -190,14 +195,17 @@ public class VisualScriptingEditor extends JFrame {
     }
     public static void main(String[] args) {
     SwingUtilities.invokeLater(() -> {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        VisualScriptingEditor f = new VisualScriptingEditor(Engine.getDefault());
-
+        System.out.print("herey");
+        //try {
+        //    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        //} catch (Exception e) {
+        //    e.printStackTrace();
+        //}
+        System.out.println("1y");
+        var engine = Engine.getDefault();
+        System.out.println("2y");
+        var f = new VisualScriptingEditor(engine);
+        System.out.println("3");
         try {
             if (args.length > 0) {
                 String script = args[0];
@@ -216,7 +224,7 @@ public class VisualScriptingEditor extends JFrame {
                 f.addStartAndEndNodes();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            
             f.addStartAndEndNodes();
         }
 
