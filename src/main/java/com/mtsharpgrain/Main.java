@@ -7,7 +7,6 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import java.io.IOException;
-//import org.openconcerto.jvisualscripting.VisualScriptingEditor; 
 import com.jvisualscripting.editor.VisualScriptingEditor;
 
 public class Main extends SimpleApplication {

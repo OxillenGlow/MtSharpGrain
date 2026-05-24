@@ -46,7 +46,7 @@ project(":assets") {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(25)
+            languageVersion = JavaLanguageVersion.of(21)
         }
     }
 }
@@ -71,6 +71,9 @@ dependencies {
   
     // Physics Library
     implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
+    
+    // Networking Library
+    implementation "org.jmonkeyengine:jme3-networking:$jmeVer"
 
     // Additional Libraries
     implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
@@ -97,7 +100,7 @@ jar {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
