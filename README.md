@@ -1,6 +1,6 @@
-<img src="Pictures/content.png" align="center"/>
+<img src="Pictures/Sc.png" align="center"/>
 
-###### _concept image_
+###### _in-game image_
 
 # MtSharpGrain ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain)
 
