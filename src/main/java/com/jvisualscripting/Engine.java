@@ -199,7 +199,7 @@ public class Engine {
 
             defaultEngine.registerNodeType(10000, "Execution", "End", EndNode.class);
         }
-        System.out.println("here");
+
         return defaultEngine;
     }
 
