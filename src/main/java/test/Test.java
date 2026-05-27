@@ -2,16 +2,16 @@ package test;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import org.lwjgl.system.Configuration;
 
 public class Test {
     public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> {
-            System.out.println(
-    java.lang.management.ManagementFactory
-        .getRuntimeMXBean()
-        .getInputArguments()
-);
+        System.out.println("1");
+        Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
+        System.out.println("1");
+        
+        Thread renderThread = new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
             System.out.println("1");
             JFrame f = new JFrame("Test");
             System.out.println("1");
@@ -24,6 +24,8 @@ public class Test {
             f.setVisible(true);
             System.out.println("1");
             System.out.println("VISIBLE");
-        });
+            });
+        }, "LWJGL-Render-Thread");
+        renderThread.start();
     }
 }

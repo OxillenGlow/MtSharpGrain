@@ -12,8 +12,9 @@ application {
     mainClass = 'com.mtsharpgrain.Main'
     //mainClass = 'com.jvisualscripting.editor.VisualScriptingEditor'
     // Mac OS with LWJGL 3 needs to be started with this JVM argument
-    applicationDefaultJvmArgs = ['-XstartOnFirstThread']
-    
+    if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+        applicationDefaultJvmArgs = ['-XstartOnFirstThread']
+    }
 }
 
 repositories {
@@ -27,7 +28,7 @@ repositories {
 }
 
 project.ext {
-    jmeVer = '3.8.1-stable'
+    jmeVer = '3.9.0-stable'
 }
 
 project(":assets") {
