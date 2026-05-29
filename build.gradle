@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.mtsharpgrain'
-version = '1.0'
+version = '0.0'
 
 application {
     applicationName = 'MtSharpGrain'
@@ -28,7 +28,7 @@ repositories {
 }
 
 project.ext {
-    jmeVer = '3.9.0-stable'
+    jmeVer = '3.10.0-alpha5'
 }
 
 project(":assets") {
