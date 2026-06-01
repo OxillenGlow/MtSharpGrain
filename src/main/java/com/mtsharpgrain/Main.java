@@ -26,7 +26,7 @@ public class Main extends SimpleApplication {
         // Maintain default 45-degree FOV, calculate current window aspect ratio, 
         // and extend the view distance range from 0.1 out to 5000 world units.
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
-        cam.setFrustumPerspective(45.0f, aspectRatio, 0.5f, 5000.0f);
+        cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
         
         // Your existing initialization logic
         TestInit.init(rootNode, flyCam, assetManager);
