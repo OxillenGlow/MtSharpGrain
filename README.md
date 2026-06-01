@@ -49,8 +49,6 @@ AND
 
 jVisualScripting (no other dependencies) see https://github.com/openconcerto/jVisualScripting for source
 
-#### Screenshots
-![My image](Sc.png)
 #### DUMB SECTION, NOT READING IS ADVISED?:
 ##### Dumb question, how many hashtags can you put here on GitHub for sections? Answer: 6.
 this actually makes the text Gray instead of smaller compared to five hashtags while content stays the same. see ->
