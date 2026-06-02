@@ -45,6 +45,9 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 JavaMonkeyEngine (everthing that LWJGL has)
 see > [website](https://www.jmonkeyengine.org)
 
+riccardobl's simple gui for jme
+https://github.com/riccardobl/jme-igui
+
 AND
 
 jVisualScripting (no other dependencies) see https://github.com/openconcerto/jVisualScripting for source
