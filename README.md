@@ -33,10 +33,10 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 - Full screen ect 0%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
-- Resolution management 0%
 - Scripts, jVisualScripting script engine would soon be added as a dependancy ✅ 50%
 ##### Implemented but still needs fixing
 - Faces, PyBallJmeMesh, my code is now super messy :( ✅ 90%
+- Resolution management ✅ 90% i will add full screen support later.(dont realy plan on multi sampling so this is it)
 
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
