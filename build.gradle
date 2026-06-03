@@ -21,7 +21,7 @@ repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
     // Sourceforge does not host a standard Maven repository layout. Removed to prevent build timeouts.
-    maven githubPackage.invoke("riccardobl")
+    //maven githubPackage.invoke("riccardobl")
     flatDir {
         dirs 'libs'
     }
@@ -87,7 +87,7 @@ dependencies {
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     
-    implementation 'wf.frk:jme-igui:0.1.2'
+    //implementation 'wf.frk:jme-igui:0.1.2'
   
     // Assets sub-project
     runtimeOnly project(':assets')
@@ -107,35 +107,6 @@ java {
 
 wrapper {
     gradleVersion = '8.6'
-}
-tasks.register('checkMyJar') {
-    doLast {
-        // 1. Calculate the exact absolute path Gradle is looking for
-        def expectedFile = file("${rootDir}/libs/jVisualScripting-editor-1.4.jar")
-        
-        println "========================================="
-        println "GRADLE LOCAL JAR SEARCH REPORT"
-        println "========================================="
-        println "Target Path:  ${expectedFile.absolutePath}"
-        println "File Exists?: ${expectedFile.exists()}"
-        
-        if (expectedFile.exists()) {
-            println "File Size:    ${expectedFile.length()} bytes"
-        } else {
-            // 2. Scan the current folder context to see what actually exists nearby
-            println "\n--- Checking Directory Contents ---"
-            def libsDir = file("${rootDir}/libs")
-            if (libsDir.exists()) {
-                println "Contents of '${libsDir.absolutePath}':"
-                libsDir.eachFile { f -> println " -> ${f.name}" }
-            } else {
-                println "WARNING: The 'libs' folder does not exist at: ${libsDir.absolutePath}"
-                println "\nRoot project contents:"
-                file("${rootDir}").eachFile { f -> println " -> ${f.name}" }
-            }
-        }
-        println "========================================="
-    }
 }
 
 tasks.withType(JavaExec).configureEach {

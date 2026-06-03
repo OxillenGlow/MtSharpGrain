@@ -29,7 +29,7 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
-- GUI > afterwards customisable with scripts 0%
+- GUI > afterwards customisable with scripts 10%
 - Full screen ect 0%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
