@@ -1,6 +1,6 @@
-id {
+plugins {
     id 'java'
-    id 'appl'application'
+    id 'application'
     id "io.github.0ffz.github-packages" version "1.2.1"
 }
 
