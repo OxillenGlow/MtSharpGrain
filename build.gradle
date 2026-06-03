@@ -1,7 +1,7 @@
-plugins {
+id {
     id 'java'
-    id 'application'
-    //id "io.github.0ffz.github-packages" version "1.2.1"
+    id 'appl'application'
+    id "io.github.0ffz.github-packages" version "1.2.1"
 }
 
 group = 'com.mtsharpgrain'
@@ -21,7 +21,7 @@ repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
     // Sourceforge does not host a standard Maven repository layout. Removed to prevent build timeouts.
-    //maven githubPackage.invoke("riccardobl")
+    maven githubPackage.invoke("riccardobl")
     flatDir {
         dirs 'libs'
     }
@@ -87,8 +87,8 @@ dependencies {
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     
-    //implementation 'com.github.riccardobl:jme-igui:0.1.2'
-    
+    implementation 'wf.frk:jme-igui:0.1.2'
+  
     // Assets sub-project
     runtimeOnly project(':assets')
 }
