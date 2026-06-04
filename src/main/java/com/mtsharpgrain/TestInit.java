@@ -37,6 +37,7 @@ class TestInit {
         boxGeo.move(3.0f, 0, 0);
         PyBallJmeMesh.init();
         flyCam.setEnabled(true);// AHHHhHHHHH
+        flyCam.setDragToRotate(true);
         // Example: Get a mesh with a pyramid pointing in the +X direction and a ball at the center
         Mesh mesh = PyBallJmeMesh.getMesh(true, true, true, true, true, true, true);  // Pyramid pointing toward +X
 
