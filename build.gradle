@@ -20,8 +20,6 @@ application {
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
-    // Sourceforge does not host a standard Maven repository layout. Removed to prevent build timeouts.
-    //maven githubPackage.invoke("riccardobl")
     flatDir {
         dirs 'libs'
     }
@@ -82,9 +80,6 @@ dependencies {
     implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    
-    // Required for AWT/Swing integration on all platforms (including Mac)
-    implementation "org.jmonkeyengine:jme3-lwjgl3-awt:$jmeVer"
     
     // Assets sub-project
     runtimeOnly project(':assets')

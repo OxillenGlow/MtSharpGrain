@@ -2,12 +2,17 @@ package com.mtsharpgrain;
 
 //needs imports
 import com.jme3.app.SimpleApplication;
+import com.jme3.system.AppSettings;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
+import com.jme3.system.JmeCanvasContext;
+import java.awt.Canvas;
 import java.io.IOException;
 import com.jvisualscripting.editor.VisualScriptingEditor;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
@@ -17,30 +22,10 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) throws IOException {
         //I am seeing if embedding in jFrame works
-        //Main app = new Main();
-        //app.start();
+        Main app = new Main();
+        app.start();
         // 1. Create the JFrame on the EDT
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("JME inside Swing");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
-
-            // 2. Create a JME canvas (not the full application window)
-            LwjglCanvas canvas = new LwjglCanvas();
-            JmeCanvasContext context = (JmeCanvasContext) canvas.getContext();
-            
-            // 3. Create your JME application (extends SimpleApplication)
-            MyGame app = new MyGame();
-            app.setCanvasContext(context);
-            canvas.setSettings(app.getContext().getSettings());
-            
-            // 4. Add canvas to frame and show
-            frame.add(canvas.getCanvas());
-            frame.setVisible(true);
-            
-            // 5. Start the JME app on the canvas
-            app.start();
-        });
+        
     }
 
     @Override
