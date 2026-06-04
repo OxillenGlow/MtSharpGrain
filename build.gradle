@@ -67,9 +67,6 @@ dependencies {
     implementation "org.jmonkeyengine:jme3-jogg:$jmeVer"
     implementation "org.jmonkeyengine:jme3-plugins:$jmeVer"
   
-    // GUI Library
-    implementation "org.jmonkeyengine:jme3-niftygui:$jmeVer"
-  
     // Physics Library
     implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
     
@@ -80,15 +77,15 @@ dependencies {
     implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
     implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
     implementation "org.jmonkeyengine:jme3-testdata:$jmeVer"
-    //implementation "org.jmonkeyengine:jme3-vr:$jmeVer"
     implementation "com.github.stephengold:Heart:9.2.0"
     implementation "com.epagagames:particlemonkey:1.1.0"
     implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     
-    //implementation 'wf.frk:jme-igui:0.1.2'
-  
+    // Required for AWT/Swing integration on all platforms (including Mac)
+    implementation "org.jmonkeyengine:jme3-lwjgl3-awt:$jmeVer"
+    
     // Assets sub-project
     runtimeOnly project(':assets')
 }
