@@ -100,7 +100,7 @@ public class Main extends SimpleApplication {
 
         // Check for block selection from BlockSelector
         BlockSelection selection = blockSelector.getSelection();
-        if (selection != null) {
+        if (selection != null && com.mtsharpgrain.gui.GameState.isOkPlace() == true) {
             if (selection.placeAction) {
                 // Left click: place block (ID 2)
                 worldAccess.setBlockAt(selection.x, selection.y , selection.z, 2);
