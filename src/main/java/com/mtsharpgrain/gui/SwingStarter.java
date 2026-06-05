@@ -17,6 +17,7 @@ import javax.swing.JFrame;
  */
 public class SwingStarter {
     public static void main(String[] args) throws IOException {
+        Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
         //I am seeing if embedding in jFrame works
         System.out.println("0");
         

@@ -38,7 +38,7 @@ public class ChunkMeshBuilder {
                     
                     Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
                     mat.setBoolean("UseMaterialColors", true);
-                    mat.setColor("Ambient", ColorRGBA.Red);
+                    mat.setColor("Ambient", ColorRGBA.fromRGBA255(5, 5, 15, 0));
                     mat.setColor("Diffuse", ColorRGBA.Red);
                     geo.setMaterial(mat);
 
@@ -62,7 +62,7 @@ public class ChunkMeshBuilder {
     private static boolean isAir(BufferedChunk chunk, int x, int y, int z) {
         // If out of bounds, default to true (render the face)
         if (x < 0 || x >= 16 || y < 0 || y >= 16 || z < 0 || z >= 16) {
-            return true;
+            return false;
         }
         
         int blockId = chunk.get(x, y, z);
