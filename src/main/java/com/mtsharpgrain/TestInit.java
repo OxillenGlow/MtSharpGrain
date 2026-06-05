@@ -12,8 +12,9 @@ import com.jme3.scene.shape.Box;
 import com.jme3.scene.Node;
 import com.jme3.input.FlyByCamera;
 import com.jme3.asset.AssetManager;
+import com.jme3.input.InputManager;
 class TestInit {
-    public static Object init(Node rootNode, FlyByCamera flyCam, AssetManager assetManager){
+    public static Object init(Node rootNode, FlyByCamera flyCam, AssetManager assetManager, InputManager inputManager){
         
         
     
@@ -58,7 +59,8 @@ class TestInit {
         rootNode.attachChild(meshGeometry);
         //Vector3f p = new Vector3f(0,0,0);
         //Player.setWorldPosition(p);
+        var flyCamToggle = new com.mtsharpgrain.gui.FlyCamToggle(inputManager, flyCam);
         return null;
-    
+        
     }
 }
