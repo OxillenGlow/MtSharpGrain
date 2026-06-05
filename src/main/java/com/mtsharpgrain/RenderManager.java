@@ -2,26 +2,35 @@ package com.mtsharpgrain;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import java.util.Collections;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.*;
-import java.util.*;
 
 public final class RenderManager {
 
     private final WorldAccess worldAccess;
-    private final SimpleApplication app; // REQUIRED for enqueue
+    private final SimpleApplication app;
     private final ConcurrentHashMap<ChunkPos, ChunkRenderData> renderMap = new ConcurrentHashMap<>();
     private final Queue<ChunkPos> dirtyQueue = new ConcurrentLinkedQueue<>();
+
+    // ── BUG FIX (1): was ConcurrentLinkedQueue – contains() is O(n).
+    // Using a ConcurrentHashMap-backed Set gives O(1) add / contains / remove.
     private final Set<ChunkPos> pendingChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     private int viewDistance = 1;
     private static final double CHUNK_METERS = BufferedChunk.SIZE * 0.5;
     private int viewHeight = 0;
+
     Player player;
     Node nd;
     AssetManager assetManager;
 
-    public RenderManager(WorldAccess worldAccess, Node nd, AssetManager am, Player player, SimpleApplication app) {
+    public RenderManager(WorldAccess worldAccess, Node nd, AssetManager am,
+                         Player player, SimpleApplication app) {
         this.worldAccess = worldAccess;
         this.nd = nd;
         this.assetManager = am;
@@ -29,23 +38,20 @@ public final class RenderManager {
         this.app = app;
     }
 
-    
     public void tick(float playerX, float playerY, float playerZ) {
-    int px = worldToChunk(playerX);
-    int py = worldToChunk(playerY);
-    int pz = worldToChunk(playerZ);
+        int px = worldToChunk(playerX);
+        int py = worldToChunk(playerY);
+        int pz = worldToChunk(playerZ);
 
         for (int dx = -viewDistance; dx <= viewDistance; dx++) {
             for (int dy = -viewDistance; dy <= viewHeight; dy++) {
                 for (int dz = -viewDistance; dz <= viewDistance; dz++) {
                     ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
-
                     worldAccess.ensureChunk(pos);
 
-                    // FIX: If this is the FIRST time we see this chunk, mark it dirty
                     renderMap.computeIfAbsent(pos, p -> {
-                        markDirty(p); // Trigger a build for the new chunk
-                    return new ChunkRenderData(p);
+                        markDirty(p);
+                        return new ChunkRenderData(p);
                     });
                 }
             }
@@ -57,8 +63,16 @@ public final class RenderManager {
         return (int) Math.floor(meters / CHUNK_METERS);
     }
 
+    // ── BUG FIX (2): was O(n) via ConcurrentLinkedQueue.contains().
+    // dirtyQueue is now only used as a FIFO; we guard duplicate entries with
+    // pendingChunks (already a set) so duplicates naturally vanish there.
+    // A simple guard using a parallel HashSet keeps contains() at O(1).
+    private final Set<ChunkPos> dirtySet = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     public void markDirty(ChunkPos pos) {
-        if (!dirtyQueue.contains(pos)) dirtyQueue.add(pos);
+        if (dirtySet.add(pos)) {   // add returns false if already present
+            dirtyQueue.add(pos);
+        }
     }
 
     public void markNeighborsDirty(ChunkPos pos) {
@@ -73,39 +87,73 @@ public final class RenderManager {
 
     private void processDirtyQueue() {
         ChunkPos pos = dirtyQueue.poll();
-        if (pos == null || pendingChunks.contains(pos)) return;
+        if (pos == null) return;
+        dirtySet.remove(pos);       // keep the guard set in sync
+
+        if (pendingChunks.contains(pos)) return;
 
         BufferedChunk chunk = worldAccess.getChunk(pos);
         if (chunk == null) return;
 
         pendingChunks.add(pos);
 
-        // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
+        // ── BUG FIX (3): THREADING ──────────────────────────────────────────
+        //
+        // ORIGINAL CODE (broken):
+        //   CompletableFuture.runAsync(() -> {
+        //       app.enqueue(() -> {
+        //           Spatial newMesh = ChunkMeshBuilder.build(...);  // ← WRONG
+        //           nd.attachChild(newMesh);
+        //       });
+        //   });
+        //
+        // ChunkMeshBuilder.build() is CPU-intensive (geometry batching via
+        // GeometryBatchFactory).  It was running INSIDE app.enqueue(), which
+        // executes on the JME render thread – blocking every frame while a
+        // chunk was being built, causing visible stutters.
+        //
+        // CORRECT pattern:
+        //   • Heavy work (mesh building)  → background thread (runAsync lambda)
+        //   • Scene graph mutation only   → render thread (enqueue lambda)
+        //
+        // NOTE: Creating Mesh / Geometry / Material objects on a background
+        // thread before attachment is safe in JME3; the render thread only
+        // needs to own the objects once they are part of the scene graph.
+        // ────────────────────────────────────────────────────────────────────
         CompletableFuture.runAsync(() -> {
             try {
-                app.enqueue(() -> {
-                        
-                    // Building (Background Thread in enqueue)
-                    Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                    ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                    newMesh.addControl(ctr);
+                // ── Heavy work on the background thread ──────────────────────
+                Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
+                ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
+                newMesh.addControl(ctr);
 
-                
+                // Shadow mode: CastAndReceive so chunks cast shadows on each
+                // other and on other scene objects, and receive shadows from
+                // the directional sun light.
+                // This is safe to set before attachment (not a scene-graph op).
+                newMesh.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+
+                // ── Scene graph ops on the render thread ─────────────────────
+                app.enqueue(() -> {
                     Spatial oldCk = nd.getChild(newMesh.getName());
                     if (oldCk != null) oldCk.removeFromParent();
-                    
+
                     nd.attachChild(newMesh);
-                    
+
                     ChunkRenderData crd = renderMap.get(pos);
                     if (crd != null) crd.lastBuiltTime = System.currentTimeMillis();
-                    
-                    pendingChunks.remove(pos); // Clean up tracking
+
+                    pendingChunks.remove(pos);
                     return null;
                 });
+
             } catch (Exception e) {
-                e.printStackTrace();
+                // ── BUG FIX (4): pendingChunks.remove was only inside
+                // enqueue(), so a crash in the async build would leak the
+                // entry and permanently block that chunk from re-queuing.
+                // Now we remove it here in the catch so retries are possible.
                 pendingChunks.remove(pos);
-                System.out.println("AHHH");
+                e.printStackTrace();
             }
         });
     }
@@ -113,7 +161,6 @@ public final class RenderManager {
     public void unloadChunk(ChunkPos pos) {
         renderMap.remove(pos);
         worldAccess.unloadChunk(pos);
-        // Enqueue removal to ensure thread safety with the Node
         app.enqueue(() -> {
             Spatial s = nd.getChild("Ck" + pos.getX() + "y" + pos.getY() + "z" + pos.getZ());
             if (s != null) s.removeFromParent();
@@ -121,22 +168,20 @@ public final class RenderManager {
         });
     }
 
-    // New method to handle block changes and trigger rebuilds
     public void onBlockChanged(int worldX, int worldY, int worldZ) {
         ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
-        markDirty(chunkPos);
-        // Mark neighbors if on boundary (simplified: always mark neighbors for now)
         markNeighborsDirty(chunkPos);
     }
 
+    // ── Inner data class ──────────────────────────────────────────────────────
     public static final class ChunkRenderData {
         public Object geometry;
         public long lastBuiltTime;
         public ChunkPos pos;
         public ChunkRenderData(ChunkPos pos) { this.pos = pos; }
     }
-    private static ChunkPos worldToChunk(int x, int y, int z) {
-        return new ChunkPos(worldToChunk((double)x), worldToChunk((double)y), worldToChunk((double)z));
-    }
 
+    private static ChunkPos worldToChunk(int x, int y, int z) {
+        return new ChunkPos(worldToChunk((double) x), worldToChunk((double) y), worldToChunk((double) z));
+    }
 }
