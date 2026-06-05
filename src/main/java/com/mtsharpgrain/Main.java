@@ -24,7 +24,7 @@ public class Main extends SimpleApplication {
     private MouseListener mouseListener;
 
     public static void main(String[] args) throws IOException {
-        //I am seeing if embedding in jFrame works
+        
         System.out.println("0");
         Main app = new Main();
         app.start();
@@ -40,7 +40,21 @@ public class Main extends SimpleApplication {
         cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
         // Your existing initialization logic
         TestInit.init(rootNode, flyCam, assetManager);
+        // Get the sun light from rootNode since TestInit still returns null
+        com.jme3.light.DirectionalLight sun = null;
+        for (com.jme3.light.Light l : rootNode.getLocalLightList()) {
+             if (l instanceof com.jme3.light.DirectionalLight) {
+                sun = (com.jme3.light.DirectionalLight) l;
+                break;
+            }
+        }
 
+        com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
+            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 2048, 3);
+        dlsr.setLight(sun);
+        viewPort.addProcessor(dlsr);
+
+        rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
         // Initialize the MouseListener first
         mouseListener = new MouseListener();
 
