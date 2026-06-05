@@ -99,7 +99,7 @@ public class Main extends SimpleApplication {
         );
 
         // Check for block selection from BlockSelector
-        Check.tick(renderManager,worldAccess,BlockSelector)
+        com.mtsharpgrain.node.Check.tick(renderManager,worldAccess);
     }
     @Override
     public void simpleRender(RenderManager rm) {
