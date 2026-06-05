@@ -1,24 +1,18 @@
 <img src="Pictures/Sc.png" align="center"/>
 
-###### _in-game image_
-
 # MtSharpGrain ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain)
 
 ###### ![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/Mtsharpgrain) ⬅️ please help increase 
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks.
+A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java using openGL lwjgl and jme.
+
+This game has already implemented:
+
+- **semi smooth** node meshes
+- **jVisualScripting engine & editor** for visualblock based coding. _Direct connection to game is still being added._
 
 ---
-## <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />I am excited about: 
 
-> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />Adding NPC's controled by their brain -> Ai MLP and scripts which can "prod" the NPC's to do certain things.
-
-> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />Adding nodes that can interact "physically" nearby nodes making machines
-
-> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" /> I also hope that one day this can support visual scripts and mods in the future for easy modding.
-
-> <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />Multiplayer is also very important (Currently not implemented).
----
 ## Link to [wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
 ## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
@@ -30,12 +24,12 @@ This is a project aimed at making a high graphic and, most importantly, realisti
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
 - GUI > afterwards customisable with scripts 10%
-- Full screen ect 0%
+- Full screen ect 50%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
-- Scripts, jVisualScripting script engine would soon be added as a dependancy ✅ 50%
+- Scripts, jVisualScripting script engine would soon be added as to game ✅ 20%
 ##### Implemented but still needs fixing
-- Faces, PyBallJmeMesh, my code is now super messy :( ✅ 90%
+- Faces, PyBallJmeMesh, my code is now super messy :( ✅ 80% i still have to think of more smoother connections especially for collums
 - Resolution management ✅ 90% i will add full screen support later.(dont realy plan on multi sampling so this is it)
 
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
