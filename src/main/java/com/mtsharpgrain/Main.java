@@ -38,10 +38,11 @@ public class Main extends SimpleApplication {
                 .getDefaultScreenDevice()
                 .getDisplayMode()
                 .getHeight()
-        )
+        );
         settings.setTitle("MtSharpGrain");
         System.out.println("0");
         Main app = new Main();
+        app.setSettings(settings);
         app.start();
          
     }
