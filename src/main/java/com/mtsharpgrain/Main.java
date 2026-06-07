@@ -27,7 +27,17 @@ public class Main extends SimpleApplication {
     boolean mousePressedR=false;
     
     public static void main(String[] args) throws IOException {
-        
+                AppSettings settings = new AppSettings(true);
+                settings.setFullscreen(false);
+                settings.setResolution(
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice()
+                .getDisplayMode()
+                .getWidth(),
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice()
+                .getDisplayMode()
+                .getHeight()
         System.out.println("0");
         Main app = new Main();
         app.start();
