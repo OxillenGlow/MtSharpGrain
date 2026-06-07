@@ -27,9 +27,9 @@ public class Main extends SimpleApplication {
     boolean mousePressedR=false;
     
     public static void main(String[] args) throws IOException {
-                AppSettings settings = new AppSettings(true);
-                settings.setFullscreen(false);
-                settings.setResolution(
+        AppSettings settings = new AppSettings(true);
+        settings.setFullscreen(false);
+        settings.setResolution(
             GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice()
                 .getDisplayMode()
@@ -38,6 +38,8 @@ public class Main extends SimpleApplication {
                 .getDefaultScreenDevice()
                 .getDisplayMode()
                 .getHeight()
+        )
+        settings.setTitle("MtSharpGrain");
         System.out.println("0");
         Main app = new Main();
         app.start();
