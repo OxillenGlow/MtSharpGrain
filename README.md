@@ -2,7 +2,9 @@
 
 # MtSharpGrain ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain)
 
-###### ![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/Mtsharpgrain) ⬅️ please help increase 
+![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/MtSharpGrain?label=Please%20help%20increase%20%E2%86%92%20stars)
+
+
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
 A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java using openGL lwjgl and jme.
 
@@ -19,7 +21,7 @@ This game has already implemented:
 ---
 ## Special points
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-This is a project aimed at making a high graphic and, most importantly, realistic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
+This is a project aimed at making a futuristic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
 
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
