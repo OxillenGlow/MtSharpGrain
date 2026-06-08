@@ -2,14 +2,15 @@ package com.mtsharpgrain.node;
 
 import com.mtsharpgrain.WorldAccess;
 import com.mtsharpgrain.RenderManager;
+import com.mtsharpgrain.gui.GameState;
 
 /**
  * CommandListener extends OnPrintScript.OnPrintListener to handle console commands
  * for block manipulation in the game world.
  * 
  * Supported commands:
- *   !destroy x y z - Remove block at coordinates
- *   !place x y z type - Place block at coordinates with given type
+ *   !destroy x y z - Remove block at coordinates (requires editor/manager/admin)
+ *   !place x y z type - Place block at coordinates with given type (requires editor/manager/admin)
  */
 public class CommandListener implements OnPrintScript.OnPrintListener {
     
@@ -31,9 +32,22 @@ public class CommandListener implements OnPrintScript.OnPrintListener {
     }
     
     /**
+     * Check if the current player state allows command execution
+     */
+    private boolean isAuthorizedForCommand() {
+        String playerState = GameState.getPlayerState();
+        return playerState.equals("editor") || playerState.equals("manager") || playerState.equals("admin");
+    }
+    
+    /**
      * Handle !destroy x y z command
      */
     private void handleDestroyCommand(String command) {
+        if (!isAuthorizedForCommand()) {
+            System.out.println("Permission denied: You do not have authorization to use !destroy command. Current state: " + GameState.getPlayerState());
+            return;
+        }
+        
         try {
             String[] parts = command.split(" ");
             if (parts.length < 4) {
@@ -60,6 +74,11 @@ public class CommandListener implements OnPrintScript.OnPrintListener {
      * Handle !place x y z type command
      */
     private void handlePlaceCommand(String command) {
+        if (!isAuthorizedForCommand()) {
+            System.out.println("Permission denied: You do not have authorization to use !place command. Current state: " + GameState.getPlayerState());
+            return;
+        }
+        
         try {
             String[] parts = command.split(" ");
             if (parts.length < 5) {
