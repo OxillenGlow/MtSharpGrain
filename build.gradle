@@ -1,14 +1,16 @@
 plugins {
     id 'java'
     id 'application'
+    id "io.github.0ffz.github-packages" version "1.2.1"
 }
 
-group 'com.mygame'
-version '1.0'
+group = 'com.mtsharpgrain'
+version = '0.0'
 
 application {
-    applicationName = 'GradleGame'
-    mainClass = 'com.mygame.Main'
+    applicationName = 'MtSharpGrain'
+    mainClass = 'com.mtsharpgrain.Main'
+    //mainClass = 'com.jvisualscripting.editor.VisualScriptingEditor'
     // Mac OS with LWJGL 3 needs to be started with this JVM argument
     if (System.getProperty("os.name").toLowerCase().contains("mac")) {
         applicationDefaultJvmArgs = ['-XstartOnFirstThread']
@@ -18,16 +20,20 @@ application {
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 project.ext {
-  jmeVer = '3.8.1-stable'
+    jmeVer = '3.9.0-stable'
 }
 
 project(":assets") {
     apply plugin: "java"
 
-    buildDir = rootProject.file("build/assets")
+    // Modern Gradle syntax for layout build directory
+    layout.buildDirectory.set(rootProject.file("build/assets"))
 
     sourceSets {
         main {
@@ -45,37 +51,38 @@ project(":assets") {
 }
 
 dependencies {
+    // Core JME
+    implementation "org.jmonkeyengine:jme3-core:$jmeVer"
+    implementation "org.jmonkeyengine:jme3-desktop:$jmeVer"
+    
+    // Mac OS with LWJGL 3 doesn't allow AWT/Swing
+    if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
+        implementation "org.jmonkeyengine:jme3-awt-dialogs:$jmeVer"
+    }
+    implementation "org.jmonkeyengine:jme3-lwjgl3:$jmeVer"
 
-  // Core JME
-  implementation "org.jmonkeyengine:jme3-core:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-desktop:$jmeVer"
-  // Mac OS with LWJGL 3 doesn't allow AWT/Swing
-  if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
-    implementation "org.jmonkeyengine:jme3-awt-dialogs:$jmeVer"
-  }
-  implementation "org.jmonkeyengine:jme3-lwjgl3:$jmeVer"
-
-  // Suppress errors / warnings building in SDK
-  implementation "org.jmonkeyengine:jme3-jogg:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-plugins:$jmeVer"
+    // Suppress errors / warnings building in SDK
+    implementation "org.jmonkeyengine:jme3-jogg:$jmeVer"
+    implementation "org.jmonkeyengine:jme3-plugins:$jmeVer"
   
-  // GUI Library
-  implementation "org.jmonkeyengine:jme3-niftygui:$jmeVer"
-  
-  // Physics Library
-  implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
+    // Physics Library
+    implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
+    
+    // Networking Library
+    implementation "org.jmonkeyengine:jme3-networking:$jmeVer"
 
-  // Additional Libraries
-  implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-testdata:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-vr:$jmeVer"
-  implementation "com.github.stephengold:Heart:9.2.0"
-  implementation "com.epagagames:particlemonkey:1.1.0"
-  implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
-
-  // Assets sub-project
-  runtimeOnly project(':assets')
+    // Additional Libraries
+    implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
+    implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
+    implementation "org.jmonkeyengine:jme3-testdata:$jmeVer"
+    implementation "com.github.stephengold:Heart:9.2.0"
+    implementation "com.epagagames:particlemonkey:1.1.0"
+    implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
+    
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    
+    // Assets sub-project
+    runtimeOnly project(':assets')
 }
 
 jar {
@@ -92,4 +99,8 @@ java {
 
 wrapper {
     gradleVersion = '8.6'
+}
+
+tasks.withType(JavaExec).configureEach {
+    jvmArgs += ['-XstartOnFirstThread']
 }

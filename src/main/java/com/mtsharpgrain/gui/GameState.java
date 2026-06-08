@@ -1,0 +1,29 @@
+package com.mtsharpgrain.gui;
+
+public class GameState {
+
+    private static boolean okPlace;
+    private static boolean darkMode;
+    private static String PLAYERSTATE = "editor";
+
+    public static void setModes(boolean okP, boolean dark) {
+        okPlace = okP;
+        darkMode = dark;
+    }
+
+    public static boolean isOkPlace() {
+        return okPlace;
+    }
+
+    public static boolean isDark() {
+        return darkMode;
+    }
+
+    public static String getPlayerState() {
+        return PLAYERSTATE;
+    }
+
+    public static void setPlayerState(String state) {
+        PLAYERSTATE = state;
+    }
+}
