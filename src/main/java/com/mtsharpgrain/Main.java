@@ -19,6 +19,8 @@ import com.jvisualscripting.editor.VisualScriptingEditor;
 import com.jvisualscripting.event.StartEventNode;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.gui.SwingStarter;
+import com.mtsharpgrain.node.OnPrintScript;
+import com.mtsharpgrain.node.CommandListener;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
@@ -92,6 +94,12 @@ public class Main extends SimpleApplication {
 
         // Initialize RenderManager
         this.renderManagermg = new com.mtsharpgrain.RenderManager(worldAccess, rootNode, assetManager, player, this);
+
+        // Initialize OnPrintScript and CommandListener
+        OnPrintScript printScript = new OnPrintScript();
+        printScript.attach();
+        CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
+        printScript.addListener(commandListener);
 
         // Chunk setup (optional, for testing)
         try {
