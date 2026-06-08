@@ -1,6 +1,9 @@
 <img src="Pictures/Sc.png" align="center"/>
 
-# MtSharpGrain ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain)
+# MtSharpGrain 
+![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain) _<-- constantly improving!_
+
+_If you don't see any comits in the last few days, I have been lazy._
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/MtSharpGrain?label=Please%20help%20increase%20%E2%86%92%20stars)
 
