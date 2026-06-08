@@ -27,12 +27,15 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 ---
 
 
-      m   m         s s s s       g g g
-    m   m   m     s             g
-    m   m   m       s s s       g   g g g
-    m       m             s     g       g
-    m       m     s s s s         g g g 
-# Unimportant but important stuff?
+      m   m           s s s s            g g g
+    m   m   m       s                  g
+    m   m   m         s s s            g   g g g
+    m       m               s          g       g
+    m       m t     s s s s   harp       g g g   rain
+
+---
+
+# Important stuff
 ## Soon to be implemented/fixed
 - simple world generation
     - random generation
