@@ -14,6 +14,8 @@ import java.util.List;
  *   OnPrintScript scriptMonitor = new OnPrintScript();
  *   scriptMonitor.attach();  // Replaces System.out
  *   scriptMonitor.addListener(myListener);
+ * Note that: this class is COMPLETELY generate by copilot/claude :p
+ * I'm lazy sometimes. hopefully it will run well.
  */
 public class OnPrintScript extends OutputStream {
     
