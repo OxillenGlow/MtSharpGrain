@@ -19,10 +19,19 @@ This game has already implemented:
 ## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
 ---
+
 ## Special points
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
 This is a project aimed at making a futuristic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
 
+---
+
+
+      m   m         s s s s       g g g
+    m   m   m     s             g
+    m   m   m       s s s       g   g g g
+    m       m             s     g       g
+    m       m     s s s s         g g g 
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
 - simple world generation
@@ -58,7 +67,7 @@ AND
 
 jVisualScripting (no other dependencies) see https://github.com/openconcerto/jVisualScripting for source
 
-#### DUMB SECTION, NOT READING IS ADVISED?:
+## DUMB SECTION, NOT READING IS ADVISED?:
 ##### Dumb question, how many hashtags can you put here on GitHub for sections? Answer: 6.
 this actually makes the text Gray instead of smaller compared to five hashtags while content stays the same. see ->
 ###### 6 hashtags 
