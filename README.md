@@ -11,7 +11,7 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
 This game has already implemented:
 
 - **semi smooth** node meshes
-- **jVisualScripting engine & editor** for visualblock based coding. _Direct connection to game is still being added._
+- **jVisualScripting engine & editor** for visualblock based coding. _Direct connection to game is still being added.(mostly finished now!)_
 
 ---
 
@@ -25,12 +25,22 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 # Unimportant but important stuff?
 ## Soon to be implemented/fixed
+- simple world generation
+    - random generation
+    - World making / hand sculpting
+- More content:
+    - More blocks: ice, glass, metal, plastic
+    - Special blocks: ...
+    - Person model - i think i should use the java drake model for people
+    - Randomly spawned builtings
 - GUI > afterwards customisable with scripts 10%
 - Full screen ect 50%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
-- Scripts, jVisualScripting script engine would soon be added as to game ✅ 20%
-##### Implemented but still needs fixing
+## Implemented (and still needs fixing)
+<img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
+
+- Scripts, jVisualScripting script engine would soon be added as to game ✅ 80% basically finished. thanks @claude and copilot. just need to connect the game now.
 - Faces, PyBallJmeMesh, my code is now super messy :( ✅ 80% i still have to think of more smoother connections especially for collums
 - Resolution management ✅ 90% i will add full screen support later.(dont realy plan on multi sampling so this is it)
 
