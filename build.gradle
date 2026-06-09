@@ -75,10 +75,11 @@ dependencies {
     implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
     implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
     implementation "org.jmonkeyengine:jme3-testdata:$jmeVer"
-    implementation "com.github.stephengold:Heart:9.2.0"
-    implementation "com.github.stephengold:SkyControl:1.1.0"
     implementation "com.epagagames:particlemonkey:1.1.0"
     implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
+    
+    implementation "com.github.stephengold:Heart:9.2.0"
+    implementation "com.github.stephengold:SkyControl:1.1.0"
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     

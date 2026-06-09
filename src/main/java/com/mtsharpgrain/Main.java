@@ -46,18 +46,19 @@ public class Main extends SimpleApplication {
             GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice()
                 .getDisplayMode()
-                .getHeight()
+                .getHeight() - 150
         );
         settings.setTitle("MtSharpGrain");
         System.out.println("0");
         Main app = new Main();
-        app.setSettings(settings);
+        //app.setSettings(settings);
         app.start();
          
     }
   
     @Override
     public void simpleInitApp() {
+        System.out.println("0");
         GameState.setModes(true, true);
         System.out.println("14");
         // Maintain default 45-degree FOV, calculate current window aspect ratio, 
