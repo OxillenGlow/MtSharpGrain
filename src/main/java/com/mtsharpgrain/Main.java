@@ -130,22 +130,8 @@ public class Main extends SimpleApplication {
         );
 
         // Check for block selection from BlockSelector
-        //Check.tick(worldAccess, renderManagermg, blockSelector);
-        BlockSelection selection = blockSelector.getSelection();
-        if (selection != null && com.mtsharpgrain.gui.GameState.isOkPlace()) {
-            if (selection.placeAction) {
-                // Left click: place block (ID 2)
-                worldAccess.setBlockAt(selection.x, selection.y , selection.z, 2);
-                System.out.println("Placed block at " + selection);
-            } else {
-                // Right click: remove block (set to 0)
-                worldAccess.removeBlockAt(selection.x , selection.y , selection.z );
-                System.out.println("Removed block at " + selection);
-            }
-            // Notify RenderManager to rebuild affected chunks
-            renderManagermg.onBlockChanged(selection.x , selection.y , selection.z );
-        };
-
+        Check.tick(worldAccess, renderManagermg, blockSelector);
+        
     }
     @Override
     public void simpleRender(RenderManager rm) {

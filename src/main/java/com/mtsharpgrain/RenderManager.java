@@ -83,7 +83,7 @@ public final class RenderManager {
         // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
         CompletableFuture.runAsync(() -> {
             try {
-                app.enqueue(() -> {
+                
                         
                     // Building (Background Thread in enqueue)
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
@@ -93,7 +93,7 @@ public final class RenderManager {
                 
                     Spatial oldCk = nd.getChild(newMesh.getName());
                     if (oldCk != null) oldCk.removeFromParent();
-                    
+                app.enqueue(() -> {
                     nd.attachChild(newMesh);
                     
                     ChunkRenderData crd = renderMap.get(pos);
