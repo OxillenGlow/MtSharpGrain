@@ -21,6 +21,7 @@ import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.gui.SwingStarter;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
+import com.mtsharpgrain.node.SkyControlInit;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
@@ -78,6 +79,10 @@ public class Main extends SimpleApplication {
         viewPort.addProcessor(dlsr);
 
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
+        
+        // Initialize SkyControl with Mars settings
+        SkyControlInit.initMarsSky(rootNode, cam, assetManager);
+        
         // Initialize the MouseListener first
         mouseListener = new MouseListener();
 
