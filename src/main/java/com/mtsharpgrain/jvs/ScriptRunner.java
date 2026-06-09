@@ -12,7 +12,7 @@ public static class ScriptRunner{
             Engine visualEngine = new Engine();
             
             // Path to your .jvsz file - modify this path as needed
-            File jvszFile = new File("scripts/default.jvsz");
+            File jvszFile = new File("scripts/CORE/simpleInit.jvsz");
             // for setting variables
             Map<String, String> keyValue = new HashMap<>();
             
