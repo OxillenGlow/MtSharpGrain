@@ -11,6 +11,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
+import com.jme3.system.AppSettings;
 import java.io.IOException;
 import java.io.File;
 import com.jvisualscripting.Engine;
@@ -19,10 +20,12 @@ import com.jvisualscripting.editor.VisualScriptingEditor;
 import com.jvisualscripting.event.StartEventNode;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.gui.SwingStarter;
+import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
 import com.mtsharpgrain.node.SkyControlInit;
 import com.mtsharpgrain.node.DayNightCycleManager;
+import java.awt.GraphicsEnvironment;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
@@ -30,10 +33,7 @@ public class Main extends SimpleApplication {
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
     private DayNightCycleManager dayNightCycle;
-    IGui gui;
-    boolean mouseHover=false;
-    boolean mousePressedL=false;
-    boolean mousePressedR=false;
+    
     
     public static void main(String[] args) throws IOException {
         AppSettings settings = new AppSettings(true);
@@ -138,7 +138,7 @@ public class Main extends SimpleApplication {
         guiNode.attachChild(ch);
         
         // Load and execute .jvsz visual script file
-        com.mtsharpgrain.jvs.ScriptRunner.loadAndExecuteVisualScript();
+        ScriptRunner.loadAndExecuteVisualScript();
     }
     
     @Override

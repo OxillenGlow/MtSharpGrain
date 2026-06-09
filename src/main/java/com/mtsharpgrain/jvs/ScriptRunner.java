@@ -4,12 +4,18 @@ import com.jvisualscripting.event.StartEventNode;
 import java.io.File;
 import com.jvisualscripting.Engine;
 import com.jvisualscripting.EventGraph;
+import java.util.HashMap;
+import java.util.Map;
 
-public static class ScriptRunner{
-    private void loadAndExecuteVisualScript() {
+/**
+ *
+ * @author oxillenglow
+ */
+public class ScriptRunner{
+    public static void loadAndExecuteVisualScript() {
         try {
             // Create engine instance for visual scripting
-            Engine visualEngine = new Engine();
+            Engine visualEngine = Engine.getDefault();
             
             // Path to your .jvsz file - modify this path as needed
             File jvszFile = new File("scripts/CORE/simpleInit.jvsz");
@@ -26,7 +32,7 @@ public static class ScriptRunner{
             EventGraph graph = new EventGraph();
             graph.load(jvszFile, visualEngine);
             for (String key : keyValue.keySet()) {
-                 graph.putParameter(key,keyValue.get(key););
+                 graph.putParameter(key,keyValue.get(key));
             }
             graph.start();
         } catch (Exception e) {

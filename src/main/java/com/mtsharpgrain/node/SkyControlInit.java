@@ -1,7 +1,7 @@
 package com.mtsharpgrain.node;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.camera.Camera;
+import com.jme3.renderer.Camera;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
