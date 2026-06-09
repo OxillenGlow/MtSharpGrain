@@ -22,12 +22,14 @@ import com.mtsharpgrain.gui.SwingStarter;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
 import com.mtsharpgrain.node.SkyControlInit;
+import com.mtsharpgrain.node.DayNightCycleManager;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
+    private DayNightCycleManager dayNightCycle;
     IGui gui;
     boolean mouseHover=false;
     boolean mousePressedL=false;
@@ -81,7 +83,11 @@ public class Main extends SimpleApplication {
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
         
         // Initialize SkyControl with Mars settings
-        SkyControlInit.initMarsSky(rootNode, cam, assetManager);
+        var skyControl = SkyControlInit.initMarsSky(rootNode, cam, assetManager);
+        
+        // Initialize day-night cycle: 60 minutes real time = 1 full day cycle
+        // 60 minutes = 3600 seconds
+        dayNightCycle = new DayNightCycleManager(skyControl, 3600f);
         
         // Initialize the MouseListener first
         mouseListener = new MouseListener();
@@ -137,6 +143,11 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleUpdate(float tpf) {
+        // Update day-night cycle
+        if (dayNightCycle != null) {
+            dayNightCycle.update(tpf);
+        }
+        
         // Update the RenderManager
         renderManagermg.tick(
             cam.getLocation().x, 
