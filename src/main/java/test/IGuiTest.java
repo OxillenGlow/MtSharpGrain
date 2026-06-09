@@ -15,7 +15,7 @@ public class IGuiTest extends SimpleApplication{
         flyCam.setEnabled(false);
         gui=IGuiAppState.newRelative(assetManager,stateManager,inputManager,guiNode, cam.getWidth(),cam.getHeight());
         // gui.destroy();
-        gui.textFont("Interface/Fonts/VeraBd.ttf");
+        gui.textFont("Interface/Fonts/Default.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.05f).textColor(ColorRGBA.Red).textHAlign("center").textVAlign("top");
         IGuiComponent text=gui.text("Test IGui",.5f,1f,true); // persistent. stays for ever
@@ -29,7 +29,7 @@ public class IGuiTest extends SimpleApplication{
     @Override
     public void simpleUpdate(float tpf){
         gui.push(false);
-        gui.textFont("Interface/Fonts/VeraBd.ttf");
+        gui.textFont("Interface/Fonts/Default.fnt");
 
         gui.textSize(0.02f);
         gui.textColor(mouseHover?ColorRGBA.Red:ColorRGBA.White);

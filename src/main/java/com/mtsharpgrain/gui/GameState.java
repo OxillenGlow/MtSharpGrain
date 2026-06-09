@@ -4,6 +4,7 @@ public class GameState {
 
     private static boolean okPlace;
     private static boolean darkMode;
+    private static String PLAYERSTATE = "editor";
 
     public static void setModes(boolean okP, boolean dark) {
         okPlace = okP;
@@ -16,5 +17,13 @@ public class GameState {
 
     public static boolean isDark() {
         return darkMode;
+    }
+
+    public static String getPlayerState() {
+        return PLAYERSTATE;
+    }
+
+    public static void setPlayerState(String state) {
+        PLAYERSTATE = state;
     }
 }

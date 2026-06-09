@@ -12,24 +12,46 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
 import java.io.IOException;
+import java.io.File;
+import com.jvisualscripting.Engine;
+import com.jvisualscripting.EventGraph;
 import com.jvisualscripting.editor.VisualScriptingEditor;
+import com.jvisualscripting.event.StartEventNode;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.gui.SwingStarter;
+import com.mtsharpgrain.node.OnPrintScript;
+import com.mtsharpgrain.node.CommandListener;
+import com.mtsharpgrain.node.SkyControlInit;
+import com.mtsharpgrain.node.DayNightCycleManager;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
+    private DayNightCycleManager dayNightCycle;
     IGui gui;
     boolean mouseHover=false;
     boolean mousePressedL=false;
     boolean mousePressedR=false;
     
     public static void main(String[] args) throws IOException {
-        
+        AppSettings settings = new AppSettings(true);
+        settings.setFullscreen(false);
+        settings.setResolution(
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice()
+                .getDisplayMode()
+                .getWidth(),
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice()
+                .getDisplayMode()
+                .getHeight()
+        );
+        settings.setTitle("MtSharpGrain");
         System.out.println("0");
         Main app = new Main();
+        app.setSettings(settings);
         app.start();
          
     }
@@ -59,6 +81,14 @@ public class Main extends SimpleApplication {
         viewPort.addProcessor(dlsr);
 
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
+        
+        // Initialize SkyControl with Mars settings
+        var skyControl = SkyControlInit.initMarsSky(rootNode, cam, assetManager);
+        
+        // Initialize day-night cycle: 60 minutes real time = 1 full day cycle
+        // 60 minutes = 3600 seconds
+        dayNightCycle = new DayNightCycleManager(skyControl, 3600f);
+        
         // Initialize the MouseListener first
         mouseListener = new MouseListener();
 
@@ -75,6 +105,12 @@ public class Main extends SimpleApplication {
 
         // Initialize RenderManager
         this.renderManagermg = new com.mtsharpgrain.RenderManager(worldAccess, rootNode, assetManager, player, this);
+
+        // Initialize OnPrintScript and CommandListener
+        OnPrintScript printScript = new OnPrintScript();
+        printScript.attach();
+        CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
+        printScript.addListener(commandListener);
 
         // Chunk setup (optional, for testing)
         try {
@@ -100,10 +136,18 @@ public class Main extends SimpleApplication {
     
         // Attach to the GUI node (2D layer)
         guiNode.attachChild(ch);
+        
+        // Load and execute .jvsz visual script file
+        com.mtsharpgrain.jvs.ScriptRunner.loadAndExecuteVisualScript();
     }
-
+    
     @Override
     public void simpleUpdate(float tpf) {
+        // Update day-night cycle
+        if (dayNightCycle != null) {
+            dayNightCycle.update(tpf);
+        }
+        
         // Update the RenderManager
         renderManagermg.tick(
             cam.getLocation().x, 
