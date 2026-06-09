@@ -18,7 +18,7 @@ public class ScriptRunner{
             Engine visualEngine = Engine.getDefault();
             
             // Path to your .jvsz file - modify this path as needed
-            File jvszFile = new File("scripts/CORE/simpleInit.jvsz");
+            File jvszFile = new File("assets/Interface/COREJVS/SimpleInit.jvsz");
             // for setting variables
             Map<String, String> keyValue = new HashMap<>();
             

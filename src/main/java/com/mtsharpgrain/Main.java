@@ -21,10 +21,9 @@ import com.jvisualscripting.event.StartEventNode;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.gui.SwingStarter;
 import com.mtsharpgrain.jvs.ScriptRunner;
+import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
-import com.mtsharpgrain.node.SkyControlInit;
-import com.mtsharpgrain.node.DayNightCycleManager;
 import java.awt.GraphicsEnvironment;
 
 public class Main extends SimpleApplication {
@@ -32,26 +31,19 @@ public class Main extends SimpleApplication {
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
-    private DayNightCycleManager dayNightCycle;
+    
     
     
     public static void main(String[] args) throws IOException {
+        
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
-        settings.setResolution(
-            GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice()
-                .getDisplayMode()
-                .getWidth(),
-            GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice()
-                .getDisplayMode()
-                .getHeight() - 150
-        );
-        settings.setTitle("MtSharpGrain");
+        //settings.setResolution(1280, 720);
+        settings.setResolution(360, 250);
         System.out.println("0");
         Main app = new Main();
-        //app.setSettings(settings);
+        app.setSettings(settings);
+        //app.setShowSettings(false); 
         app.start();
          
     }
@@ -83,44 +75,28 @@ public class Main extends SimpleApplication {
 
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
         
+        // THIS STUFF DOES NOT WORK, EITHER CLAUDE WROTE A TON OF TRASH OR IM DOING SOME IMPORTS WRONG
         // Initialize SkyControl with Mars settings
-        var skyControl = SkyControlInit.initMarsSky(rootNode, cam, assetManager);
-        
+        //var skyControl = SkyControlInit.initMarsSky(rootNode, cam, assetManager);
+        //
         // Initialize day-night cycle: 60 minutes real time = 1 full day cycle
         // 60 minutes = 3600 seconds
-        dayNightCycle = new DayNightCycleManager(skyControl, 3600f);
+        //dayNightCycle = new DayNightCycleManager(skyControl, 3600f);
         
         // Initialize the MouseListener first
         mouseListener = new MouseListener();
-
-        // Ensure camera and rootNode are available before initializing BlockSelector
         blockSelector = new BlockSelector(cam, rootNode, mouseListener);
-
-        // Register the MouseListener with the input manager
         inputManager.addRawInputListener(mouseListener);
-
-        // Initialize WorldAccess and RenderManager
         worldAccess = new WorldAccess("worlds/my_world");
         var player = new Player();
         player.setWorldPosition(new Vector3f(1, 1, 1));
-
-        // Initialize RenderManager
         this.renderManagermg = new com.mtsharpgrain.RenderManager(worldAccess, rootNode, assetManager, player, this);
-
-        // Initialize OnPrintScript and CommandListener
         OnPrintScript printScript = new OnPrintScript();
         printScript.attach();
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
 
-        // Chunk setup (optional, for testing)
-        try {
-            ChunkPos firstChunk = new ChunkPos(0, 0, 3);
-            worldAccess.createChunkAt(firstChunk, 1);
-            renderManagermg.markDirty(firstChunk);
-        } catch (Exception e) {
-            System.out.println("Error creating chunk");
-        }
+        
         
         // Load the default font
         BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
@@ -144,10 +120,7 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleUpdate(float tpf) {
-        // Update day-night cycle
-        if (dayNightCycle != null) {
-            dayNightCycle.update(tpf);
-        }
+        
         
         // Update the RenderManager
         renderManagermg.tick(
@@ -157,8 +130,21 @@ public class Main extends SimpleApplication {
         );
 
         // Check for block selection from BlockSelector
-        com.mtsharpgrain.node.Check.tick(worldAccess, renderManagermg, blockSelector);
-        
+        //Check.tick(worldAccess, renderManagermg, blockSelector);
+        BlockSelection selection = blockSelector.getSelection();
+        if (selection != null && com.mtsharpgrain.gui.GameState.isOkPlace()) {
+            if (selection.placeAction) {
+                // Left click: place block (ID 2)
+                worldAccess.setBlockAt(selection.x, selection.y , selection.z, 2);
+                System.out.println("Placed block at " + selection);
+            } else {
+                // Right click: remove block (set to 0)
+                worldAccess.removeBlockAt(selection.x , selection.y , selection.z );
+                System.out.println("Removed block at " + selection);
+            }
+            // Notify RenderManager to rebuild affected chunks
+            renderManagermg.onBlockChanged(selection.x , selection.y , selection.z );
+        };
 
     }
     @Override
