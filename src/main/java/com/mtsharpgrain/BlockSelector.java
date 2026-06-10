@@ -19,7 +19,7 @@ public class BlockSelector {
     }
         public BlockSelection getSelection() {
             tic ++;
-            if (x > 10)
+            if (tic < 10) {
                 return null;
             }
             boolean leftPressed = mouseListener.leftPressed;

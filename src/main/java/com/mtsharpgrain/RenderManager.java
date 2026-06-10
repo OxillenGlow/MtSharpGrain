@@ -59,7 +59,7 @@ public final class RenderManager {
     }
 
     public void markDirty(ChunkPos pos) {
-        public void markDirty(ChunkPos pos) {
+        
         if (dirtySet.add(pos)) {  // add() returns false if already present — O(1)
             dirtyQueue.add(pos);
         }
@@ -93,27 +93,17 @@ public final class RenderManager {
                 try {
                 
                         
-<<<<<<< Updated upstream
+
                     // Building (Background Thread in enqueue)
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
                     ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
                     newMesh.addControl(ctr);
-
+                
+                    Spatial oldCk = nd.getChild(newMesh.getName());
+                    if (oldCk != null) oldCk.removeFromParent();
                     app.enqueue(() -> {
-                        Spatial oldCk = nd.getChild(newMesh.getName());
-                        if (oldCk != null) oldCk.removeFromParent();
-=======
-                // Building (Background Thread in enqueue)
-                Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                newMesh.addControl(ctr);
-                
-                
-                Spatial oldCk = nd.getChild(newMesh.getName());
-                if (oldCk != null) oldCk.removeFromParent();
-                app.enqueue(() -> {
-                    nd.attachChild(newMesh);
->>>>>>> Stashed changes
+                    
+
                     
                         nd.attachChild(newMesh);
                     

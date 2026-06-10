@@ -38,7 +38,7 @@ public class Main extends SimpleApplication {
     
     
     public static void main(String[] args) throws IOException {
-        Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+        //Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         //settings.setResolution(1280, 720);
@@ -54,8 +54,11 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         System.out.println("0");
-        
-        VisualScriptingEditor.main(args);
+        //try {
+        //    SwingStarter.main();
+        //} catch (IOException ex) {
+        //    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        //}
         GameState.setModes(true, true);
         System.out.println("14");
         // Maintain default 45-degree FOV, calculate current window aspect ratio, 
