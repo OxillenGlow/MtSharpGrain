@@ -69,7 +69,7 @@ public class Main extends SimpleApplication {
         }
 
         com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
-            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 2048, 3);
+    new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
         dlsr.setLight(sun);
         viewPort.addProcessor(dlsr);
 
