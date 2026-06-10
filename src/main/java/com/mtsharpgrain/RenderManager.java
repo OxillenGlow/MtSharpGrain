@@ -93,6 +93,7 @@ public final class RenderManager {
                 try {
                 
                         
+<<<<<<< Updated upstream
                     // Building (Background Thread in enqueue)
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
                     ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
@@ -101,6 +102,18 @@ public final class RenderManager {
                     app.enqueue(() -> {
                         Spatial oldCk = nd.getChild(newMesh.getName());
                         if (oldCk != null) oldCk.removeFromParent();
+=======
+                // Building (Background Thread in enqueue)
+                Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
+                ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
+                newMesh.addControl(ctr);
+                
+                
+                Spatial oldCk = nd.getChild(newMesh.getName());
+                if (oldCk != null) oldCk.removeFromParent();
+                app.enqueue(() -> {
+                    nd.attachChild(newMesh);
+>>>>>>> Stashed changes
                     
                         nd.attachChild(newMesh);
                     

@@ -25,6 +25,9 @@ import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
@@ -35,7 +38,7 @@ public class Main extends SimpleApplication {
     
     
     public static void main(String[] args) throws IOException {
-        
+        Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         //settings.setResolution(1280, 720);
@@ -51,6 +54,8 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         System.out.println("0");
+        
+        VisualScriptingEditor.main(args);
         GameState.setModes(true, true);
         System.out.println("14");
         // Maintain default 45-degree FOV, calculate current window aspect ratio, 
