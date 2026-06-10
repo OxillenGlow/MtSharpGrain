@@ -22,6 +22,7 @@ public class BlockSelector {
             if (tic < 10) {
                 return null;
             }
+            tic = 0;
             boolean leftPressed = mouseListener.leftPressed;
         boolean rightPressed = mouseListener.rightPressed;
 
