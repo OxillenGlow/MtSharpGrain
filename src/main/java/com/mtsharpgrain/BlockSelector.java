@@ -10,6 +10,7 @@ public class BlockSelector {
     private com.jme3.renderer.Camera cam;
     private Node rootNode;
     private MouseListener mouseListener;
+    private int tic;
 
     public BlockSelector(com.jme3.renderer.Camera cam, Node rootNode, MouseListener mouseListener) {
         this.cam = cam;
@@ -17,7 +18,11 @@ public class BlockSelector {
         this.mouseListener = mouseListener;
     }
         public BlockSelection getSelection() {
-        boolean leftPressed = mouseListener.leftPressed;
+            tic ++;
+            if (x > 10)
+                return null;
+            }
+            boolean leftPressed = mouseListener.leftPressed;
         boolean rightPressed = mouseListener.rightPressed;
 
         if (!leftPressed && !rightPressed) return null;
