@@ -9,19 +9,28 @@ _If you don't see any comits in the last few days, I have been lazy._
 
 
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java using openGL lwjgl and jme.
+A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java (openGL lwjgl and jme).
 
-This game has already implemented:
+## What's in it so far
 
-- **semi smooth** node meshes
-- **jVisualScripting engine & editor** for visualblock based coding. _Direct connection to game is still being added.(mostly finished now!)_
+- **Semi-smooth node meshes** — blocks connect with rounded transitions rather than hard cube edges
+- **jVisualScripting engine & editor** — node-based visual coding system, mostly wired into the game now
+- **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
+- **Resolution management** — handles different resolutions, fullscreen coming later
+
+---
+## Links
+
+- 📖 [Wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
+- 💬 [Discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
 ---
 
-## Link to [wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
-## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
+- ### In progress / needs polish
+- **jVisualScripting ↔ game bridge** ✅ ~80% — node system works, finishing the game connection
+- **Smooth mesh connections** ✅ ~80% — columns and edge cases still need work
+- **Resolution management** ✅ ~90% — fullscreen to be added later
 
----
 
 ## Special points
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
@@ -52,12 +61,6 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 - Full screen ect 50%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
-## Implemented (and still needs fixing)
-<img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-
-- Scripts, jVisualScripting script engine would soon be added as to game ✅ 80% basically finished. thanks @claude and copilot. just need to connect the game now.
-- Faces, PyBallJmeMesh, my code is now super messy :( ✅ 80% i still have to think of more smoother connections especially for collums
-- Resolution management ✅ 90% i will add full screen support later.(dont realy plan on multi sampling so this is it)
 
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
