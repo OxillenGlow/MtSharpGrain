@@ -5,6 +5,10 @@ public class GameState {
     private static boolean okPlace;
     private static boolean darkMode;
     private static String PLAYERSTATE = "editor";
+    
+    public static void setokPlace(boolean okP) {
+        okPlace = okP;
+    }
 
     public static void setModes(boolean okP, boolean dark) {
         okPlace = okP;

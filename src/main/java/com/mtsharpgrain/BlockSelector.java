@@ -19,7 +19,7 @@ public class BlockSelector {
     }
         public BlockSelection getSelection() {
             tic ++;
-            if (tic < 10) {
+            if (tic < 5) {
                 return null;
             }
             tic = 0;

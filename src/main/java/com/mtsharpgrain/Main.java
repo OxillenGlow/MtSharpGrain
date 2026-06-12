@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 public class Main extends SimpleApplication {
+
+    public static String version = "v0.1.0-beta";
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
@@ -44,6 +46,7 @@ public class Main extends SimpleApplication {
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
+        settings.setTitle("MtSharpGrain"+version+".jvsz enabled");
         //settings.setResolution(360, 250);
         System.out.println("0");
         Main app = new Main();
@@ -133,9 +136,11 @@ public class Main extends SimpleApplication {
         // Load and execute .jvsz visual script file
         ScriptRunner.loadAndExecuteVisualScript();
     }
-    
+    boolean mouseHover=false;
+   
     @Override
     public void simpleUpdate(float tpf) {
+        
         gui.push(true);
         gui.textFont("Interface/Fonts/Default.fnt");
 

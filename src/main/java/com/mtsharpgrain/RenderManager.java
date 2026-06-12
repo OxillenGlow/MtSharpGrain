@@ -32,9 +32,9 @@ public final class RenderManager {
 
     
     public void tick(float playerX, float playerY, float playerZ) {
-    int px = worldToChunk(playerX);
-    int py = worldToChunk(playerY);
-    int pz = worldToChunk(playerZ);
+    int px = worldToChunk((int)playerX);
+    int py = worldToChunk((int)playerY);
+    int pz = worldToChunk((int)playerZ);
 
         for (int dx = -viewDistance; dx <= viewDistance; dx++) {
             for (int dy = -viewDistance; dy <= viewHeight; dy++) {
@@ -57,6 +57,9 @@ public final class RenderManager {
     private static int worldToChunk(double meters) {
         return (int) Math.floor(meters / CHUNK_METERS);
     }
+    private static int worldToChunk(int coord) {
+        return coord >> 4; // match WorldAccess exactly
+    }
 
     public void markDirty(ChunkPos pos) {
         
@@ -76,28 +79,30 @@ public final class RenderManager {
     }
 
     private void processDirtyQueue() {
-        int maxPerTick = 3; // tune this — higher = faster load, more stutter
+        int maxPerTick = 1;
         for (int i = 0; i < maxPerTick; i++) {
             ChunkPos pos = dirtyQueue.poll();
-            if (pos == null || pendingChunks.contains(pos)) return;
-    
+            if (pos == null) return;                    // queue empty, fine to stop
+            if (pendingChunks.contains(pos)) {
+                dirtyQueue.add(pos);
+                continue;
+            }
             BufferedChunk chunk = worldAccess.getChunk(pos);
-            if (chunk == null) return;
-            if (pos == null) return;
+            if (chunk == null) continue;
             // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
             //CompletableFuture.runAsync(() -> {
                 try {
+                
+                    dirtySet.remove(pos);  // keep them in sync
+
+                    pendingChunks.add(pos);
+
+
+                    // Building (Background Thread in enqueue)
+                    Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
+                    ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
+                    newMesh.addControl(ctr);
                     app.enqueue(() -> {
-                        dirtySet.remove(pos);  // keep them in sync
-
-                        pendingChunks.add(pos);
-
-
-                        // Building (Background Thread in enqueue)
-                        Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                        ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                        newMesh.addControl(ctr);
-
                         Spatial oldCk = nd.getChild(newMesh.getName());
                         if (oldCk != null) oldCk.removeFromParent();
                     
@@ -144,7 +149,7 @@ public final class RenderManager {
         public ChunkRenderData(ChunkPos pos) { this.pos = pos; }
     }
     private static ChunkPos worldToChunk(int x, int y, int z) {
-        return new ChunkPos(worldToChunk((double)x), worldToChunk((double)y), worldToChunk((double)z));
+        return new ChunkPos(worldToChunk(x), worldToChunk(y), worldToChunk(z));
     }
 
 }
