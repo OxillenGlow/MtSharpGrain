@@ -16,9 +16,9 @@ public class AssetConverter {
         if (is == null) {
             throw new IOException("Could not find asset at path: " + assetPath);
         }
-
+        var filePath = assetPath;
         // 2. Create a temporary file on the user's OS disk (.fnt extension preserved)
-        File tempFile = File.createTempFile("jme_font_", ".fnt");
+        File tempFile = File.createTempFile(filePath.substring(0, filePath.lastIndexOf('.')),filePath.substring(Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\')) + 1));
         
         // 3. Mark it to delete automatically when the game closes
         tempFile.deleteOnExit();
