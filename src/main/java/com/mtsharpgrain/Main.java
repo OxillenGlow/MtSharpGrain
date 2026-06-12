@@ -46,7 +46,7 @@ public class Main extends SimpleApplication {
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
-        settings.setTitle("MtSharpGrain"+version+".jvsz enabled");
+        settings.setTitle("MtSharpGrain-"+version+" .jvs enabled");
         //settings.setResolution(360, 250);
         System.out.println("0");
         Main app = new Main();
@@ -66,8 +66,8 @@ public class Main extends SimpleApplication {
         // gui.destroy();
         gui.textFont("Interface/Fonts/Default.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.02f).textColor(ColorRGBA.Red).textHAlign("left").textVAlign("top");
-        IGuiComponent text = gui.text("MtSharpGrain",.5f,1f,true); // persistent. stays for ever
+        gui.textSize(0.02f).textColor(ColorRGBA.Red).textHAlign("right").textVAlign("bottom");
+        IGuiComponent text = gui.text("MtSharpGrain",0.9f,0f,true); // persistent. stays for ever
         // -------------------------- GUI ------------------------------
         
         GameState.setModes(true, true);
@@ -140,24 +140,8 @@ public class Main extends SimpleApplication {
    
     @Override
     public void simpleUpdate(float tpf) {
+        com.mtsharpgrain.gui.Master.tic(gui);
         
-        gui.push(true);
-        gui.textFont("Interface/Fonts/Default.fnt");
-
-        gui.textSize(0.02f);
-        gui.textColor(mouseHover?ColorRGBA.Red:ColorRGBA.White);
-        gui.textHAlign("left");
-        gui.textVAlign("top");
-        float spacing=0.03f;
-        float line=1;
-        gui.text("Line1",0f,line,(event,arg)->{
-            if(event==IGuiMouseEvent.MOUSE_IN){
-                mouseHover=true;
-            }else if(event==IGuiMouseEvent.MOUSE_OUT){
-                mouseHover=false;
-            }
-            return true;
-        });
         
         
         // Update the RenderManager
