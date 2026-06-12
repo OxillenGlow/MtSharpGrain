@@ -2,7 +2,6 @@ package com.mtsharpgrain;
 
 //needs imports
 import com.jme.igui.IGui;
-import com.jme.igui.IGuiMouseEvent;
 import com.jme.igui.IGuiAppState;
 import com.jme.igui.IGuiComponent;
 import com.jme3.app.SimpleApplication;
@@ -14,21 +13,12 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import java.io.IOException;
 import java.io.File;
-import com.jvisualscripting.Engine;
-import com.jvisualscripting.EventGraph;
-import com.jvisualscripting.editor.VisualScriptingEditor;
-import com.jvisualscripting.event.StartEventNode;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.gui.SwingStarter;
 import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
 
 public class Main extends SimpleApplication {
 

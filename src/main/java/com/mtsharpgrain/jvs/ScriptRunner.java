@@ -4,6 +4,7 @@ import com.jvisualscripting.event.StartEventNode;
 import java.io.File;
 import com.jvisualscripting.Engine;
 import com.jvisualscripting.EventGraph;
+import com.tools.AssetConverter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class ScriptRunner{
             Engine visualEngine = Engine.getDefault();
             
             // Path to your .jvsz file - modify this path as needed
-            File jvszFile = new File("assets/Interface/COREJVS/SimpleInit.jvsz");
+            File jvszFile = AssetConverter.getAssetAsFile("/COREJVS/SimpleInit.jvsz");
             // for setting variables
             Map<String, String> keyValue = new HashMap<>();
             
