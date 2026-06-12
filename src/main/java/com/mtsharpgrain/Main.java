@@ -66,8 +66,8 @@ public class Main extends SimpleApplication {
         // gui.destroy();
         gui.textFont("Interface/Fonts/Default.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.02f).textColor(ColorRGBA.Red).textHAlign("right").textVAlign("bottom");
-        IGuiComponent text = gui.text("MtSharpGrain",0.9f,0f,true); // persistent. stays for ever
+        gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        IGuiComponent text = gui.text("MtSharpGrain" + version,0.9f,0f,true); // persistent. stays for ever
         // -------------------------- GUI ------------------------------
         
         GameState.setModes(true, true);
