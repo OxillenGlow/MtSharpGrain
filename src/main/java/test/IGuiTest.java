@@ -18,7 +18,7 @@ public class IGuiTest extends SimpleApplication{
         gui.textFont("Interface/Fonts/Default.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.05f).textColor(ColorRGBA.Red).textHAlign("center").textVAlign("top");
-        IGuiComponent text=gui.text("Test IGui",.5f,1f,true); // persistent. stays for ever
+        IGuiComponent text = gui.text("Test IGui",.5f,1f,true); // persistent. stays for ever
         // text.destroy();   
     }
 

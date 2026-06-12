@@ -84,26 +84,22 @@ public final class RenderManager {
             BufferedChunk chunk = worldAccess.getChunk(pos);
             if (chunk == null) return;
             if (pos == null) return;
-            dirtySet.remove(pos);  // keep them in sync
-
-            pendingChunks.add(pos);
-
             // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
-            CompletableFuture.runAsync(() -> {
+            //CompletableFuture.runAsync(() -> {
                 try {
-                
-                        
-
-                    // Building (Background Thread in enqueue)
-                    Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                    ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                    newMesh.addControl(ctr);
-                
-                    Spatial oldCk = nd.getChild(newMesh.getName());
-                    if (oldCk != null) oldCk.removeFromParent();
                     app.enqueue(() -> {
-                    
+                        dirtySet.remove(pos);  // keep them in sync
 
+                        pendingChunks.add(pos);
+
+
+                        // Building (Background Thread in enqueue)
+                        Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
+                        ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
+                        newMesh.addControl(ctr);
+
+                        Spatial oldCk = nd.getChild(newMesh.getName());
+                        if (oldCk != null) oldCk.removeFromParent();
                     
                         nd.attachChild(newMesh);
                     
@@ -118,7 +114,7 @@ public final class RenderManager {
                     pendingChunks.remove(pos);
                     System.out.println("AHHH");
                 }
-            });
+            //});
         }
     }
 

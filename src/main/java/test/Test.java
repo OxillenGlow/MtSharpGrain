@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class Test {
-    public static void main(String[] args) throws IOException {
+    public static JFrame main(String[] args) throws IOException {
         //I am seeing if embedding in jFrame works
         System.out.println("0");
         //Main app = new Main();
@@ -51,6 +51,7 @@ public class Test {
         System.out.println("13");
         app.startCanvas();
         System.out.println("14");
+        return frame;
     
         
     }

@@ -28,6 +28,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
@@ -38,11 +39,12 @@ public class Main extends SimpleApplication {
     
     
     public static void main(String[] args) throws IOException {
+        
         //Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
-        //settings.setResolution(1280, 720);
-        settings.setResolution(360, 250);
+        settings.setResolution(1280, 720);
+        //settings.setResolution(360, 250);
         System.out.println("0");
         Main app = new Main();
         app.setSettings(settings);
@@ -50,15 +52,21 @@ public class Main extends SimpleApplication {
         app.start();
          
     }
+    private IGui gui;
   
     @Override
     public void simpleInitApp() {
         System.out.println("0");
-        //try {
-        //    SwingStarter.main();
-        //} catch (IOException ex) {
-        //    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        //}
+        
+        // -------------------------- GUI ------------------------------
+        gui=IGuiAppState.newRelative(assetManager,stateManager,inputManager,guiNode, cam.getWidth(),cam.getHeight());
+        // gui.destroy();
+        gui.textFont("Interface/Fonts/Default.fnt");
+        gui.textFontStyle("bold");
+        gui.textSize(0.02f).textColor(ColorRGBA.Red).textHAlign("left").textVAlign("top");
+        IGuiComponent text = gui.text("MtSharpGrain",.5f,1f,true); // persistent. stays for ever
+        // -------------------------- GUI ------------------------------
+        
         GameState.setModes(true, true);
         System.out.println("14");
         // Maintain default 45-degree FOV, calculate current window aspect ratio, 
@@ -128,6 +136,23 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleUpdate(float tpf) {
+        gui.push(true);
+        gui.textFont("Interface/Fonts/Default.fnt");
+
+        gui.textSize(0.02f);
+        gui.textColor(mouseHover?ColorRGBA.Red:ColorRGBA.White);
+        gui.textHAlign("left");
+        gui.textVAlign("top");
+        float spacing=0.03f;
+        float line=1;
+        gui.text("Line1",0f,line,(event,arg)->{
+            if(event==IGuiMouseEvent.MOUSE_IN){
+                mouseHover=true;
+            }else if(event==IGuiMouseEvent.MOUSE_OUT){
+                mouseHover=false;
+            }
+            return true;
+        });
         
         
         // Update the RenderManager
