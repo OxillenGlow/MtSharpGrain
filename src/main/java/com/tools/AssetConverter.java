@@ -18,7 +18,7 @@ public class AssetConverter {
         }
         var filePath = assetPath;
         // 2. Create a temporary file on the user's OS disk (.fnt extension preserved)
-        File tempFile = File.createTempFile(filePath.substring(0, filePath.lastIndexOf('.')),filePath.substring(Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\')) + 1));
+        File tempFile = File.createTempFile(filePath.substring(0, filePath.lastIndexOf('.')),filePath.substring(filePath.lastIndexOf('.') + 1));
         
         // 3. Mark it to delete automatically when the game closes
         tempFile.deleteOnExit();
