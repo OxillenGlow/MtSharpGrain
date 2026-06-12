@@ -14,7 +14,7 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
 ## What's in it so far
 
 - **Semi-smooth node meshes** — blocks connect with rounded transitions rather than hard cube edges
-- **jVisualScripting engine & editor** — node-based visual coding system, mostly wired into the game now
+- **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** — block based visual coding system, mostly wired into the game now with console comand system.
 - **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
 - **Resolution management** — handles different resolutions, fullscreen coming later
 
