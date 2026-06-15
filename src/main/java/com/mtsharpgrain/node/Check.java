@@ -13,17 +13,20 @@ public class Check implements ActionListener {
 
     private final WorldAccess worldAccess;
     private final RenderManager renderManager;
-    public Check(WorldAccess worldAccess, RenderManager renderManager) {
+    private final BlockSelector blockSelector; // this was dropped
+
+    public Check(WorldAccess worldAccess, RenderManager renderManager, BlockSelector blockSelector) {
         this.worldAccess = worldAccess;
         this.renderManager = renderManager;
+        this.blockSelector = blockSelector;
     }
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (!isPressed) return; // fire only on press, not release
+        if (!isPressed) return;
         if (!com.mtsharpgrain.gui.GameState.isOkPlace()) return;
 
-        BlockSelection selection = blockSelector.getSelection();
+        BlockSelection selection = blockSelector.getSelection(ACTION_PLACE.equals(name));
         if (selection == null) return;
 
         if (ACTION_PLACE.equals(name)) {
