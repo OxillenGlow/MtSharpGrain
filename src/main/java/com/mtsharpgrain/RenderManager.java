@@ -86,7 +86,7 @@ public final class RenderManager {
             BufferedChunk chunk = worldAccess.getChunk(pos);
             if (chunk == null) continue;
             // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
-            //CompletableFuture.runAsync(() -> {
+            CompletableFuture.runAsync(() -> {
                 try {
                 
                     dirtySet.remove(pos);  // keep them in sync
@@ -115,7 +115,7 @@ public final class RenderManager {
                     pendingChunks.remove(pos);
                     System.out.println("AHHH");
                 }
-            //});
+            });
         }
     }
 
