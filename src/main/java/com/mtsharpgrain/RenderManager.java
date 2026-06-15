@@ -15,7 +15,6 @@ public final class RenderManager {
     private final Queue<ChunkPos> dirtyQueue = new ConcurrentLinkedQueue<>();
     private final Set<ChunkPos> pendingChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private int viewDistance = 1;
-    private static final double CHUNK_METERS = BufferedChunk.SIZE * 0.5;
     private int viewHeight = 0;
     Player player;
     Node nd;
@@ -54,9 +53,6 @@ public final class RenderManager {
         this.processDirtyQueue();
     }
 
-    private static int worldToChunk(double meters) {
-        return (int) Math.floor(meters / CHUNK_METERS);
-    }
     private static int worldToChunk(int coord) {
         return coord >> 4; // match WorldAccess exactly
     }
