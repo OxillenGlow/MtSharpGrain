@@ -27,7 +27,6 @@ public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
-    private MouseListener mouseListener;
     private AppSettings settings;
     
     
@@ -92,10 +91,7 @@ public class Main extends SimpleApplication {
         // Initialize day-night cycle: 60 minutes real time = 1 full day cycle
         // 60 minutes = 3600 seconds
         //dayNightCycle = new DayNightCycleManager(skyControl, 3600f);
-        
-        // Initialize the MouseListener first
-        mouseListener = new MouseListener();
-        blockSelector = new BlockSelector(cam, rootNode, mouseListener);
+        blockSelector = new BlockSelector(cam, rootNode);
         inputManager.addRawInputListener(mouseListener);
         worldAccess = new WorldAccess("worlds/my_world");
         var player = new Player();
