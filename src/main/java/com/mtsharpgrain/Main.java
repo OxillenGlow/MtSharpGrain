@@ -1,6 +1,7 @@
 package com.mtsharpgrain;
 
-//needs imports
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme.igui.IGui;
 import com.jme.igui.IGuiAppState;
 import com.jme.igui.IGuiComponent;
@@ -27,13 +28,13 @@ public class Main extends SimpleApplication {
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private MouseListener mouseListener;
-    
+    private AppSettings settings;
     
     
     public static void main(String[] args) throws IOException {
         
         //Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-        AppSettings settings = new AppSettings(true);
+        settings = new AppSettings(true);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
         settings.setTitle("MtSharpGrain-"+version+" .jvs enabled");
@@ -119,7 +120,11 @@ public class Main extends SimpleApplication {
         float x = settings.getWidth() / 2 - ch.getLineWidth() / 2;
         float y = settings.getHeight() / 2 + ch.getLineHeight() / 2;
         ch.setLocalTranslation(x, y, 0);
-    
+        // Wire Check as an action listener for block place/break
+        Check check = new Check(worldAccess, renderManagermg, blockSelector);
+        inputManager.addMapping(Check.ACTION_PLACE, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping(Check.ACTION_BREAK, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+        inputManager.addListener(check, Check.ACTION_PLACE, Check.ACTION_BREAK);
         // Attach to the GUI node (2D layer)
         guiNode.attachChild(ch);
         
@@ -140,9 +145,6 @@ public class Main extends SimpleApplication {
             cam.getLocation().y, 
             cam.getLocation().z
         );
-
-        // Check for block selection from BlockSelector
-        Check.tick(worldAccess, renderManagermg, blockSelector);
         
     }
     @Override
