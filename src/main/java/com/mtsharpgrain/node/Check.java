@@ -13,12 +13,9 @@ public class Check implements ActionListener {
 
     private final WorldAccess worldAccess;
     private final RenderManager renderManager;
-    private final BlockSelector blockSelector;
-
-    public Check(WorldAccess worldAccess, RenderManager renderManager, BlockSelector blockSelector) {
+    public Check(WorldAccess worldAccess, RenderManager renderManager) {
         this.worldAccess = worldAccess;
         this.renderManager = renderManager;
-        this.blockSelector = blockSelector;
     }
 
     @Override
