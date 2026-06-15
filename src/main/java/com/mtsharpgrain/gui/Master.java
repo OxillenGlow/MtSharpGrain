@@ -1,4 +1,3 @@
-
 package com.mtsharpgrain.gui;
 
 import com.jme.igui.IGui;
@@ -61,6 +60,7 @@ public class Master {
             }
             return true;
         });
+        gui.pop();
         
     }
     
