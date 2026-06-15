@@ -8,12 +8,12 @@ import com.mtsharpgrain.WorldAccess;
 
 public class Check implements ActionListener {
 
-    public static final String ACTION_PLACE = "PlaceBlock";
-    public static final String ACTION_BREAK = "BreakBlock";
+    public static final String MOUSE_LEFT = "MouseLeft";
+    public static final String MOUSE_RIGHT = "MouseRight";
 
     private final WorldAccess worldAccess;
     private final RenderManager renderManager;
-    private final BlockSelector blockSelector; // this was dropped
+    private final BlockSelector blockSelector;
 
     public Check(WorldAccess worldAccess, RenderManager renderManager, BlockSelector blockSelector) {
         this.worldAccess = worldAccess;
@@ -26,17 +26,17 @@ public class Check implements ActionListener {
         if (!isPressed) return;
         if (!com.mtsharpgrain.gui.GameState.isOkPlace()) return;
 
-        BlockSelection selection = blockSelector.getSelection(ACTION_PLACE.equals(name));
+        boolean leftPressed = MOUSE_LEFT.equals(name);
+        BlockSelection selection = blockSelector.getSelection(leftPressed);
         if (selection == null) return;
 
-        if (ACTION_PLACE.equals(name)) {
+        if (leftPressed) {
             worldAccess.setBlockAt(selection.x, selection.y, selection.z, 2);
             System.out.println("Placed block at " + selection);
-            renderManager.onBlockChanged(selection.x, selection.y, selection.z);
-        } else if (ACTION_BREAK.equals(name)) {
+        } else {
             worldAccess.removeBlockAt(selection.x, selection.y, selection.z);
             System.out.println("Removed block at " + selection);
-            renderManager.onBlockChanged(selection.x, selection.y, selection.z);
         }
+        renderManager.onBlockChanged(selection.x, selection.y, selection.z);
     }
 }
