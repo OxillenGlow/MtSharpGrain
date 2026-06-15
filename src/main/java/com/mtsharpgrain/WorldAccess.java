@@ -82,11 +82,6 @@ public final class WorldAccess {
         setBlockAt(worldX, worldY, worldZ, 0); // 0 = air/empty
     }
 
-    // Helper methods for coordinate conversion
-    private ChunkPos worldToChunk(int worldCoord) {
-        return new ChunkPos(worldCoord >> 4, worldCoord >> 4, worldCoord >> 4); // Assuming SIZE=16, so >>4
-    }
-
     private int worldToLocal(int worldCoord) {
         return worldCoord & 15; // &15 for SIZE=16
     }
@@ -94,9 +89,5 @@ public final class WorldAccess {
     private ChunkPos worldToChunk(int worldX, int worldY, int worldZ) {
     // Shifts coordinates by 4 (divides by 16) to find the chunk index
     return new ChunkPos(worldX >> 4, worldY >> 4, worldZ >> 4);
-}
-
-
-    
-    
+    }
 }
