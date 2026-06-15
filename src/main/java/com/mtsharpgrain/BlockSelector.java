@@ -9,13 +9,11 @@ import com.jme3.scene.Node;
 public class BlockSelector {
     private com.jme3.renderer.Camera cam;
     private Node rootNode;
-    private MouseListener mouseListener;
-    
 
-    public BlockSelector(com.jme3.renderer.Camera cam, Node rootNode, MouseListener mouseListener) {
+    public BlockSelector(com.jme3.renderer.Camera cam, Node rootNode) {
         this.cam = cam;
         this.rootNode = rootNode;
-        this.mouseListener = mouseListener;
+        
     }
         public BlockSelection getSelection() {
             
