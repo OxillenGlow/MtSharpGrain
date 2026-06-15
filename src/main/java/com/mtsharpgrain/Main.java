@@ -115,11 +115,11 @@ public class Main extends SimpleApplication {
         float x = settings.getWidth() / 2 - ch.getLineWidth() / 2;
         float y = settings.getHeight() / 2 + ch.getLineHeight() / 2;
         ch.setLocalTranslation(x, y, 0);
-        // Wire Check as an action listener for block place/break
+        
         Check check = new Check(worldAccess, renderManagermg, blockSelector);
-        inputManager.addMapping(Check.ACTION_PLACE, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addMapping(Check.ACTION_BREAK, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
-        inputManager.addListener(check, Check.ACTION_PLACE, Check.ACTION_BREAK);
+        inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+        inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
         // Attach to the GUI node (2D layer)
         guiNode.attachChild(ch);
         
