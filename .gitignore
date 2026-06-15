@@ -18,6 +18,7 @@
 !**/*.jvsz
 !**/*.jvs
 !**/*.fnt
+!**/*.jar
 
 # Re-ignore the build folder inside src just in case
 src/**/build/
