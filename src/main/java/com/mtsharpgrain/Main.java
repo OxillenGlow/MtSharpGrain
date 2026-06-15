@@ -25,7 +25,6 @@ public class Main extends SimpleApplication {
 
     public static String version = "v0.1.0-beta";
     private com.mtsharpgrain.RenderManager renderManagermg;
-    private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private AppSettings settings;
     
