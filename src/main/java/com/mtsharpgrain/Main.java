@@ -12,6 +12,8 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.FogFilter;
 import java.io.IOException;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.jvs.ScriptRunner;
@@ -22,6 +24,7 @@ import com.mtsharpgrain.node.CommandListener;
 public class Main extends SimpleApplication {
 
     public static String version = "v0.1.0-beta";
+    public static int VIEW_DISTANCE = 8;
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
@@ -64,6 +67,19 @@ public class Main extends SimpleApplication {
         dlsr.setLight(sun);
         viewPort.addProcessor(dlsr);
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
+
+        // ── Background & distance fog ─────────────────────────────────────────
+        ColorRGBA darkBlue = new ColorRGBA(0.02f, 0.05f, 0.12f, 1f);
+        viewPort.setBackgroundColor(darkBlue);
+
+        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        FogFilter fog = new FogFilter();
+        fog.setFogColor(darkBlue);
+        fog.setFogDistance(VIEW_DISTANCE * 16 * 0.70f);
+        fog.setFogDensity(1.5f);
+        fpp.addFilter(fog);
+        viewPort.addProcessor(fpp);
+        // ─────────────────────────────────────────────────────────────────────
 
         blockSelector = new BlockSelector(cam, rootNode);
         worldAccess = new WorldAccess("worlds/my_world");
