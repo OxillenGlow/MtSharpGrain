@@ -14,7 +14,6 @@ public final class RenderManager {
     private final ConcurrentHashMap<ChunkPos, ChunkRenderData> renderMap = new ConcurrentHashMap<>();
     private final Queue<ChunkPos> dirtyQueue = new ConcurrentLinkedQueue<>();
     private final Set<ChunkPos> pendingChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private int viewDistance = 1;
     private int viewHeight = 0;
     Player player;
     Node nd;
@@ -29,15 +28,14 @@ public final class RenderManager {
         this.app = app;
     }
 
-    
     public void tick(float playerX, float playerY, float playerZ) {
-    int px = worldToChunk((int)playerX);
-    int py = worldToChunk((int)playerY);
-    int pz = worldToChunk((int)playerZ);
+        int px = worldToChunk((int)playerX);
+        int py = worldToChunk((int)playerY);
+        int pz = worldToChunk((int)playerZ);
 
-        for (int dx = -viewDistance; dx <= viewDistance; dx++) {
-            for (int dy = -viewDistance; dy <= viewHeight; dy++) {
-                for (int dz = -viewDistance; dz <= viewDistance; dz++) {
+        for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
+            for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
+                for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
                     ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
 
                     worldAccess.ensureChunk(pos);
@@ -45,7 +43,7 @@ public final class RenderManager {
                     // FIX: If this is the FIRST time we see this chunk, mark it dirty
                     renderMap.computeIfAbsent(pos, p -> {
                         markDirty(p); // Trigger a build for the new chunk
-                    return new ChunkRenderData(p);
+                        return new ChunkRenderData(p);
                     });
                 }
             }
@@ -58,7 +56,6 @@ public final class RenderManager {
     }
 
     public void markDirty(ChunkPos pos) {
-        
         if (dirtySet.add(pos)) {  // add() returns false if already present — O(1)
             dirtyQueue.add(pos);
         }
@@ -88,11 +85,9 @@ public final class RenderManager {
             // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
             CompletableFuture.runAsync(() -> {
                 try {
-                
                     dirtySet.remove(pos);  // keep them in sync
 
                     pendingChunks.add(pos);
-
 
                     // Building (Background Thread in enqueue)
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
@@ -101,12 +96,12 @@ public final class RenderManager {
                     app.enqueue(() -> {
                         Spatial oldCk = nd.getChild(newMesh.getName());
                         if (oldCk != null) oldCk.removeFromParent();
-                    
+
                         nd.attachChild(newMesh);
-                    
+
                         ChunkRenderData crd = renderMap.get(pos);
                         if (crd != null) crd.lastBuiltTime = System.currentTimeMillis();
-                    
+
                         pendingChunks.remove(pos); // Clean up tracking
                         return null;
                     });
@@ -144,8 +139,8 @@ public final class RenderManager {
         public ChunkPos pos;
         public ChunkRenderData(ChunkPos pos) { this.pos = pos; }
     }
+
     private static ChunkPos worldToChunk(int x, int y, int z) {
         return new ChunkPos(worldToChunk(x), worldToChunk(y), worldToChunk(z));
     }
-
 }
