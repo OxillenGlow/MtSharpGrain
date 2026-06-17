@@ -109,8 +109,6 @@ public class Main extends SimpleApplication {
         ScriptRunner.loadAndExecuteVisualScript();
     }
 
-    boolean mouseHover = false;
-
     @Override
     public void simpleUpdate(float tpf) {
         com.mtsharpgrain.gui.Master.tic(gui);

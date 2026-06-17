@@ -34,9 +34,6 @@ public final class RenderManager {
         int py = worldToChunk((int)playerY);
         int pz = worldToChunk((int)playerZ);
         
-        player.setWorldPosition(new Vector3f((int)playerX,(int)playerY,(int)playerZ));
-        
-        
         for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
             for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
                 for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
@@ -52,6 +49,7 @@ public final class RenderManager {
                 }
             }
         }
+        
         this.processDirtyQueue();
     }
 
@@ -95,8 +93,8 @@ public final class RenderManager {
 
                     // Building (Background Thread in enqueue)
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                    ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                    newMesh.addControl(ctr);
+                    //ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
+                    //newMesh.addControl(ctr);
                     app.enqueue(() -> {
                         Spatial oldCk = nd.getChild(newMesh.getName());
                         if (oldCk != null) oldCk.removeFromParent();
