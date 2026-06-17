@@ -1,5 +1,4 @@
-<img src="Pictures/Sc.png" align="center"/>
-
+<img src="Pictures/Sc.png" align="center"/> 
 # MtSharpGrain 
 ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain) _<-- constantly improving!_
 
@@ -18,6 +17,11 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
 - **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
 - **Resolution management** — handles different resolutions, fullscreen coming later
 
+<img src="Pictures/jVS-ingame-demo.png" align="left" width="400" style="margin-right: 20px;" />
+
+<- Using jVisualScript to break and place blocks (too bad i did not do a GIF)
+
+---
 ---
 ## Links
 
@@ -25,12 +29,6 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
 - 💬 [Discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
 ---
-
-- ### In progress / needs polish
-- **jVisualScripting ↔ game bridge** ✅ ~80% — node system works, finishing the game connection
-- **Smooth mesh connections** ✅ ~80% — columns and edge cases still need work
-- **Resolution management** ✅ ~90% — fullscreen to be added later
-
 
 ## Special points
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
@@ -48,7 +46,7 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 ---
 
 # Important stuff
-## Soon to be implemented/fixed
+## My todo/doing list:
 - simple world generation
     - random generation
     - World making / hand sculpting
