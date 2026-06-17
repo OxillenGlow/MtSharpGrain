@@ -59,7 +59,7 @@ public class CommandListener implements OnPrintScript.OnPrintListener {
             int y = Integer.parseInt(parts[2]);
             int z = Integer.parseInt(parts[3]);
             
-            worldAccess.removeBlockAt(x, y, z);
+            worldAccess.setBlockAt(x, y, z, 0);
             renderManager.onBlockChanged(x, y, z);
             System.out.println("Block destroyed at (" + x + ", " + y + ", " + z + ")");
             
@@ -85,7 +85,7 @@ public class CommandListener implements OnPrintScript.OnPrintListener {
                 System.out.println("Usage: !place x y z type");
                 return;
             }
-            
+            System.out.println("Usage: !place");
             int x = Integer.parseInt(parts[1]);
             int y = Integer.parseInt(parts[2]);
             int z = Integer.parseInt(parts[3]);
