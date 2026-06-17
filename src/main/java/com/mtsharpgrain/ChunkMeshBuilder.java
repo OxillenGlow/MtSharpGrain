@@ -103,6 +103,11 @@ public class ChunkMeshBuilder {
      * so boundary faces are always emitted.
      */
     private static boolean isAir(BufferedChunk chunk, int x, int y, int z) {
+        
+        if (x < 0 || x >= 16 || y < 0 || y >= 16 || z < 0 || z >= 16) {
+            return false;
+        }
         return BlockRegistry.isAir(chunk.get(x, y, z));
+        
     }
 }
