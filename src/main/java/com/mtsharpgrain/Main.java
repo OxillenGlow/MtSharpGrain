@@ -20,6 +20,7 @@ import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
+import java.util.concurrent.CompletableFuture;
 
 public class Main extends SimpleApplication {
 
@@ -106,7 +107,9 @@ public class Main extends SimpleApplication {
         inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
 
         guiNode.attachChild(ch);
-        ScriptRunner.loadAndExecuteVisualScript();
+        CompletableFuture.runAsync(() -> {
+            ScriptRunner.loadAndExecuteVisualScript();
+        });
     }
 
     @Override
