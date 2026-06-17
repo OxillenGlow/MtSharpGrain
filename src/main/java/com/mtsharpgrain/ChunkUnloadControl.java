@@ -6,8 +6,6 @@ import com.jme3.math.Vector3f;
 
 public class ChunkUnloadControl extends AbstractControl {
 
-    private static final float UNLOAD_DISTANCE = 100f;
-
     private final RenderManager renderManager;
     private final ChunkPos chunkPos;
     private final Player player;
@@ -30,7 +28,7 @@ public class ChunkUnloadControl extends AbstractControl {
         Vector3f chunkPosWorld = spatial.getWorldTranslation();  // Get chunk's world position
 
         // Check if the chunk is too far from the player
-        if (playerPos.distanceSquared(chunkPosWorld) > UNLOAD_DISTANCE * UNLOAD_DISTANCE) {
+        if (playerPos.distanceSquared(chunkPosWorld) > Main.VIEW_DISTANCE* Main.VIEW_DISTANCE) {
             spatial.removeFromParent();  // Remove the chunk from the scene graph
             renderManager.unloadChunk(chunkPos);  // Ensure this method exists and handles chunk unloading
             setEnabled(false);  // Disable this control to avoid further updates

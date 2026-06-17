@@ -69,13 +69,13 @@ public class Main extends SimpleApplication {
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
 
         // ── Background & distance fog ─────────────────────────────────────────
-        ColorRGBA darkBlue = new ColorRGBA(0.02f, 0.05f, 0.12f, 1f);
+        ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );//rgba(247, 51, 10, 0.8)
         viewPort.setBackgroundColor(darkBlue);
 
         FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
         FogFilter fog = new FogFilter();
         fog.setFogColor(darkBlue);
-        fog.setFogDistance(VIEW_DISTANCE * 16 * 0.70f);
+        fog.setFogDistance(VIEW_DISTANCE * 16 * 0.90f);
         fog.setFogDensity(1.5f);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);

@@ -2,6 +2,7 @@ package com.mtsharpgrain;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.concurrent.*;
@@ -32,7 +33,10 @@ public final class RenderManager {
         int px = worldToChunk((int)playerX);
         int py = worldToChunk((int)playerY);
         int pz = worldToChunk((int)playerZ);
-
+        
+        player.setWorldPosition(new Vector3f((int)playerX,(int)playerY,(int)playerZ));
+        
+        
         for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
             for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
                 for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
