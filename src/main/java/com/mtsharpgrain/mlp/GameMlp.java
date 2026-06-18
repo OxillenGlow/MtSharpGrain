@@ -66,12 +66,13 @@ public class GameMlp {
         ds.addRow(new DataSetRow(inputs, outputs));
     }
 
-    // ── Train ────────────────────────────────────────────────────────────────
+    // ── Train — automatically saves the model file when done ────────────────
     public void train() {
         if (mlp == null) build();
         System.out.println("[MLP] Training started…");
         mlp.learn(buildTrainingSet());
         System.out.println("[MLP] Training finished.");
+        save();  // weights are written to MODEL_PATH immediately after training
     }
 
     // ── Save ─────────────────────────────────────────────────────────────────
@@ -107,13 +108,17 @@ public class GameMlp {
     }
 
     // ── Quick smoke-test (run standalone) ────────────────────────────────────
+    // Flow: train → auto-saves model.nnet → load from file → predict
     public static void main(String[] args) {
         GameMlp net = new GameMlp();
-        net.train();
-        net.save();
-        net.load();
+        net.train();  // trains + saves model.nnet automatically
 
-        double[] result = net.predict(1.0, 0.5, 0.0);
+        // Simulate a fresh session: discard in-memory weights and reload from
+        // disk to prove the file round-trip actually works.
+        GameMlp fresh = new GameMlp();
+        fresh.load();
+
+        double[] result = fresh.predict(1.0, 0.5, 0.0);
         System.out.printf("[MLP] predict(1.0, 0.5, 0.0) → %.4f%n", result[0]);
     }
 }
