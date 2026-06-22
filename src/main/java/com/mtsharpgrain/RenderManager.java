@@ -28,30 +28,36 @@ public final class RenderManager {
         this.player = player;
         this.app = app;
     }
+    
+    private int lastPx = Integer.MIN_VALUE, lastPy, lastPz;
 
     public void tick(float playerX, float playerY, float playerZ) {
         int px = worldToChunk((int)playerX);
         int py = worldToChunk((int)playerY);
         int pz = worldToChunk((int)playerZ);
-        
-        for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
-            for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
-                for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
-                    ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
 
-                    worldAccess.ensureChunk(pos);
+        if (px != lastPx || py != lastPy || pz != lastPz) {
+            lastPx = px; lastPy = py; lastPz = pz;
+            // do the nested loop only here
 
-                    // FIX: If this is the FIRST time we see this chunk, mark it dirty
-                    renderMap.computeIfAbsent(pos, p -> {
-                        markDirty(p); // Trigger a build for the new chunk
-                        return new ChunkRenderData(p);
-                    });
+            for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
+                for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
+                    for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
+                        ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
+
+                        worldAccess.ensureChunk(pos);
+                        renderMap.computeIfAbsent(pos, p -> {
+                            markDirty(p); // Trigger a build for the new chunk
+                            return new ChunkRenderData(p);
+                        });
+                    }
                 }
-            }
+            }   
         }
-        
+
         this.processDirtyQueue();
     }
+    
 
     private static int worldToChunk(int coord) {
         return coord >> 4; // match WorldAccess exactly
