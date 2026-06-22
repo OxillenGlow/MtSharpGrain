@@ -68,10 +68,12 @@ dependencies {
     implementation "com.github.stephengold:Heart:9.2.0"
     implementation "com.github.stephengold:SkyControl:1.1.0"
 
+    implementation "org.mozilla:rhino:1.7.14"
+    
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // MLP — Neuroph neural network library
-    // neuroph-core-2.98.jar lives in libs/, picked up automatically
+    // neuroph-core-2.98.jar is now in libs/, picked up automatically
     // by the fileTree(dir: 'libs') line above — no Maven coordinate needed
 
     runtimeOnly project(':assets')
