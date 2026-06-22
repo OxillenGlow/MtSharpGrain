@@ -68,13 +68,8 @@ dependencies {
     implementation "com.github.stephengold:Heart:9.2.0"
     implementation "com.github.stephengold:SkyControl:1.1.0"
 
-    // Core engine interface
-    implementation 'org.graalvm.polyglot:polyglot:24.1.0'
-    
-    // Pure Java JS runtime (Uses platform() to handle Oracle's pom-type layout)
-    implementation platform('org.graalvm.polyglot:js:25.0.5')
-    implementation 'org.graalvm.polyglot:js'
-    
+    implementation 'org.graalvm.polyglot:polyglot:25.0.5'
+    implementation 'org.graalvm.polyglot:js:25.0.5'
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
