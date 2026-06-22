@@ -71,7 +71,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // MLP — Neuroph neural network library
-    implementation 'org.neuroph:neuroph-core:2.98'
+    // neuroph-core-2.98.jar lives in libs/, picked up automatically
+    // by the fileTree(dir: 'libs') line above — no Maven coordinate needed
 
     runtimeOnly project(':assets')
 }

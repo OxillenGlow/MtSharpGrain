@@ -63,7 +63,8 @@ public class GameMlp {
     }
 
     private static void addRow(DataSet ds, double[] inputs, double[] outputs) {
-        ds.addRow(new DataSetRow(inputs, outputs));
+        
+        ds.add(inputs, outputs);
     }
 
     // ── Train — automatically saves the model file when done ────────────────
