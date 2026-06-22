@@ -72,8 +72,8 @@ dependencies {
     implementation 'org.graalvm.polyglot:polyglot:24.1.0'
     
     // Pure Java JS runtime (Uses platform() to handle Oracle's pom-type layout)
-    implementation platform('org.graalvm.polyglot:js:24.1.0')
-    runtimeOnly 'org.graalvm.polyglot:js'
+    implementation platform('org.graalvm.polyglot:js:25.0.5')
+    implementation 'org.graalvm.polyglot:js'
     
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
