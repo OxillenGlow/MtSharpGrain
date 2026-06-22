@@ -5,7 +5,6 @@
 !src/
 !src/*/
 !src/**/
-!build/distributions/
 !**/*.java
 !build.gradle
 !settings.gradle
@@ -23,7 +22,6 @@
 !**/*.jar
 !Pictures/
 !Pictures/**/*
-!**/*.zip
 
 **/.DS_Store
 
