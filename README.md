@@ -79,7 +79,7 @@ GitHub source: https://github.com/neuroph/NeurophFramework
 - **jVisualScripting** for visual scripts and engine see GitHub source: https://github.com/openconcerto/jVisualScripting
 
 - **GraalVM** for the javascript modules
-GitHun source: https://github.com/oracle/graaljs
+GitHub source: https://github.com/oracle/graaljs
 
 ---
 
