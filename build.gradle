@@ -68,10 +68,12 @@ dependencies {
     implementation "com.github.stephengold:Heart:9.2.0"
     implementation "com.github.stephengold:SkyControl:1.1.0"
 
-    // Core engine interface
+    // 1. Core Polyglot Engine API
     implementation 'org.graalvm.polyglot:polyglot:24.1.0'
-    // Pure Java JS runtime (pulls in the necessary AST parser & interpreter)
-    implementation 'org.graalvm.polyglot:js:24.1.0'
+
+    // 2. The JavaScript engine (Using platform() handles the <type>pom</type> translation)
+    implementation platform('org.graalvm.polyglot:js:24.1.0')
+    runtimeOnly 'org.graalvm.polyglot:js'
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
