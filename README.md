@@ -65,15 +65,18 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 [My other projects](https://github.com/OxillenGlow)
 # Attribs
 
-JavaMonkeyEngine (everthing that LWJGL has)
-see > [website](https://www.jmonkeyengine.org)
+- **JavaMonkeyEngine** (everthing that LWJGL has)
+Website: https://www.jmonkeyengine.org
 
-riccardobl's simple gui for jme
-https://github.com/riccardobl/jme-igui
+- **Riccardobl's simple IGui** for jme
+GitHub source: https://github.com/riccardobl/jme-igui
 
-AND
+- **Neuroph** for mlp
+GitHub source: https://github.com/neuroph/NeurophFramework
 
-jVisualScripting (no other dependencies) see https://github.com/openconcerto/jVisualScripting for source
+- **jVisualScripting** for visual scripts and engine see GitHub source: https://github.com/openconcerto/jVisualScripting
+
+---
 
 ## DUMB SECTION, NOT READING IS ADVISED?:
 ##### Dumb question, how many hashtags can you put here on GitHub for sections? Answer: 6.
