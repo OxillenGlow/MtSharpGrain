@@ -47,11 +47,11 @@ public final class BlockRegistry {
      * @param specular  the highlight colour (use {@code ColorRGBA.Black} for matte)
      * @param shininess Phong shininess exponent; 0 = matte, 128 = mirror-like
      */
-    public record BlockDef(ColorRGBA diffuse, ColorRGBA specular, float shininess) {
+    public record BlockDef(ColorRGBA diffuse, ColorRGBA specular, float shininess, boolean mostlyAir) {
 
         /** Convenience constructor for fully matte blocks with no specular highlight. */
         public BlockDef(ColorRGBA diffuse) {
-            this(diffuse, ColorRGBA.Black, 0f);
+            this(diffuse, ColorRGBA.Black, 0f, false);
         }
     }
 
@@ -66,7 +66,8 @@ public final class BlockRegistry {
         new BlockDef(
             ColorRGBA.fromRGBA255(120, 120, 125, 255),   // diffuse
             ColorRGBA.fromRGBA255( 55,  55,  60, 255),   // specular
-            24f                                           // shininess
+            24f,// shininess
+            false
         ),
 
         /* 3 – Dirt: earthy brown, fully matte */
@@ -78,14 +79,16 @@ public final class BlockRegistry {
         new BlockDef(
             ColorRGBA.fromRGBA255( 34, 139,  34, 255),   // diffuse
             ColorRGBA.fromRGBA255( 15,  60,  15, 255),   // specular
-            16f                                           // shininess
+            16f,                                          // shininess
+            false
         ),
 
         /* 5 – Crystal Ore: electric blue, high specular sparkle */
         new BlockDef(
             ColorRGBA.fromRGBA255( 70, 110, 210, 255),   // diffuse
             ColorRGBA.fromRGBA255(200, 225, 255, 255),   // specular
-            112f                                          // shininess
+            112f,                                         // shininess
+            false
         ),
 
         // ── ADD NEW BLOCKS BELOW THIS LINE ────────────────────────────────
