@@ -29,6 +29,33 @@ public final class RenderManager {
         this.app = app;
     }
     
+    private final Set<ChunkPos> pendingGeneration = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private JsChunkGenerator chunkGen; // set via constructor or a setter
+    private long worldSeed = 1234L;    // wire this up however you're tracking world seed
+
+    private void requestChunk(ChunkPos pos) {
+        if (worldAccess.getChunk(pos) != null) {
+            renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
+            return;
+        }
+        if (!pendingGeneration.add(pos)) return; // already in flight
+
+        BufferedChunk fromDisk = worldAccess.tryLoadFromDisk(pos);
+        if (fromDisk != null) {
+            worldAccess.putLoadedChunk(pos, fromDisk);
+            pendingGeneration.remove(pos);
+            renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
+            return;
+        }
+    
+        chunkGen.generateAsync(pos, worldSeed).whenComplete((chunk, err) -> {
+            pendingGeneration.remove(pos);
+            if (err != null) { err.printStackTrace(); return; }
+            worldAccess.putLoadedChunk(pos, chunk);
+            renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
+        });
+    }
+    
     private int lastPx = Integer.MIN_VALUE, lastPy, lastPz;
 
     public void tick(float playerX, float playerY, float playerZ) {
@@ -45,7 +72,7 @@ public final class RenderManager {
                     for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
                         ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
 
-                        worldAccess.ensureChunk(pos);
+                        requestChunk(pos);
                         renderMap.computeIfAbsent(pos, p -> {
                             markDirty(p); // Trigger a build for the new chunk
                             return new ChunkRenderData(p);
