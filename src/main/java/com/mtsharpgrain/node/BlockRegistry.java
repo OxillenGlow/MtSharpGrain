@@ -19,7 +19,8 @@ import com.jme3.math.ColorRGBA;
  *   3  – Dirt
  *   4  – Grass
  *   5  – Crystal Ore
- *   6+ – add yours here
+ *   6  - Ice Sludge
+ *   7+ – add yours here
  *
  * AMBIENT is shared across all block types and lives here so there is
  * exactly one place to change it.
@@ -36,6 +37,8 @@ public final class BlockRegistry {
     public static final int ID_DIRT         = 3;
     public static final int ID_GRASS        = 4;
     public static final int ID_CRYSTAL_ORE  = 5;
+    public static final int ID_ICE_SLUDGE   = 6;
+    
 
     // ── Block definition ───────────────────────────────────────────────────
 
@@ -46,12 +49,13 @@ public final class BlockRegistry {
      * @param diffuse   the primary surface colour under light
      * @param specular  the highlight colour (use {@code ColorRGBA.Black} for matte)
      * @param shininess Phong shininess exponent; 0 = matte, 128 = mirror-like
+     * @param mostlyAir not to be confused with is air, mostly air just gives whether node is solid
      */
-    public record BlockDef(ColorRGBA diffuse, ColorRGBA specular, float shininess, boolean mostlyAir) {
+    public record BlockDef(ColorRGBA diffuse, ColorRGBA specular, float shininess, boolean mostlyAir, String meshBuilder) {
 
         /** Convenience constructor for fully matte blocks with no specular highlight. */
         public BlockDef(ColorRGBA diffuse) {
-            this(diffuse, ColorRGBA.Black, 0f, false);
+            this(diffuse, ColorRGBA.Black, 0f, false, "Py");
         }
     }
 
@@ -66,8 +70,9 @@ public final class BlockRegistry {
         new BlockDef(
             ColorRGBA.fromRGBA255(120, 120, 125, 255),   // diffuse
             ColorRGBA.fromRGBA255( 55,  55,  60, 255),   // specular
-            24f,// shininess
-            false
+            30f,// shininess
+            false,
+            "Py"
         ),
 
         /* 3 – Dirt: earthy brown, fully matte */
@@ -80,7 +85,8 @@ public final class BlockRegistry {
             ColorRGBA.fromRGBA255( 34, 139,  34, 255),   // diffuse
             ColorRGBA.fromRGBA255( 15,  60,  15, 255),   // specular
             16f,                                          // shininess
-            false
+            false,
+            "Py"
         ),
 
         /* 5 – Crystal Ore: electric blue, high specular sparkle */
@@ -88,7 +94,17 @@ public final class BlockRegistry {
             ColorRGBA.fromRGBA255( 70, 110, 210, 255),   // diffuse
             ColorRGBA.fromRGBA255(200, 225, 255, 255),   // specular
             112f,                                         // shininess
-            false
+            false,
+            "Py"
+        ),
+
+        /* 5 – Ice sludge: Blue white */
+        new BlockDef(
+            ColorRGBA.fromRGBA255( 110, 110, 210, 255),   // diffuse
+            ColorRGBA.fromRGBA255(30, 30, 40, 255),   // specular
+            24f,                                         // shininess
+            false,
+            "Py"
         ),
 
         // ── ADD NEW BLOCKS BELOW THIS LINE ────────────────────────────────
