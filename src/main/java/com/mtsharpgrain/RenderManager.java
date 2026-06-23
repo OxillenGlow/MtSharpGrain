@@ -73,10 +73,6 @@ public final class RenderManager {
                         ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
 
                         requestChunk(pos);
-                        renderMap.computeIfAbsent(pos, p -> {
-                            markDirty(p); // Trigger a build for the new chunk
-                            return new ChunkRenderData(p);
-                        });
                     }
                 }
             }   
