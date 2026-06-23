@@ -1,8 +1,8 @@
 package com.mtsharpgrain;
 
-//needs imports
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme.igui.IGui;
-import com.jme.igui.IGuiMouseEvent;
 import com.jme.igui.IGuiAppState;
 import com.jme.igui.IGuiComponent;
 import com.jme3.app.SimpleApplication;
@@ -11,150 +11,119 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
+import com.jme3.system.AppSettings;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.FogFilter;
 import java.io.IOException;
-import java.io.File;
-import com.jvisualscripting.Engine;
-import com.jvisualscripting.EventGraph;
-import com.jvisualscripting.editor.VisualScriptingEditor;
-import com.jvisualscripting.event.StartEventNode;
 import com.mtsharpgrain.gui.GameState;
-import com.mtsharpgrain.gui.SwingStarter;
+import com.mtsharpgrain.jvs.ScriptRunner;
+import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
+import java.util.concurrent.CompletableFuture;
 
 public class Main extends SimpleApplication {
+
+    public static String version = "v0.1.0-beta";
+    public static int VIEW_DISTANCE = 1;
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
-    private MouseListener mouseListener;
-    IGui gui;
-    boolean mouseHover=false;
-    boolean mousePressedL=false;
-    boolean mousePressedR=false;
-    
+
     public static void main(String[] args) throws IOException {
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
-        settings.setResolution(
-            GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice()
-                .getDisplayMode()
-                .getWidth(),
-            GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice()
-                .getDisplayMode()
-                .getHeight()
-        );
-        settings.setTitle("MtSharpGrain");
-        System.out.println("0");
+        settings.setResolution(1280, 720);
+        settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
         Main app = new Main();
         app.setSettings(settings);
         app.start();
-         
     }
-  
+
+    private IGui gui;
+
     @Override
     public void simpleInitApp() {
+        gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
+        gui.textFont("Interface/Fonts/Default.fnt");
+        gui.textFontStyle("bold");
+        gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
+
         GameState.setModes(true, true);
-        System.out.println("14");
-        // Maintain default 45-degree FOV, calculate current window aspect ratio, 
-        // and extend the view distance range from 0.1 out to 5000 world units.
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
         cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
-        // Your existing initialization logic
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
-        // Get the sun light from rootNode since TestInit still returns null
+
         com.jme3.light.DirectionalLight sun = null;
         for (com.jme3.light.Light l : rootNode.getLocalLightList()) {
-             if (l instanceof com.jme3.light.DirectionalLight) {
+            if (l instanceof com.jme3.light.DirectionalLight) {
                 sun = (com.jme3.light.DirectionalLight) l;
                 break;
             }
         }
 
         com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
-            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 2048, 3);
+            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
         dlsr.setLight(sun);
         viewPort.addProcessor(dlsr);
-
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
-        // Initialize the MouseListener first
-        mouseListener = new MouseListener();
 
-        // Ensure camera and rootNode are available before initializing BlockSelector
-        blockSelector = new BlockSelector(cam, rootNode, mouseListener);
+        // ── Background & distance fog ─────────────────────────────────────────
+        ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );//rgba(247, 51, 10, 0.8)
+        viewPort.setBackgroundColor(darkBlue);
 
-        // Register the MouseListener with the input manager
-        inputManager.addRawInputListener(mouseListener);
+        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        FogFilter fog = new FogFilter();
+        fog.setFogColor(darkBlue);
+        fog.setFogDistance(VIEW_DISTANCE * 16 * 0.90f);
+        fog.setFogDensity(1.5f);
+        fpp.addFilter(fog);
+        viewPort.addProcessor(fpp);
+        // ─────────────────────────────────────────────────────────────────────
 
-        // Initialize WorldAccess and RenderManager
+        blockSelector = new BlockSelector(cam, rootNode);
         worldAccess = new WorldAccess("worlds/my_world");
         var player = new Player();
         player.setWorldPosition(new Vector3f(1, 1, 1));
-
-        // Initialize RenderManager
         this.renderManagermg = new com.mtsharpgrain.RenderManager(worldAccess, rootNode, assetManager, player, this);
 
-        // Initialize OnPrintScript and CommandListener
         OnPrintScript printScript = new OnPrintScript();
         printScript.attach();
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
 
-        // Chunk setup (optional, for testing)
-        try {
-            ChunkPos firstChunk = new ChunkPos(0, 0, 3);
-            worldAccess.createChunkAt(firstChunk, 1);
-            renderManagermg.markDirty(firstChunk);
-        } catch (Exception e) {
-            System.out.println("Error creating chunk");
-        }
-        
-        // Load the default font
         BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
-    
-        // Set properties
         ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
-        ch.setText("+"); // The crosshair shape
-    
-        // Center it on screen
-        float x = settings.getWidth() / 2 - ch.getLineWidth() / 2;
-        float y = settings.getHeight() / 2 + ch.getLineHeight() / 2;
+        ch.setText("+");
+        float x = cam.getWidth() / 2f - ch.getLineWidth() / 2f;
+        float y = cam.getHeight() / 2f + ch.getLineHeight() / 2f;
         ch.setLocalTranslation(x, y, 0);
-    
-        // Attach to the GUI node (2D layer)
+
+        Check check = new Check(worldAccess, renderManagermg, blockSelector);
+        inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+        inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
+
         guiNode.attachChild(ch);
-        
-        // Load and execute .jvsz visual script file
-        com.mtsharpgrain.jvs.ScriptRunner.loadAndExecuteVisualScript();
+        CompletableFuture.runAsync(() -> {
+            ScriptRunner.loadAndExecuteVisualScript();
+        });
     }
-    
+
     @Override
     public void simpleUpdate(float tpf) {
-        // Update the RenderManager
-        renderManagermg.tick(
-            cam.getLocation().x, 
-            cam.getLocation().y, 
-            cam.getLocation().z
-        );
-
-        // Check for block selection from BlockSelector
-        com.mtsharpgrain.node.Check.tick(worldAccess, renderManagermg, blockSelector);
-        
-
+        com.mtsharpgrain.gui.Master.tic(gui);
+        renderManagermg.tick(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
     }
+
     @Override
-    public void simpleRender(RenderManager rm) {
-        // Optional: Render logic
-    }
+    public void simpleRender(RenderManager rm) {}
 
     @Override
     public void destroy() {
-        // Save world if needed
-        if (worldAccess != null) {
-            worldAccess.saveAll();
-        }
-        super.destroy(); // Standard shutdown
+        if (worldAccess != null) worldAccess.saveAll();
+        super.destroy();
     }
 }

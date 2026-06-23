@@ -2,6 +2,7 @@ package com.mtsharpgrain;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.concurrent.*;
@@ -14,12 +15,11 @@ public final class RenderManager {
     private final ConcurrentHashMap<ChunkPos, ChunkRenderData> renderMap = new ConcurrentHashMap<>();
     private final Queue<ChunkPos> dirtyQueue = new ConcurrentLinkedQueue<>();
     private final Set<ChunkPos> pendingChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private int viewDistance = 1;
-    private static final double CHUNK_METERS = BufferedChunk.SIZE * 0.5;
     private int viewHeight = 0;
     Player player;
     Node nd;
     AssetManager assetManager;
+    private final Set<ChunkPos> dirtySet = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public RenderManager(WorldAccess worldAccess, Node nd, AssetManager am, Player player, SimpleApplication app) {
         this.worldAccess = worldAccess;
@@ -28,37 +28,68 @@ public final class RenderManager {
         this.player = player;
         this.app = app;
     }
-
     
-    public void tick(float playerX, float playerY, float playerZ) {
-    int px = worldToChunk(playerX);
-    int py = worldToChunk(playerY);
-    int pz = worldToChunk(playerZ);
+    private final Set<ChunkPos> pendingGeneration = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private JsChunkGenerator chunkGen; // set via constructor or a setter
+    private long worldSeed = 1234L;    // wire this up however you're tracking world seed
 
-        for (int dx = -viewDistance; dx <= viewDistance; dx++) {
-            for (int dy = -viewDistance; dy <= viewHeight; dy++) {
-                for (int dz = -viewDistance; dz <= viewDistance; dz++) {
-                    ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
-
-                    worldAccess.ensureChunk(pos);
-
-                    // FIX: If this is the FIRST time we see this chunk, mark it dirty
-                    renderMap.computeIfAbsent(pos, p -> {
-                        markDirty(p); // Trigger a build for the new chunk
-                    return new ChunkRenderData(p);
-                    });
-                }
-            }
+    private void requestChunk(ChunkPos pos) {
+        if (worldAccess.getChunk(pos) != null) {
+            renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
+            return;
         }
+        if (!pendingGeneration.add(pos)) return; // already in flight
+
+        BufferedChunk fromDisk = worldAccess.tryLoadFromDisk(pos);
+        if (fromDisk != null) {
+            worldAccess.putLoadedChunk(pos, fromDisk);
+            pendingGeneration.remove(pos);
+            renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
+            return;
+        }
+    
+        chunkGen.generateAsync(pos, worldSeed).whenComplete((chunk, err) -> {
+            pendingGeneration.remove(pos);
+            if (err != null) { err.printStackTrace(); return; }
+            worldAccess.putLoadedChunk(pos, chunk);
+            renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
+        });
+    }
+    
+    private int lastPx = Integer.MIN_VALUE, lastPy, lastPz;
+
+    public void tick(float playerX, float playerY, float playerZ) {
+        int px = worldToChunk((int)playerX);
+        int py = worldToChunk((int)playerY);
+        int pz = worldToChunk((int)playerZ);
+
+        if (px != lastPx || py != lastPy || pz != lastPz) {
+            lastPx = px; lastPy = py; lastPz = pz;
+            // do the nested loop only here
+
+            for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
+                for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
+                    for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
+                        ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
+
+                        requestChunk(pos);
+                    }
+                }
+            }   
+        }
+
         this.processDirtyQueue();
     }
+    
 
-    private static int worldToChunk(double meters) {
-        return (int) Math.floor(meters / CHUNK_METERS);
+    private static int worldToChunk(int coord) {
+        return coord >> 4; // match WorldAccess exactly
     }
 
     public void markDirty(ChunkPos pos) {
-        if (!dirtyQueue.contains(pos)) dirtyQueue.add(pos);
+        if (dirtySet.add(pos)) {  // add() returns false if already present — O(1)
+            dirtyQueue.add(pos);
+        }
     }
 
     public void markNeighborsDirty(ChunkPos pos) {
@@ -72,42 +103,46 @@ public final class RenderManager {
     }
 
     private void processDirtyQueue() {
-        ChunkPos pos = dirtyQueue.poll();
-        if (pos == null || pendingChunks.contains(pos)) return;
+        int maxPerTick = 1;
+        for (int i = 0; i < maxPerTick; i++) {
+            ChunkPos pos = dirtyQueue.poll();
+            if (pos == null) return;                    // queue empty, fine to stop
+            if (pendingChunks.contains(pos)) {
+                dirtyQueue.add(pos);
+                continue;
+            }
+            BufferedChunk chunk = worldAccess.getChunk(pos);
+            if (chunk == null) continue;
+            // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
+            CompletableFuture.runAsync(() -> {
+                try {
+                    dirtySet.remove(pos);  // keep them in sync
 
-        BufferedChunk chunk = worldAccess.getChunk(pos);
-        if (chunk == null) return;
+                    pendingChunks.add(pos);
 
-        pendingChunks.add(pos);
-
-        // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
-        CompletableFuture.runAsync(() -> {
-            try {
-                app.enqueue(() -> {
-                        
                     // Building (Background Thread in enqueue)
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                    ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                    newMesh.addControl(ctr);
+                    //ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
+                    //newMesh.addControl(ctr);
+                    app.enqueue(() -> {
+                        Spatial oldCk = nd.getChild(newMesh.getName());
+                        if (oldCk != null) oldCk.removeFromParent();
 
-                
-                    Spatial oldCk = nd.getChild(newMesh.getName());
-                    if (oldCk != null) oldCk.removeFromParent();
-                    
-                    nd.attachChild(newMesh);
-                    
-                    ChunkRenderData crd = renderMap.get(pos);
-                    if (crd != null) crd.lastBuiltTime = System.currentTimeMillis();
-                    
-                    pendingChunks.remove(pos); // Clean up tracking
-                    return null;
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                pendingChunks.remove(pos);
-                System.out.println("AHHH");
-            }
-        });
+                        nd.attachChild(newMesh);
+
+                        ChunkRenderData crd = renderMap.get(pos);
+                        if (crd != null) crd.lastBuiltTime = System.currentTimeMillis();
+
+                        pendingChunks.remove(pos); // Clean up tracking
+                        return null;
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    pendingChunks.remove(pos);
+                    System.out.println("AHHH");
+                }
+            });
+        }
     }
 
     public void unloadChunk(ChunkPos pos) {
@@ -135,8 +170,8 @@ public final class RenderManager {
         public ChunkPos pos;
         public ChunkRenderData(ChunkPos pos) { this.pos = pos; }
     }
-    private static ChunkPos worldToChunk(int x, int y, int z) {
-        return new ChunkPos(worldToChunk((double)x), worldToChunk((double)y), worldToChunk((double)z));
-    }
 
+    private static ChunkPos worldToChunk(int x, int y, int z) {
+        return new ChunkPos(worldToChunk(x), worldToChunk(y), worldToChunk(z));
+    }
 }

@@ -19,13 +19,8 @@ public final class BufferedChunk {
 
     public BufferedChunk(ChunkPos pos){
         blocks = new int[SIZE][SIZE][SIZE];
-        
         var fill = (pos.getY() > -1) ? 1 : 2;
-        if(pos.getY()>-1){
-            
         
-        }
-        else{}
         for(int x=0;x<SIZE;x++)
             for(int y=0;y<SIZE;y++)
                 for(int z=0;z<SIZE;z++)

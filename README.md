@@ -1,4 +1,4 @@
-<img src="Pictures/Sc.png" align="center"/>
+<img src="Pictures/Sc.png" align="center"/> 
 
 # MtSharpGrain 
 ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain) _<-- constantly improving!_
@@ -9,17 +9,25 @@ _If you don't see any comits in the last few days, I have been lazy._
 
 
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java using openGL lwjgl and jme.
+A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java (openGL lwjgl and jme).
 
-This game has already implemented:
+## What's in it so far
 
-- **semi smooth** node meshes
-- **jVisualScripting engine & editor** for visualblock based coding. _Direct connection to game is still being added.(mostly finished now!)_
+- **Semi-smooth node meshes** — blocks connect with rounded transitions rather than hard cube edges
+- **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** — block based visual coding system, mostly wired into the game now with console comand system.
+- **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
+- **Resolution management** — handles different resolutions, fullscreen coming later
+
+<img src="Pictures/jVS-ingame-demo.png" align="left" width="400" style="margin-right: 20px;" />
+
+<- Using jVisualScript to break and place blocks (too bad i did not do a GIF)
 
 ---
+---
+## Links
 
-## Link to [wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
-## Talk and ask, [discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
+- 📖 [Wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
+- 💬 [Discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
 ---
 
@@ -39,39 +47,41 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 ---
 
 # Important stuff
-## Soon to be implemented/fixed
-- simple world generation
+## My todo/doing list:
+- simple world generation 5%
     - random generation
     - World making / hand sculpting
-- More content:
+- More content: 0%
     - More blocks: ice, glass, metal, plastic
     - Special blocks: ...
     - Person model - i think i should use the java drake model for people
     - Randomly spawned builtings
-- GUI > afterwards customisable with scripts 10%
+- GUI > afterwards customisable with scripts 20%
 - Full screen ect 50%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
-## Implemented (and still needs fixing)
-<img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-
-- Scripts, jVisualScripting script engine would soon be added as to game ✅ 80% basically finished. thanks @claude and copilot. just need to connect the game now.
-- Faces, PyBallJmeMesh, my code is now super messy :( ✅ 80% i still have to think of more smoother connections especially for collums
-- Resolution management ✅ 90% i will add full screen support later.(dont realy plan on multi sampling so this is it)
+- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)40%
 
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
 # Attribs
 
-JavaMonkeyEngine (everthing that LWJGL has)
-see > [website](https://www.jmonkeyengine.org)
+- **JavaMonkeyEngine** (everthing that LWJGL has)
+Website: https://www.jmonkeyengine.org
+GitHub organization: https://github.com/jmonkeyengine
 
-riccardobl's simple gui for jme
-https://github.com/riccardobl/jme-igui
+- **Riccardobl's simple IGui** for jme
+GitHub source: https://github.com/riccardobl/jme-igui
 
-AND
+- **Neuroph** for mlp
+GitHub source: https://github.com/neuroph/NeurophFramework
 
-jVisualScripting (no other dependencies) see https://github.com/openconcerto/jVisualScripting for source
+- **jVisualScripting** for visual scripts and engine see GitHub source: https://github.com/openconcerto/jVisualScripting
+
+- **GraalVM** for the javascript modules
+GitHub source: https://github.com/oracle/graaljs
+
+---
 
 ## DUMB SECTION, NOT READING IS ADVISED?:
 ##### Dumb question, how many hashtags can you put here on GitHub for sections? Answer: 6.

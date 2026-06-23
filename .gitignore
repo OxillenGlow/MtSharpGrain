@@ -15,6 +15,16 @@
 !gradle/**/
 !.gitignore
 !**/*.png
+!**/*.jpg
+!**/*.jvsz
+!**/*.jvs
+!**/*.fnt
+!**/*.jar
+!Pictures/
+!Pictures/**/*
+
+**/.DS_Store
+
 
 # Re-ignore the build folder inside src just in case
 src/**/build/
