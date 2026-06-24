@@ -142,6 +142,10 @@ public class Main extends SimpleApplication {
         CompletableFuture.runAsync(() -> {
             ScriptRunner.loadAndExecuteVisualScript();
         });
+        
+        Vector3f spawn = new Vector3f(10000f, 10f, 0f);
+        cam.setLocation(spawn);
+        player.setWorldPosition(spawn);
     }
 
     @Override

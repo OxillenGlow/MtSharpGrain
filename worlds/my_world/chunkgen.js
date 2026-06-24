@@ -111,8 +111,8 @@ function terrainFeatureDelta(wx, wz, seed) {
 
 // ── 4. Polar ice cap ─────────────────────────────────────────────────────────
 // Linear cone centered at world origin: full thickness at r=0, zero at r=ICE_MAX_RADIUS.
-var ICE_MAX_RADIUS = 100000;
-var ICE_MAX_THICKNESS = 30;
+var ICE_MAX_RADIUS = 10000;
+var ICE_MAX_THICKNESS = 10;
 
 function iceThickness(wx, wz) {
     var r = Math.sqrt(wx * wx + wz * wz);

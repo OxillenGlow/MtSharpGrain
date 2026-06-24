@@ -1,5 +1,7 @@
 package com.mtsharpgrain;
 
+
+import com.mtsharpgrain.js.JsChunkGenerator;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class WorldAccess {
@@ -40,7 +42,7 @@ public final class WorldAccess {
 
         BufferedChunk c = Useful.remove(pos);
 
-        if(c!=null && pos.getX > -6 )
+        if(c!=null && pos.getX() > -6 )
             fileHelper.saveChunk(pos,c);
     }
     
