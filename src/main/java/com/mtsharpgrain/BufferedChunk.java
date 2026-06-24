@@ -38,4 +38,22 @@ public final class BufferedChunk {
     public int[][][] getRaw(){
         return blocks;
     }
+
+    public void setFromFlat(int[] flat) {
+        int i = 0;
+        for (int x = 0; x < SIZE; x++)
+        for (int y = 0; y < SIZE; y++)
+        for (int z = 0; z < SIZE; z++)
+            blocks[x][y][z] = flat[i++];
+    }
+
+    public int[] toFlat() {
+        int[] flat = new int[SIZE * SIZE * SIZE];
+        int i = 0;
+        for (int x = 0; x < SIZE; x++)
+        for (int y = 0; y < SIZE; y++)
+        for (int z = 0; z < SIZE; z++)
+            flat[i++] = blocks[x][y][z];
+        return flat;
+    }
 }
