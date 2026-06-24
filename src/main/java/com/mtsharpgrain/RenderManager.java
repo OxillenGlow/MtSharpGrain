@@ -5,6 +5,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.mtsharpgrain.js.JsChunkGenerator;
 import java.util.concurrent.*;
 import java.util.*;
 
@@ -21,17 +22,24 @@ public final class RenderManager {
     AssetManager assetManager;
     private final Set<ChunkPos> dirtySet = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    public RenderManager(WorldAccess worldAccess, Node nd, AssetManager am, Player player, SimpleApplication app) {
+    private final Set<ChunkPos> pendingGeneration = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    // These are now wired in via the constructor instead of being left unset.
+    // chunkGen is the SAME JsChunkGenerator instance passed into WorldAccess,
+    // so there is exactly one GraalVM Context/genThread for the whole world.
+    private final JsChunkGenerator chunkGen;
+    private final long worldSeed;
+
+    public RenderManager(WorldAccess worldAccess, Node nd, AssetManager am, Player player,
+                          SimpleApplication app, JsChunkGenerator chunkGen, long worldSeed) {
         this.worldAccess = worldAccess;
         this.nd = nd;
         this.assetManager = am;
         this.player = player;
         this.app = app;
+        this.chunkGen = chunkGen;
+        this.worldSeed = worldSeed;
     }
-    
-    private final Set<ChunkPos> pendingGeneration = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private JsChunkGenerator chunkGen; // set via constructor or a setter
-    private long worldSeed = 1234L;    // wire this up however you're tracking world seed
 
     private void requestChunk(ChunkPos pos) {
         if (worldAccess.getChunk(pos) != null) {
@@ -47,7 +55,9 @@ public final class RenderManager {
             renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
             return;
         }
-    
+
+        // Async path: runs chunkBuild() in chunkgen.js on the dedicated js-chunk-gen thread.
+        // Non-blocking — the main/render thread is free to keep ticking while this resolves.
         chunkGen.generateAsync(pos, worldSeed).whenComplete((chunk, err) -> {
             pendingGeneration.remove(pos);
             if (err != null) { err.printStackTrace(); return; }
@@ -55,7 +65,7 @@ public final class RenderManager {
             renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
         });
     }
-    
+
     private int lastPx = Integer.MIN_VALUE, lastPy, lastPz;
 
     public void tick(float playerX, float playerY, float playerZ) {
