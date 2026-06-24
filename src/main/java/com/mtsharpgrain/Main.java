@@ -58,7 +58,7 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
-        gui.textFont("Interface/Fonts/Default.fnt");
+        gui.textFont("Interface/Fonts/Console.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
@@ -79,6 +79,7 @@ public class Main extends SimpleApplication {
         com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
             new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
         dlsr.setLight(sun);
+        
         viewPort.addProcessor(dlsr);
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
 
@@ -125,9 +126,9 @@ public class Main extends SimpleApplication {
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
 
-        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-        BitmapText ch = new BitmapText(guiFont, false);
-        ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+        BitmapFont guiFonty = assetManager.loadFont("Interface/Fonts/Console.fnt");
+        BitmapText ch = new BitmapText(guiFonty, false);
+        ch.setSize(guiFonty.getCharSet().getRenderedSize() * 2);
         ch.setText("+");
         float x = cam.getWidth() / 2f - ch.getLineWidth() / 2f;
         float y = cam.getHeight() / 2f + ch.getLineHeight() / 2f;
@@ -139,9 +140,9 @@ public class Main extends SimpleApplication {
         inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
 
         guiNode.attachChild(ch);
-        CompletableFuture.runAsync(() -> {
-            ScriptRunner.loadAndExecuteVisualScript();
-        });
+        //CompletableFuture.runAsync(() -> {
+        //    ScriptRunner.loadAndExecuteVisualScript();
+        //});
         
         Vector3f spawn = new Vector3f(10000f, 10f, 0f);
         cam.setLocation(spawn);
