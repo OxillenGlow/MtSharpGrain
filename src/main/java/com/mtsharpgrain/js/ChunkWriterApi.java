@@ -22,4 +22,9 @@ public class ChunkWriterApi {
     public int get(int localX, int localY, int localZ) {
         return chunk.get(localX, localY, localZ);
     }
+
+    @HostAccess.Export
+    public void setArray(int[] flat) {
+        chunk.setFromFlat(flat);
+    }
 }
