@@ -7,6 +7,7 @@ import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 
+import java.nio.file.Path;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -27,15 +28,6 @@ public class JsChunkGenerator implements AutoCloseable {
         t.setDaemon(true);
         return t;
     });
-
-    public JsChunkGenerator(File generatorScript) throws IOException {
-        context = Context.newBuilder("js")
-                .allowHostAccess(HostAccess.EXPLICIT)
-                .allowHostClassLookup(className -> false)
-                .option("engine.WarnInterpreterOnly", "false")
-                .build();
-        context.eval(Source.newBuilder("js", generatorScript).build());
-    }
 
     /** Call from any thread. Generation itself always runs on genThread. */
     public CompletableFuture<BufferedChunk> generateAsync(ChunkPos pos, long seed) {
