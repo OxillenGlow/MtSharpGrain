@@ -4,43 +4,43 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class WorldAccess {
 
-    public final ConcurrentHashMap<ChunkPos,BufferedChunk> Useful
-            = new ConcurrentHashMap<>();
-
+    public final ConcurrentHashMap<ChunkPos,BufferedChunk> Useful = new ConcurrentHashMap<>();
     private final ChunkFileHelper fileHelper;
+    private final JsChunkGenerator generator;
+    private final long seed;
 
-    public WorldAccess(String worldFolder){
+    public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
+        this.generator = generator;
+        this.seed = seed;
+    }
+
+    public BufferedChunk ensureChunk(ChunkPos pos){
+        BufferedChunk c = Useful.get(pos);
+        if(c!=null) return c;
+
+        BufferedChunk loaded = fileHelper.loadChunk(pos);
+        if(loaded!=null){
+            Useful.put(pos,loaded);
+            return loaded;
+        }
+
+        // Was: new BufferedChunk(pos)  -> now actually runs chunkBuild() in chunkgen.js
+        BufferedChunk generated = generator.generateSync(pos, seed);
+        Useful.put(pos, generated);
+        fileHelper.saveChunk(pos, generated);
+        return generated;
     }
 
     public BufferedChunk getChunk(ChunkPos pos){
         return Useful.get(pos);
     }
 
-    public BufferedChunk ensureChunk(ChunkPos pos){
-
-        BufferedChunk c = Useful.get(pos);
-        if(c!=null) return c;
-
-        BufferedChunk loaded = fileHelper.loadChunk(pos);
-
-        if(loaded!=null){
-            Useful.put(pos,loaded);
-            return loaded;
-        }
-
-        BufferedChunk created = new BufferedChunk(pos);
-
-        Useful.put(pos,created);
-
-        return created;
-    }
-
     public void unloadChunk(ChunkPos pos){
 
         BufferedChunk c = Useful.remove(pos);
 
-        if(c!=null)
+        if(c!=null && pos.getX > -6 )
             fileHelper.saveChunk(pos,c);
     }
     
