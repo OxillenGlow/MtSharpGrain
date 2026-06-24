@@ -50,7 +50,25 @@ public class JsChunkGenerator implements AutoCloseable {
         return future;
     }
 
-    // Only ever invoked on genThread — never call this directly from elsewhere.
+    @Override
+    public void close() {
+        genThread.shutdown();
+        context.close();
+    }
+
+    private final ChunkArrayApi arrayApi;
+
+    public JsChunkGenerator(File generatorScript, Path templatesRoot) throws IOException {
+        context = Context.newBuilder("js")
+            .allowHostAccess(HostAccess.EXPLICIT)
+            .allowHostClassLookup(className -> false)
+            .option("engine.WarnInterpreterOnly", "false")
+            .build();
+        arrayApi = new ChunkArrayApi(templatesRoot);
+        context.getBindings("js").putMember("__ChunkArrayApi", arrayApi);
+        context.eval(Source.newBuilder("js", generatorScript).build());
+    }
+
     private BufferedChunk generate(ChunkPos pos, long seed) {
         BufferedChunk chunk = new BufferedChunk(pos);
         ChunkWriterApi writer = new ChunkWriterApi(chunk);
@@ -59,21 +77,18 @@ public class JsChunkGenerator implements AutoCloseable {
         context.eval("js",
             "globalThis.Chunk = {\n" +
             "  set: function(x, y, z, id) { __ChunkWriter.set(x, y, z, id); },\n" +
-            "  get: function(x, y, z) { return __ChunkWriter.get(x, y, z); }\n" +
+            "  get: function(x, y, z) { return __ChunkWriter.get(x, y, z); },\n" +
+            "  setArray: function(flat) { __ChunkWriter.setArray(flat); },\n" +
+            "  load: function(path) { return __ChunkArrayApi.getChunkAsArray(path); },\n" +
+            "  pickFile: function(folder, roll) { return __ChunkArrayApi.pickFile(folder, roll); }\n" +
             "};\n"
         );
-
+    
         Value chunkBuildFn = context.getBindings("js").getMember("chunkBuild");
         if (chunkBuildFn == null || !chunkBuildFn.canExecute()) {
             throw new IllegalStateException("Generator script has no chunkBuild(x, y, z, seed) function");
         }
         chunkBuildFn.execute(pos.getX(), pos.getY(), pos.getZ(), seed);
         return chunk;
-    }
-
-    @Override
-    public void close() {
-        genThread.shutdown();
-        context.close();
     }
 }
