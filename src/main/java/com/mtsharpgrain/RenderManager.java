@@ -73,19 +73,28 @@ public final class RenderManager {
         int py = worldToChunk((int)playerY);
         int pz = worldToChunk((int)playerZ);
 
-        if (px != lastPx || py != lastPy || pz != lastPz) {
-            lastPx = px; lastPy = py; lastPz = pz;
-            // do the nested loop only here
+        Set<ChunkPos> stillInRange = new HashSet<>();
 
-            for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
-                for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
-                    for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
-                        ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
+        for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
+            for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
+                for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
+                    ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
+                    stillInRange.add(pos);
 
-                        requestChunk(pos);
-                    }
+                    worldAccess.ensureChunk(pos);
+                    renderMap.computeIfAbsent(pos, p -> {
+                        markDirty(p);
+                        return new ChunkRenderData(p);
+                    });
                 }
-            }   
+            }
+        }
+
+        // Unload anything that's no longer in the view-distance window
+        for (ChunkPos loaded : renderMap.keySet()) {
+            if (!stillInRange.contains(loaded)) {
+                unloadChunk(loaded);
+            }
         }
 
         this.processDirtyQueue();
