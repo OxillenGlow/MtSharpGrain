@@ -67,14 +67,15 @@ public final class RenderManager {
     }
 
     private int lastPx = Integer.MIN_VALUE, lastPy, lastPz;
+    Set<ChunkPos> stillInRange = new HashSet<>();
 
     public void tick(float playerX, float playerY, float playerZ) {
         int px = worldToChunk((int)playerX);
         int py = worldToChunk((int)playerY);
         int pz = worldToChunk((int)playerZ);
-
-        Set<ChunkPos> stillInRange = new HashSet<>();
-
+        
+        stillInRange.clear();
+        
         for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
             for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
                 for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
@@ -122,7 +123,7 @@ public final class RenderManager {
     }
 
     private void processDirtyQueue() {
-        int maxPerTick = 1;
+        int maxPerTick = 8;
         for (int i = 0; i < maxPerTick; i++) {
             ChunkPos pos = dirtyQueue.poll();
             if (pos == null) return;                    // queue empty, fine to stop
