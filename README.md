@@ -81,6 +81,12 @@ GitHub source: https://github.com/neuroph/NeurophFramework
 - **GraalVM** for the javascript modules
 GitHub source: https://github.com/oracle/graaljs
 
+## AI?
+
+Yes, I use claude a lot, perhaps too much? idk just speeds things up and removes need for constantly checking the API of whatever thing is implemented.
+
+This is only for code, all assets/ideas are human made (not that i use a lot of assets).
+
 ---
 
 ## DUMB SECTION, NOT READING IS ADVISED?:
