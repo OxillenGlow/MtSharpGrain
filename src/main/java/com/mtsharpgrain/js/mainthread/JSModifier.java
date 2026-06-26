@@ -4,6 +4,11 @@ import com.jme3.asset.AssetManager;
 import com.jme3.scene.Node;
 import com.mtsharpgrain.WorldAccess;
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.Source;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Main entry point for the JS modding bridge. Owns the {@link JsApiBootstrap}
@@ -14,7 +19,7 @@ import org.graalvm.polyglot.Context;
  * <pre>{@code
  * JSModifier modifier = new JSModifier();
  * modifier.init(assetManager, rootNode, worldAccess);
- * modifier.runScript(someScriptSource);
+ * modifier.runJs(new File("worlds/my_world/mod/test.js"));
  *
  * // in SimpleApplication.simpleUpdate(tpf):
  * modifier.tick(tpf, currentGuiTag); // runs only callbacks tagged with currentGuiTag
@@ -42,10 +47,30 @@ public class JSModifier {
         this.bootstrap.getNodeRegistry().registerFixed(0L, rootNode);
     }
 
-    /** Evaluates a JS script source against the bridge's Context. Call after init(). */
-    public void runScript(String jsSource) {
+    /**
+     * Reads and evaluates a JS file against the bridge's Context. Call after init().
+     *
+     * Builds a Graal {@link Source} from the file (rather than reading it into a
+     * String yourself and eval-ing that) so stack traces and error messages
+     * reference the real file name/path - much easier to debug than an
+     * anonymous "unnamed" source.
+     *
+     * @param scriptFile e.g. new File("worlds/my_world/mod/test.js")
+     * @throws IOException if the file can't be read
+     */
+    public void runJs(File scriptFile) throws IOException {
         requireInitialized();
-        bootstrap.getContext().eval("js", jsSource);
+        if (!scriptFile.isFile()) {
+            throw new IOException("Script file not found: " + scriptFile.getAbsolutePath());
+        }
+        Source source = Source.newBuilder("js", scriptFile).build();
+        try {
+            bootstrap.getContext().eval(source);
+        } catch (PolyglotException e) {
+            // TODO: route to your real logger instead of stderr
+            System.err.println("[JSModifier] error running script '" + scriptFile.getName() + "': " + e.getMessage());
+            throw e;
+        }
     }
 
     /**
