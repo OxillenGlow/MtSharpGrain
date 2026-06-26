@@ -19,9 +19,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * }, "myFloatingLabel");
  * }</pre>
  *
- * IMPORTANT: {@link #tick(float)} must always be called from the same thread
- * that created the Graal Context these callbacks belong to (the render/main
- * thread) - a polyglot Context is not safe to use across multiple threads.
+ * IMPORTANT: {@link #tick(float)} and {@link #tickTag(float, String)} must
+ * always be called from the same thread that created the Graal Context these
+ * callbacks belong to (the render/main thread) - a polyglot Context is not
+ * safe to use across multiple threads.
  */
 public class TickRegistry {
 
@@ -43,21 +44,39 @@ public class TickRegistry {
         onTick(fn, "");
     }
 
-    /** Call once per frame from SimpleApplication.simpleUpdate(tpf), on the render thread. */
+    /** Calls every registered callback, regardless of tag. */
     public void tick(float tpf) {
         for (TickCallback cb : callbacks) {
-            try {
-                cb.fn.execute(tpf, cb.tag);
-                cb.failureCount = 0;
-            } catch (PolyglotException e) {
-                cb.failureCount++;
-                // TODO: route to your real logger instead of stderr
-                System.err.println("[TickRegistry] callback for tag '" + cb.tag + "' threw: " + e.getMessage());
-                if (cb.failureCount >= MAX_CONSECUTIVE_FAILURES) {
-                    System.err.println("[TickRegistry] disabling callback for tag '" + cb.tag
-                            + "' after " + cb.failureCount + " consecutive failures");
-                    callbacks.remove(cb);
-                }
+            runCallback(cb, tpf);
+        }
+    }
+
+    /**
+     * Calls only the callbacks registered under the given tag - lets you
+     * drive a single gui-tagged script on demand (e.g. "run this widget's
+     * logic now") instead of ticking everything every frame.
+     */
+    public void tickTag(float tpf, String tag) {
+        String safeTag = tag == null ? "" : tag;
+        for (TickCallback cb : callbacks) {
+            if (cb.tag.equals(safeTag)) {
+                runCallback(cb, tpf);
+            }
+        }
+    }
+
+    private void runCallback(TickCallback cb, float tpf) {
+        try {
+            cb.fn.execute(tpf, cb.tag);
+            cb.failureCount = 0;
+        } catch (PolyglotException e) {
+            cb.failureCount++;
+            // TODO: route to your real logger instead of stderr
+            System.err.println("[TickRegistry] callback for tag '" + cb.tag + "' threw: " + e.getMessage());
+            if (cb.failureCount >= MAX_CONSECUTIVE_FAILURES) {
+                System.err.println("[TickRegistry] disabling callback for tag '" + cb.tag
+                        + "' after " + cb.failureCount + " consecutive failures");
+                callbacks.remove(cb);
             }
         }
     }
