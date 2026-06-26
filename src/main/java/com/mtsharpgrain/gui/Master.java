@@ -17,7 +17,8 @@ public class Master {
     static boolean mousePressedL = false;
 
     public static void tic(IGui gui) {
-        gui.push(true);
+        
+        gui.push(false);
         gui.textFont("Interface/Fonts/Default.fnt");
 
         gui.textSize(0.02f);
@@ -26,27 +27,27 @@ public class Master {
         gui.textVAlign("top");
         float spacing=0.03f;
         float line=1;
-        gui.text("Open jVisualScript Editor",0f,line,(var event,var arg)->{
-            if(event==IGuiMouseEvent.MOUSE_IN){
-                mouseHover=true;
-            }else if(event==IGuiMouseEvent.MOUSE_OUT){
-                mouseHover=false;
-            }
-            if(event==IGuiMouseEvent.MOUSE_PRESSED_LEFT){
-                mousePressedL = true;
-                try {
-                    var jar = com.tools.AssetConverter.getAssetAsFile("/jVisualScripting-editor-1.4.jar");
-                    new ProcessBuilder("java", "-jar", jar.getAbsolutePath())
-                        .inheritIO()
-                        .start();
-                } catch (IOException ex) {
-                    Logger.getLogger(Master.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }else if(event==IGuiMouseEvent.MOUSE_RELEASED_LEFT){
-                mousePressedL=false;
-            }
-            return true;
-        });
+        //gui.text("Open jVisualScript Editor",0f,line,(var event,var arg)->{
+        //    if(event==IGuiMouseEvent.MOUSE_IN){
+        //        mouseHover=true;
+        //    }else if(event==IGuiMouseEvent.MOUSE_OUT){
+        //         mouseHover=false;
+        //    }
+        //    if(event==IGuiMouseEvent.MOUSE_PRESSED_LEFT){
+        //        mousePressedL = true;
+        //        try {
+        //            var jar = com.tools.AssetConverter.getAssetAsFile("/jVisualScripting-editor-1.4.jar");
+        //            new ProcessBuilder("java", "-jar", jar.getAbsolutePath())
+        //                .inheritIO()
+        //                .start();
+        //        } catch (IOException ex) {
+        //            Logger.getLogger(Master.class.getName()).log(Level.SEVERE, null, ex);
+        //        }
+        //    }else if(event==IGuiMouseEvent.MOUSE_RELEASED_LEFT){
+        //        mousePressedL=false;
+        //    }
+        //    return true;
+        //});
         gui.text("Line1",0f,line,(var event,var arg)->{
             if(event==IGuiMouseEvent.MOUSE_IN){
                 mouseHover=true;
@@ -60,8 +61,8 @@ public class Master {
             }
             return true;
         });
-        gui.pop();
-        
+            
+        gui.pop();     
     }
     
 }
