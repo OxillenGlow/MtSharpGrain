@@ -19,11 +19,14 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.js.JsChunkGenerator;
+import com.mtsharpgrain.js.mainthread.JSModifier;
 import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main extends SimpleApplication {
 
@@ -48,12 +51,13 @@ public class Main extends SimpleApplication {
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
         settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
-        Main app = new Main();
+        var app = new Main();
         app.setSettings(settings);
         app.start();
     }
 
     private IGui gui;
+    private JSModifier modifier;
 
     @Override
     public void simpleInitApp() {
@@ -91,7 +95,7 @@ public class Main extends SimpleApplication {
         ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );//rgba(247, 51, 10, 0.8)
         viewPort.setBackgroundColor(darkBlue);
 
-        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        var fpp = new FilterPostProcessor(assetManager);
         FogFilter fog = new FogFilter();
         fog.setFogColor(darkBlue);
         fog.setFogDistance(VIEW_DISTANCE * 16 * 0.90f);
@@ -155,9 +159,13 @@ public class Main extends SimpleApplication {
 
         // adding JS mods that run on main thread
         // TODO: Moving to another thread! Very important.
-        JSModifier modifier = new JSModifier();
+        modifier = new JSModifier();
         modifier.init(assetManager, rootNode, worldAccess); // worldAccess = your existing com.mtsharpgrain.WorldAccess instance
-        modifier.runJs(new File("worlds/my_world/mod/test.js"));
+        try {
+            modifier.runJs(new File("worlds/my_world/mod/test.js"));
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         
     }

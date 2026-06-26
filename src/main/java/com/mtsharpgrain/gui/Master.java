@@ -3,7 +3,6 @@ package com.mtsharpgrain.gui;
 import com.jme.igui.IGui;
 import com.jme.igui.IGuiMouseEvent;
 import com.jme3.math.ColorRGBA;
-import com.mtsharpgrain.GameState;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
