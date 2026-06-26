@@ -147,12 +147,22 @@ public class Main extends SimpleApplication {
         Vector3f spawn = new Vector3f(10000f, 10f, 0f);
         cam.setLocation(spawn);
         player.setWorldPosition(spawn);
+
+
+        // adding JS mods that run on main thread
+        // TODO: Moving to another thread! Very important.
+        JSModifier modifier = new JSModifier();
+        modifier.init(assetManager, rootNode, worldAccess); // worldAccess = your existing com.mtsharpgrain.WorldAccess instance
+        modifier.runJs(new File("worlds/my_world/mod/test.js"));
+        
+        
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        com.mtsharpgrain.gui.Master.tic(gui);
+        com.mtsharpgrain.gui.Master.tic(gui);// just noticed tic is misspelled! wont fix
         renderManagermg.tick(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
+        modifier.tick(tpf, "groundCheckLabel");
     }
 
     @Override
