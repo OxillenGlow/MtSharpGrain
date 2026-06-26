@@ -68,8 +68,8 @@ public final class BlockRegistry {
 
         /* 2 – Stone: mid-grey, low specular gloss */
         new BlockDef(
-            ColorRGBA.fromRGBA255(70, 5, 5, 255),   // diffuse
-            ColorRGBA.fromRGBA255( 55,  20,  20, 255),   // specular
+            ColorRGBA.fromRGBA255(10, 2, 2, 255),   // diffuse
+            ColorRGBA.fromRGBA255( 55, 20, 20, 255),   // specular
             30f,// shininess
             false,
             "Py"
@@ -77,7 +77,7 @@ public final class BlockRegistry {
 
         /* 3 – Dirt: earthy brown, fully matte */
         new BlockDef(
-            ColorRGBA.fromRGBA255(101,  33,  33, 255)    // diffuse (matte shortcut)
+            ColorRGBA.fromRGBA255(40,  10,  10, 255)    // diffuse (matte shortcut)
         ),
 
         /* 4 – Grass: forest green, subtle wet-leaf sheen */

@@ -5,6 +5,7 @@ import com.mtsharpgrain.BlockSelection;
 import com.mtsharpgrain.BlockSelector;
 import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
+import static com.mtsharpgrain.gui.Master.blockType;
 
 public class Check implements ActionListener {
 
@@ -31,8 +32,8 @@ public class Check implements ActionListener {
         if (selection == null) return;
 
         if (leftPressed) {
-            worldAccess.setBlockAt(selection.x, selection.y, selection.z, 2);
-            System.out.println("Placed block at " + selection);
+            worldAccess.setBlockAt(selection.x, selection.y, selection.z, blockType);
+            System.out.println("Placed block at " + selection + "of type:" +  blockType);
         } else {
             worldAccess.removeBlockAt(selection.x, selection.y, selection.z);
             System.out.println("Removed block at " + selection);

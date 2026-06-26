@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 public class Main extends SimpleApplication {
 
     public static String version = "v0.1.0-beta";
-    public static int VIEW_DISTANCE = 1;
+    public static int VIEW_DISTANCE = 3;
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
@@ -83,13 +83,15 @@ public class Main extends SimpleApplication {
                 break;
             }
         }
-
-        com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
-            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
-        dlsr.setLight(sun);
         
-        viewPort.addProcessor(dlsr);
-        rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
+        
+        // NO SHADOWS FOR NOW
+        //com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
+        //    new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
+        //dlsr.setLight(sun);
+        
+        //viewPort.addProcessor(dlsr);
+        //rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
 
         // ── Background & distance fog ─────────────────────────────────────────
         ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );//rgba(247, 51, 10, 0.8)
@@ -99,7 +101,7 @@ public class Main extends SimpleApplication {
         FogFilter fog = new FogFilter();
         fog.setFogColor(darkBlue);
         fog.setFogDistance(VIEW_DISTANCE * 16 * 0.90f);
-        fog.setFogDensity(1.5f);
+        fog.setFogDensity(0.5f);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
         // ─────────────────────────────────────────────────────────────────────
@@ -152,7 +154,7 @@ public class Main extends SimpleApplication {
         //    ScriptRunner.loadAndExecuteVisualScript();
         //});
         
-        Vector3f spawn = new Vector3f(10000f, 10f, 0f);
+        Vector3f spawn = new Vector3f(10000f, 16f, 0f);
         cam.setLocation(spawn);
         player.setWorldPosition(spawn);
 
