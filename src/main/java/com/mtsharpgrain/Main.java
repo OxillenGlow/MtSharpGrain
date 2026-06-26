@@ -57,11 +57,15 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("Interface/Fonts/Console.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
+        
+        gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("left").textVAlign("top");
+        IGuiComponent text2 = gui.text("Press [F] to exit full screen [Escape] to close.", 0f, 1f, true);
 
         GameState.setModes(true, true);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
@@ -126,7 +130,7 @@ public class Main extends SimpleApplication {
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
 
-        BitmapFont guiFonty = assetManager.loadFont("Interface/Fonts/Console.fnt");
+        BitmapFont guiFonty = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFonty, false);
         ch.setSize(guiFonty.getCharSet().getRenderedSize() * 2);
         ch.setText("+");
