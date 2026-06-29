@@ -48,19 +48,19 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 # Important stuff
 ## My todo/doing list:
-- simple world generation 5%
-    - random generation
-    - World making / hand sculpting
+- simple world generation 70%
+    - random generation 90%
+    - World making / hand sculpting 30%
 - More content: 0%
-    - More blocks: ice, glass, metal, plastic
-    - Special blocks: ...
+    - More blocks: ice, glass, metal, plastic 10%
+    - Special blocks: ... 
     - Person model - i think i should use the java drake model for people
     - Randomly spawned builtings
-- GUI > afterwards customisable with scripts 20%
+- GUI > afterwards customisable with scripts 40%
 - Full screen ect 50%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
-- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)40%
+- JavaScript, to add some real and powerfull scripting (thanks a lot to claude) 80%
 
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
