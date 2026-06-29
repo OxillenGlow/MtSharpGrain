@@ -7,6 +7,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import com.mtsharpgrain.node.BlockRegistry;
 import com.mtsharpgrain.node.BlockRegistry.BlockDef;
 import jme3tools.optimize.GeometryBatchFactory;
@@ -45,8 +46,10 @@ public class ChunkMeshBuilder {
                     boolean pz = isAir(chunk, x, y, z + 1);
                     boolean nz = isAir(chunk, x, y, z - 1);
 
-                    Mesh mesh = PyBallJmeMesh.getMesh(!px, !py, !pz, !nx, !ny, !nz, false);
-                    Geometry geo = new Geometry("Geo" + x + y + z, mesh);
+                    BlockDef def = BlockRegistry.get(block);
+                    String meshBuilder = (def != null) ? def.meshBuilder() : "Py";
+
+                    Geometry geo = buildGeometry(meshBuilder, x, y, z, px, py, pz, nx, ny, nz);
 
                     geo.setMaterial(buildMaterial(assetManager, block));
                     geo.setLocalTranslation(x + 16 * X, y + 16 * Y, z + 16 * Z);
@@ -58,6 +61,56 @@ public class ChunkMeshBuilder {
         Spatial batched = GeometryBatchFactory.optimize(tempNode);
         batched.setName(cnkName);
         return batched;
+    }
+
+    // ── Geometry helper ─────────────────────────────────────────────────────
+
+    /**
+     * Builds the {@link Geometry} for one block according to its
+     * {@code meshBuilder} type. "Py" keeps the original face-culled
+     * PyBall mesh; the "Cube*" variants build a simple {@link Box}.
+     *
+     * Box geometries are centered in their 1x1x1 grid cell via the local
+     * translation offset baked into the returned geometry's name-relative
+     * position; CubeTall/CubeFlat are floor-aligned (sit on the cell's
+     * bottom face) rather than vertically centered.
+     */
+    private static Geometry buildGeometry(String meshBuilder, int x, int y, int z,
+                                           boolean px, boolean py, boolean pz,
+                                           boolean nx, boolean ny, boolean nz) {
+        switch (meshBuilder) {
+            case "Cube": {
+                Box boxMesh = new Box(0.5f, 0.5f, 0.5f);
+                Geometry boxGeo = new Geometry("Colored Box", boxMesh);
+                boxGeo.setLocalTranslation(0.5f, 0.5f, 0.5f); // center in cell
+                return boxGeo;
+            }
+            case "CubeTiny": {
+                Box boxMesh = new Box(0.2f, 0.2f, 0.2f);
+                Geometry boxGeo = new Geometry("Colored Box", boxMesh);
+                boxGeo.setLocalTranslation(0.5f, 0.5f, 0.5f); // center in cell
+                return boxGeo;
+            }
+            case "CubeTall": {
+                Box boxMesh = new Box(0.3f, 0.5f, 0.3f);
+                Geometry boxGeo = new Geometry("Colored Box", boxMesh);
+                // floor-aligned: half-height above the cell's bottom face
+                boxGeo.setLocalTranslation(0.5f, 0.5f, 0.5f);
+                return boxGeo;
+            }
+            case "CubeFlat": {
+                Box boxMesh = new Box(0.5f, 0.1f, 0.5f);
+                Geometry boxGeo = new Geometry("Colored Box", boxMesh);
+                // floor-aligned: half-height above the cell's bottom face
+                boxGeo.setLocalTranslation(0.5f, 0.1f, 0.5f);
+                return boxGeo;
+            }
+            case "Py":
+            default: {
+                Mesh mesh = PyBallJmeMesh.getMesh(!px, !py, !pz, !nx, !ny, !nz, false);
+                return new Geometry("Geo" + x + y + z, mesh);
+            }
+        }
     }
 
     // ── Material helper ────────────────────────────────────────────────────
@@ -97,17 +150,14 @@ public class ChunkMeshBuilder {
     // ── Face-visibility helper ─────────────────────────────────────────────
 
     /**
-     * Returns {@code true} when the neighbouring position is transparent,
+     * Returns true when the neighbouring position is transparent,
      * meaning the face between the two blocks should be rendered.
-     * Out-of-bounds positions (chunk edges) always return {@code true}
-     * so boundary faces are always emitted.
+     * Out-of-bounds positions (chunk edges) always return false.
      */
     private static boolean isAir(BufferedChunk chunk, int x, int y, int z) {
-        
         if (x < 0 || x >= 16 || y < 0 || y >= 16 || z < 0 || z >= 16) {
             return false;
         }
         return BlockRegistry.isAir(chunk.get(x, y, z));
-        
     }
 }
