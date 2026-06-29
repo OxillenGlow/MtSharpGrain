@@ -176,8 +176,16 @@ function chunkBuild(x, y, z, seed) {
                     block = (wy === surfaceTop) ? decoBlock : 0;
                 } else if (wy >= rockTop) {
                     block = 6; // ice
-                } else if (depthFromSurface >= 0 && depthFromSurface < 4) {
-                    block = subsurfaceBlock(wx, wy, wz, seed, depthFromSurface);
+                } else if (depthFromSurface >= 0 && depthFromSurface < 10) {
+                    var r = hash2(wx * 53 + wy * 191, wz * 97 + seed * 331, seed);
+                    var block;
+                    if (r < 0.99) {
+                        block = 3; // dirt — 99%
+                    } else if (r < 0.995) {
+                        block = 6; // 0.5% of total
+                    } else {
+                        block = 7; // 0.5% of total
+                    }
                 } else {
                     block = pickUndergroundBlock(wx, wy, wz, seed, rockTop - wy);
                 }
