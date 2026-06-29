@@ -169,7 +169,7 @@ public class Main extends SimpleApplication {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
+        flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
     }
 
     @Override
