@@ -21,6 +21,9 @@ public class Master {
     // currently selected block type
     public static int blockType = 0;
 
+    // lower bound of the currently displayed page (10 numbers shown: pageStart..pageStart+9)
+    public static int pageStart = 1;
+
     public static void tic(IGui gui) {
 
         gui.push(false);
@@ -41,30 +44,42 @@ public class Master {
     }
 
     private static void drawBlockTypeSelector(IGui gui) {
-        gui.textColor(ColorRGBA.Blue);
         gui.textHAlign("center");
         gui.textVAlign("bottom");
 
         float y = 0f; // bottom of screen
 
-        // "<" and "[x]" buttons share the row, evenly spread between them
+        // status/help line, sits just above the button row
+        gui.textColor(ColorRGBA.White);
+        gui.text("< -10 / +10 > to browse  |  Selected: [" + blockType + "]", 0.5f, y + 0.045f, null);
+        
         float leftMargin = 0.05f;
         float rightMargin = 0.95f;
 
-        // total slots: "<" + (x+1) numbers + ">"
-        int totalSlots = x + 3;
+        // total slots: "< -10" + 10 numbers + "+10 >"
+        int totalSlots = 12;
         float slotSpacing = (rightMargin - leftMargin) / (totalSlots - 1);
 
-        // "<" decorative, leftmost
-        gui.text("<", leftMargin, y, null);
+        // "< -10" clickable, shifts page down by 10
+        gui.textColor(ColorRGBA.Blue);
+        gui.text("< -10", leftMargin, y, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                pageStart -= 10;
+            }
+            return true;
+        });
 
-        // number buttons [0]..[x]
-        for (int i = 0; i <= x; i++) {
-            final int blockIndex = i;
+        // 10 number buttons for the current page
+        for (int i = 0; i < 10; i++) {
+            final int blockIndex = pageStart + i;
             float xpos = leftMargin + slotSpacing * (i + 1);
-            String label = "[" + blockIndex + "]";
 
-            gui.text(label, xpos, y, (var event, var arg) -> {
+            BlockDef def = BlockRegistry.get(blockIndex);
+            ColorRGBA color = def.diffuse();
+            gui.textColor(color);
+
+            String label = "[" + blockIndex + "]";
+            gui.text(label, xpos, y, (event, arg) -> {
                 if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                     blockType = blockIndex;
                 }
@@ -72,8 +87,14 @@ public class Master {
             });
         }
 
-        // ">" decorative, rightmost
-        gui.text(">", rightMargin, y, null);
+        // "+10 >" clickable, shifts page up by 10
+        gui.textColor(ColorRGBA.Blue);
+        gui.text("+10 >", rightMargin, y, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                pageStart += 10;
+            }
+            return true;
+        });
     }
 
 }
