@@ -182,9 +182,9 @@ function chunkBuild(x, y, z, seed) {
                     if (r < 0.99) {
                         block = 3; // dirt — 99%
                     } else if (r < 0.995) {
-                        block = 6; // 0.5% of total
-                    } else {
                         block = 7; // 0.5% of total
+                    } else {
+                        block = 8; // 0.5% of total
                     }
                 } else {
                     block = pickUndergroundBlock(wx, wy, wz, seed, rockTop - wy);
