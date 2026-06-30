@@ -69,4 +69,9 @@ public class JsApiBootstrap {
     public void tick(float tpf) {
         tickRegistry.tick(tpf);
     }
+
+    // Getta the current mini you gui manager.
+    public GuiApi getGuiApi() {
+        return guiApi;
+    }
 }
