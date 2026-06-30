@@ -162,7 +162,7 @@ public class Main extends SimpleApplication {
         // adding JS mods that run on main thread
         // TODO: Moving to another thread! Very important.
         modifier = new JSModifier();
-        modifier.init(assetManager, rootNode, worldAccess); // worldAccess = your existing com.mtsharpgrain.WorldAccess instance
+        modifier.init(assetManager, rootNode, worldAccess, renderManagermg);
         try {
             modifier.runJs(new File("worlds/my_world/mod/test.js"));
         } catch (IOException ex) {
