@@ -3,9 +3,9 @@ package com.mtsharpgrain.gui;
 public class GameState {
 
     private static boolean okPlace;
-    private static boolean darkMode;
+    public static boolean darkMode;
     private static String PLAYERSTATE = "editor";
-    
+    public static String guiState = "play";
     public static void setokPlace(boolean okP) {
         okPlace = okP;
     }
