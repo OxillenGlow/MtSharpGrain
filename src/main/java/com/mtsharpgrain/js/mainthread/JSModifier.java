@@ -41,9 +41,11 @@ public class JSModifier {
      * @param rootNode     the jME node scripts will attach created nodes under, registered at handle 0
      * @param worldAccess  your real world/chunk storage - wired to Scene.getBlockId via RealWorldAccessor
      */
-    public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess) {
+    
+    public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager) {
         WorldAccessor worldAccessor = new RealWorldAccessor(worldAccess);
-        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor);
+        BlockApi blockApi = new BlockApi(worldAccess, renderManager);
+        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi);
         this.bootstrap.getNodeRegistry().registerFixed(0L, rootNode);
     }
 
