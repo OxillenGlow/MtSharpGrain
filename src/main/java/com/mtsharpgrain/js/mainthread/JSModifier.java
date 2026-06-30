@@ -113,4 +113,17 @@ public class JSModifier {
             throw new IllegalStateException("JSModifier.init(...) must be called before use");
         }
     }
+    
+    public void draw(com.jme.igui.IGui gui) {
+        requireInitialized();
+        bootstrap.getGuiApi().draw(gui);
+    }
+
+    /** Dispatches tick(tpf, tag) for every gui element clicked this frame. Call once per frame, after draw(). */
+    public void processGuiClicks(float tpf) {
+        requireInitialized();
+        for (String tag : bootstrap.getGuiApi().drainClickedTags()) {
+            bootstrap.getTickRegistry().tickTag(tpf, tag);
+        }
+    }
 }
