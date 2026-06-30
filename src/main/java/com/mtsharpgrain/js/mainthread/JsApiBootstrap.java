@@ -3,6 +3,7 @@ package com.mtsharpgrain.js.mainthread;
 import com.jme3.asset.AssetManager;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
+import com.mtsharpgrain.js.BlockApi;
 
 /**
  * Wires together the registries/APIs and builds the Graal Context.
@@ -27,20 +28,29 @@ public class JsApiBootstrap {
     private final GuiApi guiApi;
     private final SceneApi sceneApi;
     private final Context context;
-
-    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor) {
+    
+    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi) {
         this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor);
         this.guiApi = new GuiApi(nodeRegistry);
 
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT).build();
         this.context = Context.newBuilder("js")
                 .allowHostAccess(access)
-                .allowHostClassLookup(name -> false) // no Java.type() escape hatch
+                .allowHostClassLookup(name -> false)
                 .build();
 
         context.getBindings("js").putMember("Scene", sceneApi);
         context.getBindings("js").putMember("Engine", tickRegistry);
         context.getBindings("js").putMember("Gui", guiApi);
+
+        context.getBindings("js").putMember("__BlockApi", blockApi);
+        context.eval("js",
+            "globalThis.Block = {\n" +
+            "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
+            "  destroy: function(x, y, z) { __BlockApi.destroyBlock(x, y, z); },\n" +
+            "  get: function(x, y, z) { return __BlockApi.getBlock(x, y, z); }\n" +
+            "};\n"
+        );
     }
 
     public Context getContext() {
