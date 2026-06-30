@@ -176,7 +176,7 @@ public class Main extends SimpleApplication {
     public void simpleUpdate(float tpf) {
         com.mtsharpgrain.gui.Master.tic(gui);// just noticed tic is misspelled! wont fix
         renderManagermg.tick(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
-        modifier.tick(tpf, "groundCheckLabel");
+        modifier.tick(tpf, "Update");
         com.mtsharpgrain.gui.Master.tic(gui);
         modifier.draw(gui);
         modifier.processGuiClicks(tpf);
