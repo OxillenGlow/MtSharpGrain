@@ -2,7 +2,9 @@ package com.mtsharpgrain.js.mainthread;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.scene.Node;
+import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
+import com.mtsharpgrain.js.BlockApi;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
@@ -40,6 +42,7 @@ public class JSModifier {
      * @param assetManager used for creating geometry/materials (e.g. Scene.createCube)
      * @param rootNode     the jME node scripts will attach created nodes under, registered at handle 0
      * @param worldAccess  your real world/chunk storage - wired to Scene.getBlockId via RealWorldAccessor
+     * @param renderManager for notifying on block change
      */
     
     public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager) {

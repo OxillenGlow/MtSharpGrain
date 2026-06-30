@@ -3,6 +3,8 @@ package com.mtsharpgrain.gui;
 import com.jme.igui.IGui;
 import com.jme.igui.IGuiMouseEvent;
 import com.jme3.math.ColorRGBA;
+import com.mtsharpgrain.node.BlockRegistry;
+import com.mtsharpgrain.node.BlockRegistry.BlockDef;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,7 +77,11 @@ public class Master {
             float xpos = leftMargin + slotSpacing * (i + 1);
 
             BlockDef def = BlockRegistry.get(blockIndex);
-            ColorRGBA color = def.diffuse();
+            ColorRGBA color;
+            try {
+                color = def.diffuse();
+            }catch(Exception e) {color = ColorRGBA.Black;}
+            
             gui.textColor(color);
 
             String label = "[" + blockIndex + "]";
