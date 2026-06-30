@@ -5,7 +5,8 @@ public class GameState {
     private static boolean okPlace;
     public static boolean darkMode;
     private static String PLAYERSTATE = "editor";
-    public static String guiState = "play";
+    public static String guiState = "load";
+    public static Boolean jsOverrideGui = "false"; 
     public static void setokPlace(boolean okP) {
         okPlace = okP;
     }
