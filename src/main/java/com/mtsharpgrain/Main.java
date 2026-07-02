@@ -163,10 +163,28 @@ public class Main extends SimpleApplication {
         // TODO: Moving to another thread! Very important.
         modifier = new JSModifier();
         modifier.init(assetManager, rootNode, worldAccess, renderManagermg);
+        // Main.simpleInitApp — replace the single modifier.runJs(...) block
         try {
-            modifier.runJs(new File("worlds/my_world/mod/test.js"));
+            Path modRoot = Paths.get("worlds/my_world/mod");
+            if (Files.exists(modRoot)) {
+                try (var walk = Files.walk(modRoot)) {
+                    walk.filter(p -> p.toString().endsWith(".js"))
+                    .sorted() // deterministic load order across platforms
+                    .forEach(p -> {
+                        try {
+                             modifier.runJs(p.toFile());
+                        } catch (IOException ex) {
+                            Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+                            "Failed to load mod script: " + p, ex);
+                        }
+                    });
+                }
+            } else {
+                Logger.getLogger(Main.class.getName()).log(Level.WARNING,
+                "Mod folder not found, skipping: " + modRoot.toAbsolutePath());
+            }
         } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to walk mod folder", ex);
         }
         
         flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
