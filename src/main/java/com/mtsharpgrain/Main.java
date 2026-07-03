@@ -75,9 +75,12 @@ public class Main extends SimpleApplication {
 
         GameState.setModes(true, true);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
-        cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
-        TestInit.init(rootNode, flyCam, assetManager, inputManager);
+        cam.setFrustumPerspective(70f, aspectRatio, 0.5f, 5000.0f);
+        cam.setFrustumFar(VIEW_DISTANCE * 16f);
 
+        
+        TestInit.init(rootNode, flyCam, assetManager, inputManager);
+        
         com.jme3.light.DirectionalLight sun = null;
         for (com.jme3.light.Light l : rootNode.getLocalLightList()) {
             if (l instanceof com.jme3.light.DirectionalLight) {
