@@ -14,7 +14,12 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
 ## What's in it so far
 
 - **Semi-smooth node meshes** — blocks connect with rounded transitions rather than hard cube edges
-- **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** — block based visual coding system, mostly wired into the game now with console comand system.
+- **JavaScript modifier API** - much more powerful than JVisualScripting, mostly complete API with:
+    - end-node place/destroy
+    - gui management
+    - procedural world generation
+    - end-node placement listener (in progress)
+- **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** (depricating) — block based visual coding system, mostly wired into the game now with console comand system.
 - **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
 - **Resolution management** — handles different resolutions, fullscreen coming later
 
@@ -78,7 +83,7 @@ GitHub source: https://github.com/neuroph/NeurophFramework
 
 - **jVisualScripting** for visual scripts and engine see GitHub source: https://github.com/openconcerto/jVisualScripting
 
-- **GraalVM** for the javascript modules
+- **GraalVM's community GraalJS** for the javascript modules
 GitHub source: https://github.com/oracle/graaljs
 
 ## AI?
