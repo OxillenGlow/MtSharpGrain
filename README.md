@@ -62,7 +62,7 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
     - Person model - i think i should use the java drake model for people
     - Randomly spawned builtings
 - GUI > afterwards customisable with scripts 80%
-- Full screen ect 50%
+- Full screen ect 90%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0%
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude) 80%
