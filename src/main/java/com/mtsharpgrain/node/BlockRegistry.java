@@ -103,7 +103,7 @@ public final class BlockRegistry {
             ColorRGBA.fromRGBA255(200, 225, 255, 255),   // specular
             112f,                                         // shininess
             false,
-            "Py"
+            "CubeTiny"
         ),
 
         /* 6 – Ice sludge: Blue white */
@@ -135,7 +135,7 @@ public final class BlockRegistry {
             ColorRGBA.fromRGBA255(245, 245, 250, 255),   // specular
             128f,                                         // shininess (max, mirror-like)
             false,
-            "Py"
+            "Cube"
         ),
 
         /* 10 – Glass: near-clear, low diffuse alpha, sharp specular */
