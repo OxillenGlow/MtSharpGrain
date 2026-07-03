@@ -21,14 +21,26 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
     - end-node placement listener (in progress)
 - **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** (depricating) — block based visual coding system, mostly wired into the game now with console comand system.
 - **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
-- **Resolution management** — handles different resolutions, fullscreen coming later
 
-<img src="Pictures/jVS-ingame-demo.png" align="left" width="400" style="margin-right: 20px;" />
+# Download [here](https://github.com/OxillenGlow/MtSharpGrain/releases)
+---
 
-<- Using jVisualScript to break and place blocks (too bad i did not do a GIF)
+<details>
+<summary> Click here to see screen shots</summary>
+
+![](Pictures/jVS-ingame-demo.png)
+Using jVisualScript to break and place blocks (too bad i did not do a GIF)
+
+![](Pictures/CoolArtifacts.png) 
+Just interesting to see how it is loading.
+
+![](Pictures/v0.1.0-beta2.png)
+This is a picture from current version.
+
+</details>
 
 ---
----
+
 ## Links
 
 - 📖 [Wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
@@ -51,8 +63,10 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 ---
 
-# Important stuff
-## My todo/doing list:
+# Important? stuff
+<details>
+<summary>What am i working on now?</summary>
+My todo/doing list:
 - simple world generation 70%
     - random generation 90%
     - World making / hand sculpting 30%
@@ -64,8 +78,10 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 - GUI > afterwards customisable with scripts 80%
 - Full screen ect 90%
 - Npc with behavior > afterwards, scripts to control npc 0%
-- PBR, idk if it will actually make the game look "better" 0%
+- PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude) 80%
+
+</details>
 
 # ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
@@ -93,9 +109,6 @@ Yes, I use claude a lot, perhaps too much? idk just speeds things up and removes
 This is only for code, all assets/ideas are human made (not that i use a lot of assets).
 
 ---
-
-## DUMB SECTION, NOT READING IS ADVISED?:
-##### Dumb question, how many hashtags can you put here on GitHub for sections? Answer: 6.
-this actually makes the text Gray instead of smaller compared to five hashtags while content stays the same. see ->
-###### 6 hashtags 
-[content] <sup>dumb stuff btc? bc1qyhkftprqr6q37nvdf4ke4l9e7earmlkyvzepe9</sup>
+<details>
+<summary>The dumb section</summary>
+empty...
