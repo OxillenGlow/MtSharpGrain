@@ -231,6 +231,7 @@ public class Main extends SimpleApplication {
     @Override
     public void reshape(int width, int height) {
         super.reshape(width, height);
+        if (cam == null) return;
         float aspectRatio = (float) width / height;
         cam.setFrustumPerspective(70f, aspectRatio, 0.5f, VIEW_DISTANCE * 16f);
     }
