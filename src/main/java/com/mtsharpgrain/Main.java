@@ -199,7 +199,7 @@ public class Main extends SimpleApplication {
         Vector3f camPos = cam.getLocation();
         Vector3f shift = new Vector3f(
             (float) (Math.floor(camPos.x / ZONE_SIZE) * ZONE_SIZE),
-            0, // usually don't shift vertical, unless you expect huge Y ranges too
+            0, // usually don't shift vertical, unless huge Y ranges in the future
             (float) (Math.floor(camPos.z / ZONE_SIZE) * ZONE_SIZE)
         );
 
@@ -210,7 +210,8 @@ public class Main extends SimpleApplication {
         }
         
         com.mtsharpgrain.gui.Master.tic(gui);// just noticed tic is misspelled! wont fix
-        renderManagermg.tick(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
+        Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
+        renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
         modifier.tick(tpf, "Update");
         com.mtsharpgrain.gui.Master.tic(gui);
         modifier.draw(gui);
