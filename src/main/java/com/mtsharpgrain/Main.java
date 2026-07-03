@@ -53,6 +53,8 @@ public class Main extends SimpleApplication {
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
         settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
+        settings.setResizable(true);
+        
         var app = new Main();
         app.setSettings(settings);
         app.start();
@@ -223,6 +225,13 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleRender(RenderManager rm) {}
+
+    @Override
+    public void reshape(int width, int height) {
+        super.reshape(width, height);
+        float aspectRatio = (float) width / height;
+        cam.setFrustumPerspective(70f, aspectRatio, 0.5f, VIEW_DISTANCE * 16f);
+    }
 
     @Override
     public void destroy() {
