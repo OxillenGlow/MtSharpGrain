@@ -35,6 +35,8 @@ public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
+    public static final float ZONE_SIZE = 100f;
+    
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -192,6 +194,21 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+
+        // Floating origin: keep camera's render-space position small.
+        Vector3f camPos = cam.getLocation();
+        Vector3f shift = new Vector3f(
+            (float) (Math.floor(camPos.x / ZONE_SIZE) * ZONE_SIZE),
+            0, // usually don't shift vertical, unless you expect huge Y ranges too
+            (float) (Math.floor(camPos.z / ZONE_SIZE) * ZONE_SIZE)
+        );
+
+        if (!shift.equals(Vector3f.ZERO)) {
+            rootNode.getLocalTranslation().subtractLocal(shift);
+            rootNode.setLocalTranslation(rootNode.getLocalTranslation()); // trigger transform refresh
+            cam.setLocation(camPos.subtract(shift));
+        }
+        
         com.mtsharpgrain.gui.Master.tic(gui);// just noticed tic is misspelled! wont fix
         renderManagermg.tick(cam.getLocation().x, cam.getLocation().y, cam.getLocation().z);
         modifier.tick(tpf, "Update");
