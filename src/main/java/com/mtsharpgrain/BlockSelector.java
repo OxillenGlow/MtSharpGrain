@@ -32,7 +32,9 @@ public class BlockSelector {
         } else {
             adjustedPoint.addLocal(normal.mult(-0.01f));
         }
-
+        
+        adjustedPoint.subtractLocal(rootNode.getLocalTranslation());
+            
         int x = (int) Math.floor(adjustedPoint.x + 0.5);
         int y = (int) Math.floor(adjustedPoint.y + 0.5);
         int z = (int) Math.floor(adjustedPoint.z + 0.5);
