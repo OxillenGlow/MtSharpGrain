@@ -10,7 +10,7 @@
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
 A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java (openGL lwjgl and jme).
 
-## What's in it so far
+### What's in it so far
 
 - **Semi-smooth node meshes** — blocks connect with rounded transitions rather than hard cube edges
 - **JavaScript modifier API** - much more powerful than JVisualScripting, mostly complete API with:
@@ -21,9 +21,10 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
 - **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** (depricating) — block based visual coding system, mostly wired into the game now with console comand system.
 - **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
 
-# Download [here](https://github.com/OxillenGlow/MtSharpGrain/releases)
+### Download [here](https://github.com/OxillenGlow/MtSharpGrain/releases)
 ---
 
+### Screen shots
 <details>
 <summary> Click here to see screen shots</summary>
 
@@ -40,14 +41,14 @@ This is a picture from current version.
 
 ---
 
-## Links
+#### Links
 
 - 📖 [Wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
 - 💬 [Discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
 
 ---
 
-## Special points
+### Special points
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
 This is a project aimed at making a futuristic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
 
@@ -62,9 +63,11 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 ---
 
-# Important? stuff
+### Important? stuff
+#### What am i working on now?
 <details>
 <summary>What am i working on now?</summary>
+    
 My todo/doing list:
 - simple world generation 70%
     - random generation 90%
@@ -82,9 +85,9 @@ My todo/doing list:
 
 </details>
 
-# ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
+### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
-# Attribs
+#### Attribs
 
 - **JavaMonkeyEngine** (everthing that LWJGL has)
 Website: https://www.jmonkeyengine.org
@@ -101,7 +104,7 @@ GitHub source: https://github.com/neuroph/NeurophFramework
 - **GraalVM's community GraalJS** for the javascript modules
 GitHub source: https://github.com/oracle/graaljs
 
-## AI?
+#### AI?
 
 Yes, I use claude a lot, perhaps too much? idk just speeds things up and removes need for constantly checking the API of whatever thing is implemented.
 
