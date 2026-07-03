@@ -169,7 +169,7 @@ public class Main extends SimpleApplication {
         // adding JS mods that run on main thread
         // TODO: Moving to another thread! Very important.
         modifier = new JSModifier();
-        modifier.init(assetManager, rootNode, worldAccess, renderManagermg);
+        modifier.init(assetManager, rootNode, worldAccess, renderManagermg, cam);
         // Main.simpleInitApp — replace the single modifier.runJs(...) block
         try {
             Path modRoot = Paths.get("worlds/my_world/mod");
