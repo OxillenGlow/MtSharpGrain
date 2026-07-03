@@ -4,6 +4,7 @@ import com.jme3.asset.AssetManager;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import com.mtsharpgrain.js.BlockApi;
+import com.jme3.renderer.Camera;
 
 /**
  * Wires together the registries/APIs and builds the Graal Context.
@@ -31,7 +32,7 @@ public class JsApiBootstrap {
     
     public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam) {
         this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor);
-        this.guiApi = new GuiApi(nodeRegistry);
+        this.guiApi = new GuiApi();
 
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT).build();
         this.context = Context.newBuilder("js")

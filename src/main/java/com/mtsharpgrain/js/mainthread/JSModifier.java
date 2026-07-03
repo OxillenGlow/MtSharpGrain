@@ -1,6 +1,7 @@
 package com.mtsharpgrain.js.mainthread;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
@@ -43,6 +44,7 @@ public class JSModifier {
      * @param rootNode     the jME node scripts will attach created nodes under, registered at handle 0
      * @param worldAccess  your real world/chunk storage - wired to Scene.getBlockId via RealWorldAccessor
      * @param renderManager for notifying on block change
+     * @param cam camera for moving
      */
     
     public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam) {
