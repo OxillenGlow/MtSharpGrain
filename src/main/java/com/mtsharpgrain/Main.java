@@ -80,7 +80,7 @@ public class Main extends SimpleApplication {
         GameState.setModes(true, true);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
         cam.setFrustumPerspective(70f, aspectRatio, 0.5f, 5000.0f);
-        cam.setFrustumFar(VIEW_DISTANCE * 16f);
+        cam.setFrustumFar((VIEW_DISTANCE * 16f) + 100);
 
         
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
@@ -110,7 +110,7 @@ public class Main extends SimpleApplication {
         FogFilter fog = new FogFilter();
         fog.setFogColor(darkBlue);
         fog.setFogDistance(VIEW_DISTANCE * 16 * 0.90f);
-        fog.setFogDensity(0.5f);
+        fog.setFogDensity(0.8f);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
         // ─────────────────────────────────────────────────────────────────────
@@ -233,7 +233,7 @@ public class Main extends SimpleApplication {
         super.reshape(width, height);
         if (cam == null) return;
         float aspectRatio = (float) width / height;
-        cam.setFrustumPerspective(70f, aspectRatio, 0.5f, VIEW_DISTANCE * 16f);
+        cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
     }
 
     @Override
