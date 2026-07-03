@@ -29,7 +29,7 @@ public class JsApiBootstrap {
     private final SceneApi sceneApi;
     private final Context context;
     
-    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi) {
+    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam) {
         this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor);
         this.guiApi = new GuiApi(nodeRegistry);
 
@@ -44,6 +44,7 @@ public class JsApiBootstrap {
         context.getBindings("js").putMember("Gui", guiApi);
 
         context.getBindings("js").putMember("__BlockApi", blockApi);
+        context.getBindings("js").putMember("Player", new PlayerApi(cam));
         context.eval("js",
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
