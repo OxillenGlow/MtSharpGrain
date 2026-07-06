@@ -128,4 +128,19 @@ public class JSModifier {
             bootstrap.getTickRegistry().tickTag(tpf, tag);
         }
     }
+
+    /**
+     * Runs registered JS block-change validators (Engine.onBlockChange) for
+     * this edit. Returns normally if allowed (or if no validators are
+     * registered — matches the old no-op behavior). Throws if any validator
+     * rejects it.
+     */
+    public void notifyBlockSet(int worldX, int worldY, int worldZ, int blockId) {
+        requireInitialized();
+        boolean allowed = bootstrap.getBlockChangeRegistry().checkBlockChange(worldX, worldY, worldZ, blockId);
+        if (!allowed) {
+            throw new IllegalStateException("Block change rejected at (" + worldX + ", " + worldY + ", " + worldZ
+                    + ") to blockId " + blockId + " by a mod validator");
+        }
+    }
 }
