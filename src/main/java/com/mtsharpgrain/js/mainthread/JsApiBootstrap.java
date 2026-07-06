@@ -27,6 +27,7 @@ public class JsApiBootstrap {
     private final NodeRegistry nodeRegistry = new NodeRegistry();
     private final TickRegistry tickRegistry = new TickRegistry();
     private final GuiApi guiApi;
+    private final BlockChangeRegistry blockChangeRegistry = new BlockChangeRegistry();
     private final SceneApi sceneApi;
     private final Context context;
     
@@ -45,13 +46,15 @@ public class JsApiBootstrap {
         context.getBindings("js").putMember("Gui", guiApi);
 
         context.getBindings("js").putMember("__BlockApi", blockApi);
+        context.getBindings("js").putMember("__BlockChangeRegistry", blockChangeRegistry);
         context.getBindings("js").putMember("Player", new PlayerApi(cam));
         context.eval("js",
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
             "  destroy: function(x, y, z) { __BlockApi.destroyBlock(x, y, z); },\n" +
             "  get: function(x, y, z) { return __BlockApi.getBlock(x, y, z); }\n" +
-            "};\n"
+            "};\n" +
+            "globalThis.Engine.onBlockChange = function(fn) { __BlockChangeRegistry.onBlockChange(fn); };\n"
         );
     }
 
@@ -75,5 +78,9 @@ public class JsApiBootstrap {
     // Getta the current mini you gui manager.
     public GuiApi getGuiApi() {
         return guiApi;
+    }
+    
+    public BlockChangeRegistry getBlockChangeRegistry() {
+        return blockChangeRegistry;
     }
 }
