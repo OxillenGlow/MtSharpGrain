@@ -18,7 +18,7 @@ public final class WorldAccess {
         this.seed = seed;
     }
 
-    public addModifier(JSModifier modifier){
+    public void addModifier(JSModifier modifier){
         this.modifier = modifier;
     }
 
