@@ -1,6 +1,6 @@
 package com.mtsharpgrain;
 
-
+import com.mtsharpgrain.js.mainthread.JSModifier;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,11 +10,16 @@ public final class WorldAccess {
     private final ChunkFileHelper fileHelper;
     private final JsChunkGenerator generator;
     private final long seed;
+    private JSModifier modifier;
 
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
         this.generator = generator;
         this.seed = seed;
+    }
+
+    public addModifier(JSModifier modifier){
+        this.modifier = modifier;
     }
 
     public BufferedChunk ensureChunk(ChunkPos pos){
@@ -77,6 +82,9 @@ public final class WorldAccess {
         int localX = worldToLocal(worldX);
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
+        
+        modifier.notifyBlockPlaced(worldX,worldY,worldZ);
+        
         chunk.set(localX, localY, localZ, blockId);
     }
 
