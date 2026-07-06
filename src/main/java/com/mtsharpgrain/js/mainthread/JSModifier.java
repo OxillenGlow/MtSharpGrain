@@ -50,7 +50,7 @@ public class JSModifier {
     public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam) {
         WorldAccessor worldAccessor = new RealWorldAccessor(worldAccess);
         BlockApi blockApi = new BlockApi(worldAccess, renderManager);
-        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi, cam);
+        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi, cam, rootNode);
         this.bootstrap.getNodeRegistry().registerFixed(0L, rootNode);
     }
 
