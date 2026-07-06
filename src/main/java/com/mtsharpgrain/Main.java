@@ -195,6 +195,8 @@ public class Main extends SimpleApplication {
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to walk mod folder", ex);
         }
+
+        worldAccess.addModifier(modifier);
         
         flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
     }
