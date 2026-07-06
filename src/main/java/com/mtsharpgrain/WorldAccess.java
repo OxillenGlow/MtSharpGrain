@@ -83,7 +83,7 @@ public final class WorldAccess {
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
         
-        modifier.notifyBlockPlaced(worldX, worldY, worldZ, blockId);
+        modifier.notifyBlockSet(worldX, worldY, worldZ, blockId);
         
         chunk.set(localX, localY, localZ, blockId);
     }
