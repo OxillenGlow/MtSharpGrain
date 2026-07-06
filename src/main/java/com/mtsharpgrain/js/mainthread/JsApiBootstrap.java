@@ -5,6 +5,7 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import com.mtsharpgrain.js.BlockApi;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.Node;
 
 /**
  * Wires together the registries/APIs and builds the Graal Context.
@@ -31,7 +32,7 @@ public class JsApiBootstrap {
     private final SceneApi sceneApi;
     private final Context context;
     
-    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam) {
+    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam, Node rootNode) {
         this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor);
         this.guiApi = new GuiApi();
 
@@ -47,7 +48,7 @@ public class JsApiBootstrap {
 
         context.getBindings("js").putMember("__BlockApi", blockApi);
         context.getBindings("js").putMember("__BlockChangeRegistry", blockChangeRegistry);
-        context.getBindings("js").putMember("Player", new PlayerApi(cam));
+        context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode));
         context.eval("js",
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
