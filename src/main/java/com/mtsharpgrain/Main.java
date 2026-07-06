@@ -94,13 +94,13 @@ public class Main extends SimpleApplication {
         }
         
         
-        // NO SHADOWS FOR NOW
-        //com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
-        //    new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
-        //dlsr.setLight(sun);
+        // Testing shadows
+        com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
+            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
+        dlsr.setLight(sun);
         
-        //viewPort.addProcessor(dlsr);
-        //rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
+        viewPort.addProcessor(dlsr);
+        rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
 
         // ── Background & distance fog ─────────────────────────────────────────
         ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );//rgba(247, 51, 10, 0.8)
