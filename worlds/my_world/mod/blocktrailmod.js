@@ -7,3 +7,5 @@
 //    const z = Math.floor(p[2]);
 //    Block.place(x, y, z, 10);
 //}, "Update");
+// IF YOU WANT BLOCK TRAIL, ENABLE THIS
+// TODO LIST + ADD A BUTTON USING JS TO TOGGLE BLOCKTRAIL

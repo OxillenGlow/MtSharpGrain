@@ -82,6 +82,7 @@ My todo/doing list:
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude) 80%
+- Add a checker for alpha channle in object material, place in transparent bucket if needed. 0%
 
 </details>
 
