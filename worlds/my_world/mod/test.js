@@ -8,4 +8,4 @@ Engine.onTick(function(tpf, tag) {
     if (blockBelow !== 0) {
         Scene.setColor(cube, 0, 1, 0, 1); // green when over solid ground
     }
-}, "groundCheckLabel");
+}, "Update");
