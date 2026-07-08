@@ -23,8 +23,10 @@ public class SceneApi {
     private final NodeRegistry registry;
     private final AssetManager assets;
     private final WorldAccessor world;
+    private final Node rootNode;
 
-    public SceneApi(NodeRegistry registry, AssetManager assets, WorldAccessor world) {
+    public SceneApi(NodeRegistry registry, AssetManager assets, WorldAccessor world, Node rootNode) {
+        this.rootNode = rootNode;
         this.registry = registry;
         this.assets = assets;
         this.world = world;
@@ -63,6 +65,9 @@ public class SceneApi {
      * Returns the WORLD position (not local translation) of the given handle.
      * In JS: {@code const p = Scene.getPosition(handle); p[0], p[1], p[2]}
      * - GraalJS exposes Java float[] as an indexable, length-bearing array-like value.
+     * 
+     * @param handle 
+     * @return float[3] 0 is x; 1 is y 2; is z
      */
     @HostAccess.Export
     public float[] getPosition(long handle) {

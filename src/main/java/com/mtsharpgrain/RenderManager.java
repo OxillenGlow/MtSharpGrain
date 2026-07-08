@@ -82,11 +82,7 @@ public final class RenderManager {
                     ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
                     stillInRange.add(pos);
 
-                    worldAccess.ensureChunk(pos);
-                    renderMap.computeIfAbsent(pos, p -> {
-                        markDirty(p);
-                        return new ChunkRenderData(p);
-                    });
+                    requestChunk(pos);
                 }
             }
         }

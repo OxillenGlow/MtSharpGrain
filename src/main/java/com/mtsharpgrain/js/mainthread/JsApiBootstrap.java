@@ -33,10 +33,12 @@ public class JsApiBootstrap {
     private final Context context;
     
     public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam, Node rootNode) {
-        this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor);
+        this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
+        
         this.guiApi = new GuiApi();
-
-        HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT).build();
+        HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT)
+                .allowArrayAccess(true)
+                .build();
         this.context = Context.newBuilder("js")
                 .allowHostAccess(access)
                 .allowHostClassLookup(name -> false)
