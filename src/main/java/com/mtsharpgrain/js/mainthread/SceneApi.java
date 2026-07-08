@@ -67,7 +67,8 @@ public class SceneApi {
     @HostAccess.Export
     public float[] getPosition(long handle) {
         Vector3f worldPos = registry.get(handle).getWorldTranslation();
-        return new float[] { worldPos.x, worldPos.y, worldPos.z };
+        Vector3f trueWorldPos = worldPos.subtract(rootNode.getLocalTranslation());
+        return new float[] { trueWorldPos.x, trueWorldPos.y, trueWorldPos.z };
     }
 
     @HostAccess.Export
