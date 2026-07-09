@@ -169,7 +169,7 @@ function chunkBuild(x, y, z, seed) {
             for (var ly = 0; ly < 16; ly++) {
                 var wy = worldY + ly;
                 var block;
-                var depthFromSurface = rockTop - 1 - wy; // 0 = topmost solid layer
+                var depthFromSurface = rockTop - wy; // 0 = topmost solid layer
 
                 if (wy >= surfaceTop) {
                     // Only the single air cell directly above the surface can hold a decoration.
