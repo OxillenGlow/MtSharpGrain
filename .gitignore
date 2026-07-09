@@ -17,14 +17,16 @@
 !gradle/*/
 !gradle/**/
 !.gitignore
+!Pictures/
+!Pictures/*/
+!Pictures/**/
 !**/*.png
 !**/*.jpg
 !**/*.jvsz
 !**/*.jvs
 !**/*.fnt
 !**/*.jar
-!Pictures/
-!Pictures/**/*
+!**/*.properties
 
 **/.DS_Store
 
