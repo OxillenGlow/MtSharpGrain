@@ -5,6 +5,9 @@
 !src/
 !src/*/
 !src/**/
+!libs/
+!libs/*/
+!libs/**/
 !**/*.java
 !build.gradle
 !settings.gradle
