@@ -16,7 +16,8 @@ public final class RenderManager {
     private final ConcurrentHashMap<ChunkPos, ChunkRenderData> renderMap = new ConcurrentHashMap<>();
     private final Queue<ChunkPos> dirtyQueue = new ConcurrentLinkedQueue<>();
     private final Set<ChunkPos> pendingChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private int viewHeight = 0;
+    private int viewTop = 1;
+    private int viewBottom = 1;
     Player player;
     Node nd;
     AssetManager assetManager;
@@ -77,7 +78,7 @@ public final class RenderManager {
         stillInRange.clear();
         
         for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
-            for (int dy = -Main.VIEW_DISTANCE; dy <= viewHeight; dy++) {
+            for (int dy = -viewBottom; dy <= viewTop; dy++) {
                 for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
                     ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
                     stillInRange.add(pos);
