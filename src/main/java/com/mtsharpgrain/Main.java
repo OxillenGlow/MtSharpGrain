@@ -14,6 +14,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
+import com.tools.AssetConverter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -67,6 +68,9 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+
+        // This takes some files out of resources and extracts them to world folder.
+        extractFiles("my_world");
         
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("Interface/Fonts/Console.fnt");
@@ -246,5 +250,15 @@ public class Main extends SimpleApplication {
         // generation (it won't currently, but keeps shutdown order sane).
         if (chunkGen != null) chunkGen.close();
         super.destroy();
+    }
+
+    private void extractFiles(String world) {
+        try {
+            AssetConverter.extract("/chunkgen.js", "worlds/"+world+"/chunkgen.js");
+            AssetConverter.extract("/test.js", "worlds/"+world+"/mod/test.js");
+            AssetConverter.extract("/blocktrailmod.js", "worlds/"+world+"/mod/blocktrailmod.js");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to extract bundled world scripts", e);
+        }
     }
 }
