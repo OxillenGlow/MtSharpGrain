@@ -122,34 +122,30 @@ public final class RenderManager {
         int maxPerTick = 8;
         for (int i = 0; i < maxPerTick; i++) {
             ChunkPos pos = dirtyQueue.poll();
-            if (pos == null) return;                    // queue empty, fine to stop
+            if (pos == null) return;
+            if (!renderMap.containsKey(pos)) continue; // NEW: stale entry, chunk was unloaded before we got to it
             if (pendingChunks.contains(pos)) {
                 dirtyQueue.add(pos);
                 continue;
             }
             BufferedChunk chunk = worldAccess.getChunk(pos);
             if (chunk == null) continue;
-            // --- MULTITHREADING START (Using Java's default ForkJoinPool or Virtual Threads) ---
             CompletableFuture.runAsync(() -> {
                 try {
-                    dirtySet.remove(pos);  // keep them in sync
-
+                    dirtySet.remove(pos);
                     pendingChunks.add(pos);
-
-                    // Building (Background Thread in enqueue)
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
-                    //ChunkUnloadControl ctr = new ChunkUnloadControl(this, pos, player);
-                    //newMesh.addControl(ctr);
                     app.enqueue(() -> {
+                        if (!renderMap.containsKey(pos)) {  // NEW: unloaded while we were building — don't reattach
+                            pendingChunks.remove(pos);
+                            return null;
+                        }
                         Spatial oldCk = nd.getChild(newMesh.getName());
                         if (oldCk != null) oldCk.removeFromParent();
-
                         nd.attachChild(newMesh);
-
                         ChunkRenderData crd = renderMap.get(pos);
                         if (crd != null) crd.lastBuiltTime = System.currentTimeMillis();
-
-                        pendingChunks.remove(pos); // Clean up tracking
+                        pendingChunks.remove(pos);
                         return null;
                     });
                 } catch (Exception e) {
@@ -163,8 +159,8 @@ public final class RenderManager {
 
     public void unloadChunk(ChunkPos pos) {
         renderMap.remove(pos);
+        dirtySet.remove(pos);
         worldAccess.unloadChunk(pos);
-        // Enqueue removal to ensure thread safety with the Node
         app.enqueue(() -> {
             Spatial s = nd.getChild("Ck" + pos.getX() + "y" + pos.getY() + "z" + pos.getZ());
             if (s != null) s.removeFromParent();

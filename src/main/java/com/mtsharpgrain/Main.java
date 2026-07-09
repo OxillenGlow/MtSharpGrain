@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class Main extends SimpleApplication {
 
     public static String version = "v0.1.0-beta";
-    public static int VIEW_DISTANCE = 3;
+    public static int VIEW_DISTANCE = 1;
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
