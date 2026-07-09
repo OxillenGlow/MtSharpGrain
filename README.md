@@ -78,11 +78,18 @@ My todo/doing list:
     - Person model - i think i should use the java drake model for people
     - Randomly spawned builtings
 - GUI > afterwards customisable with scripts 80%
-- Full screen ect 90%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude) 80%
+- Default JavaSctipt mods to be placed in assets and unpacked at runtime
+    - FloorCreator
+    - **IMPORTANT** chunk generator
 - Add a checker for alpha channle in object material, place in transparent bucket if needed. 0%
+- Bottons or slider for selecting view distance 0%
+<sup>80% means it is mostly done</sup>
+
+Done:
+- Full screen ect 100%
 
 </details>
 
