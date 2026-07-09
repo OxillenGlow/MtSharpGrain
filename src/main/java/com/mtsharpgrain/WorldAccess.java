@@ -78,7 +78,8 @@ public final class WorldAccess {
 
     public void setBlockAt(int worldX, int worldY, int worldZ, int blockId) {
         ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
-        BufferedChunk chunk = ensureChunk(chunkPos);
+        BufferedChunk chunk = Useful.get(chunkPos);
+        if (chunk == null) {System.out.println("Failed to break block at unrendered chunk: " + chunkPos);return;}
         int localX = worldToLocal(worldX);
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
