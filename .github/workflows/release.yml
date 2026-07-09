@@ -1,0 +1,58 @@
+name: Build & Release Native Packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            ext: dmg
+          - os: windows-latest
+            ext: exe
+          - os: ubuntu-latest
+            ext: deb
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install WiX (Windows only, needed for jpackage exe)
+        if: runner.os == 'Windows'
+        run: choco install wixtoolset -y
+
+      - name: Install fakeroot (Linux only, needed for jpackage deb)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y fakeroot
+
+      - name: Grant execute permission for gradlew
+        if: runner.os != 'Windows'
+        run: chmod +x ./gradlew
+
+      - name: Build native package
+        run: ./gradlew jpackage
+        shell: bash
+
+      - name: Find built package
+        id: findfile
+        shell: bash
+        run: |
+          FILE=$(find build/jpackage -maxdepth 1 -type f -iname "*.${{ matrix.ext }}" | head -n 1)
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.findfile.outputs.file }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
