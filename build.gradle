@@ -95,3 +95,39 @@ wrapper {
 tasks.withType(JavaExec).configureEach {
     jvmArgs += ['-XstartOnFirstThread']
 }
+
+tasks.register('jpackage') {
+    dependsOn 'installDist'
+    doLast {
+        def installLibDir = layout.buildDirectory.dir("install/${application.applicationName}/lib").get().asFile
+        def outputDir = layout.buildDirectory.dir("jpackage").get().asFile
+        outputDir.mkdirs()
+
+        def os = System.getProperty("os.name").toLowerCase()
+        def type
+        def extraArgs = []
+        if (os.contains("mac")) {
+            type = "dmg"
+            extraArgs += ["--java-options", "-XstartOnFirstThread"]
+        } else if (os.contains("win")) {
+            type = "exe"
+        } else {
+            type = "deb"
+        }
+
+        // jpackage requires a purely numeric app-version (x.y.z)
+        def cleanVersion = project.version.toString().tokenize('-')[0]
+
+        exec {
+            commandLine "jpackage",
+                "--type", type,
+                "--input", installLibDir.absolutePath,
+                "--dest", outputDir.absolutePath,
+                "--name", application.applicationName,
+                "--main-jar", tasks.jar.archiveFileName.get(),
+                "--main-class", application.mainClass.get(),
+                "--app-version", cleanVersion,
+                *extraArgs
+        }
+    }
+}
