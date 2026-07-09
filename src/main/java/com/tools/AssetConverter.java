@@ -30,32 +30,32 @@ public class AssetConverter {
         // 5. Return the real physical File object for your API
         return tempFile;
     }
-    
+
     /**
-     * Extracts a resource from the classpath (src/main/resources, or the
-     * "assets" project root — same convention as getAssetAsFile) to a
-     * permanent file on disk. Unlike getAssetAsFile, the result is NOT
-     * temporary and is NOT deleted on exit — it stays at destPath.
-     *
-     * @param assetPath path to the resource, e.g. "/Interface/Fonts/Default.fnt"
-     * @param destPath  destination path, relative to the program's working directory
-     *                  (or absolute), e.g. "worlds/my_world/extracted/Default.fnt"
-     * @return the extracted File, for convenience
-     */
+    * @param assetPath path to the resource, e.g. "/Interface/Fonts/Default.fnt"
+    * @param destPath  destination path, relative to the program's working directory
+    *                  (or absolute), e.g. "worlds/my_world/extracted/Default.fnt"
+    * @return the extracted File or the file already in place, for convenience
+    */
     public static File extract(String assetPath, String destPath) throws IOException {
+        File destFile = new File(destPath);
+
+        if (destFile.exists()) {
+            return destFile; // already extracted — leave it alone, don't overwrite
+        }
+ 
         InputStream is = AssetConverter.class.getResourceAsStream(assetPath);
         if (is == null) {
             throw new IOException("Could not find asset at path: " + assetPath);
         }
 
-        File destFile = new File(destPath);
         File parent = destFile.getParentFile();
         if (parent != null) {
             Files.createDirectories(parent.toPath());
         }
 
         try {
-            Files.copy(is, destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, destFile.toPath()); // no REPLACE_EXISTING — redundant now, but explicit
         } finally {
             is.close();
         }
