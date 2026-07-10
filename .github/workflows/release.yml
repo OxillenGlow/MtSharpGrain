@@ -16,7 +16,7 @@ jobs:
           - os: macos-14        # Apple Silicon (arm64)
             ext: dmg
             arch: aarch64
-          - os: macos-13        # Intel (x86_64)
+          - os: macos-15-intel  # Intel (x86_64)
             ext: dmg
             arch: x64
           - os: windows-latest
