@@ -97,17 +97,18 @@ Done:
 [My other projects](https://github.com/OxillenGlow)
 #### Attribs
 
-- **JavaMonkeyEngine** (everthing that LWJGL has)
+- **JavaMonkeyEngine** (and everthing that LWJGL has)
 Website: https://www.jmonkeyengine.org
 GitHub organization: https://github.com/jmonkeyengine
 
 - **Riccardobl's simple IGui** for jme
 GitHub source: https://github.com/riccardobl/jme-igui
 
-- **Neuroph** for mlp
-GitHub source: https://github.com/neuroph/NeurophFramework
+- **Neuroph** for mlp (unused)
+GitHub source: https://github.com/neuroph/NeurophFramework 
 
-- **jVisualScripting** for visual scripts and engine see GitHub source: https://github.com/openconcerto/jVisualScripting
+- **jVisualScripting** for visual scripts and engine (unused) see
+GitHub source: https://github.com/openconcerto/jVisualScripting
 
 - **GraalVM's community GraalJS** for the javascript modules
 GitHub source: https://github.com/oracle/graaljs
