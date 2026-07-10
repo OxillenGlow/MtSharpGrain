@@ -134,9 +134,15 @@ tasks.register('jpackage') {
             type = "deb"
         }
 
-        // jpackage requires a purely numeric app-version (x.y.z)
-        def cleanVersion = project.version.toString().tokenize('-')[0]
-
+        // jpackage's macOS bundler rejects a leading-zero major version (e.g. "0.1.0"),
+        // so remap to a 1.x-based version string just for the package metadata —
+        // this doesn't change project.version anywhere else
+        def rawVersion = project.version.toString().tokenize('-')[0]  // e.g. "0.1.0"
+        def versionParts = rawVersion.tokenize('.')
+        if (versionParts[0] == '0') {
+            versionParts[0] = '1'
+        }
+        def cleanVersion = versionParts.join('.')
         exec {
             commandLine "jpackage",
                 "--type", type,
