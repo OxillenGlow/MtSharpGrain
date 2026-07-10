@@ -17,7 +17,8 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
     - end-node place/destroy
     - gui management
     - procedural world generation
-    - end-node placement listener (in progress)
+    - end-node placement listener
+    - player location getter/setter
 - **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** (depricating) — block based visual coding system, mostly wired into the game now with console comand system.
 - **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
 
