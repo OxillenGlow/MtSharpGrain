@@ -1,5 +1,7 @@
 package com.mtsharpgrain;
 
+import com.jme3.material.RenderState.BlendMode;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -51,7 +53,12 @@ public class ChunkMeshBuilder {
 
                     Geometry geo = buildGeometry(meshBuilder, x, y, z, px, py, pz, nx, ny, nz);
 
-                    geo.setMaterial(buildMaterial(assetManager, block));
+                    Material mat = buildMaterial(assetManager, block);
+                    geo.setMaterial(mat);
+                    if (isTransparent(block)) {
+                        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+                        geo.setQueueBucket(Bucket.Transparent);
+                    }
                     geo.setLocalTranslation(x + 16 * X, y + 16 * Y, z + 16 * Z);
                     tempNode.attachChild(geo);
                 }
@@ -159,5 +166,11 @@ public class ChunkMeshBuilder {
             return false;
         }
         return BlockRegistry.isAir(chunk.get(x, y, z));
+    }
+    
+    /** @return True if this block's diffuse alpha is less than fully opaque (e.g. Glass). */
+    private static boolean isTransparent(int blockId) {
+        BlockDef def = BlockRegistry.get(blockId);
+        return def != null && def.diffuse().a < 1f;
     }
 }
