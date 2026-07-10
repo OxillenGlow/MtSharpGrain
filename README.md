@@ -95,7 +95,7 @@ Done:
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
-#### Attribs
+### This project uses:
 
 - **JavaMonkeyEngine** (and everthing that LWJGL has)
 Website: https://www.jmonkeyengine.org
