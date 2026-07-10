@@ -5,6 +5,7 @@ import com.jme.igui.IGuiMouseEvent;
 import com.jme3.math.ColorRGBA;
 import com.mtsharpgrain.node.BlockRegistry;
 import com.mtsharpgrain.node.BlockRegistry.BlockDef;
+import com.mtsharpgrain.Main;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +41,7 @@ public class Master {
 
         if (!GameState.isOkPlace()) {
             drawBlockTypeSelector(gui);
+            drawViewDistanceSelector(gui);
         }
 
         gui.pop();
@@ -102,5 +104,33 @@ public class Master {
             return true;
         });
     }
+    
+    private static void drawViewDistanceSelector(IGui gui) {
+        gui.textHAlign("center");
+        gui.textVAlign("bottom");
 
+        // sits above the block-type row (which occupies y .. y+0.045)
+        float y = 0.09f;
+
+        gui.textColor(ColorRGBA.White);
+        gui.text("View Distance: [" + Main.VIEW_DISTANCE + "]", 0.5f, y + 0.045f, null);
+
+        float leftMargin = 0.35f;
+        float rightMargin = 0.65f;
+        int slots = 5; // 1..5
+        float slotSpacing = (rightMargin - leftMargin) / (slots - 1);
+
+        for (int i = 1; i <= slots; i++) {
+            final int dist = i;
+            float xpos = leftMargin + slotSpacing * (i - 1);
+
+            gui.textColor(dist == Main.VIEW_DISTANCE ? ColorRGBA.Green : ColorRGBA.Blue);
+            gui.text("[" + dist + "]", xpos, y, (event, arg) -> {
+                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                    Main.VIEW_DISTANCE = dist;
+                }
+                return true;
+            });
+        }
+    }
 }
