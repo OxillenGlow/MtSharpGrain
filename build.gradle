@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.mtsharpgrain'
-version = '0.1.0-beta3'
+version = 'v0.1.0-beta3'
 
 application {
     applicationName = 'MtSharpGrain'
