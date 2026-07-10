@@ -78,16 +78,17 @@ public class Main extends SimpleApplication {
         gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
         
-        gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("left").textVAlign("top");
+        gui.textSize(0.015f).textColor(ColorRGBA.Blue).textHAlign("left").textVAlign("top");
         IGuiComponent text2 = gui.text("Press [F] to exit full screen [Escape] to close.", 0f, 1f, true);
 
-        GameState.setModes(true, true);
+        GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
         cam.setFrustumPerspective(70f, aspectRatio, 0.5f, 5000.0f);
         cam.setFrustumFar((VIEW_DISTANCE * 16f) + 100);
 
         
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
+        flyCam.setEnabled(false);
         
         com.jme3.light.DirectionalLight sun = null;
         for (com.jme3.light.Light l : rootNode.getLocalLightList()) {
