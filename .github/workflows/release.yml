@@ -5,17 +5,23 @@ on:
     types: [published]
 
 jobs:
-  build:
+  jpackage:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: macos-latest
+          - os: macos-14        # Apple Silicon (arm64)
             ext: dmg
+            arch: aarch64
+          - os: macos-13        # Intel (x86_64)
+            ext: dmg
+            arch: x64
           - os: windows-latest
             ext: exe
+            arch: x64
           - os: ubuntu-latest
             ext: deb
+            arch: x64
 
     runs-on: ${{ matrix.os }}
 
@@ -43,16 +49,50 @@ jobs:
         run: ./gradlew jpackage
         shell: bash
 
-      - name: Find built package
+      - name: Find and rename built package
         id: findfile
         shell: bash
         run: |
-          FILE=$(find build/jpackage -maxdepth 1 -type f -iname "*.${{ matrix.ext }}" | head -n 1)
-          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+          RAW=$(find build/jpackage -maxdepth 1 -type f -iname "*.${{ matrix.ext }}" | head -n 1)
+          DIR=$(dirname "$RAW")
+          BASE=$(basename "$RAW" ".${{ matrix.ext }}")
+          NEWFILE="$DIR/${BASE}-${{ matrix.arch }}.${{ matrix.ext }}"
+          mv "$RAW" "$NEWFILE"
+          echo "file=$NEWFILE" >> "$GITHUB_OUTPUT"
 
       - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.findfile.outputs.file }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  distzip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build cross-platform zip
+        run: ./gradlew distZip
+
+      - name: Find built zip
+        id: findzip
+        run: |
+          FILE=$(find build/distributions -maxdepth 1 -type f -iname "*.zip" | head -n 1)
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.findzip.outputs.file }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
