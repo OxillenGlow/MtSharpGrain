@@ -81,15 +81,15 @@ My todo/doing list:
 - GUI > afterwards customisable with scripts 80%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
-- JavaScript, to add some real and powerfull scripting (thanks a lot to claude) 80%
-- Add a checker for alpha channle in object material, place in transparent bucket if needed. 0%
-- Bottons or slider for selecting view distance 0%
+- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)80%
+- Upgrade GUI to use lemur gui manager 0%
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
+- Add buttons for adjusting view distance
 
 </details>
 

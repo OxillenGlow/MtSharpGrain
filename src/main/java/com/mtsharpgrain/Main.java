@@ -78,8 +78,8 @@ public class Main extends SimpleApplication {
         gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
         
-        gui.textSize(0.015f).textColor(ColorRGBA.Blue).textHAlign("left").textVAlign("top");
-        IGuiComponent text2 = gui.text("Press [F] to exit full screen [Escape] to close.", 0f, 1f, true);
+        gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
+        IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, .9f, true);
 
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
@@ -111,13 +111,13 @@ public class Main extends SimpleApplication {
         ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );//rgba(247, 51, 10, 0.8)
         viewPort.setBackgroundColor(darkBlue);
 
-        var fpp = new FilterPostProcessor(assetManager);
-        FogFilter fog = new FogFilter();
-        fog.setFogColor(darkBlue);
-        fog.setFogDistance(VIEW_DISTANCE * 16 * 0.90f);
-        fog.setFogDensity(0.8f);
-        fpp.addFilter(fog);
-        viewPort.addProcessor(fpp);
+        //var fpp = new FilterPostProcessor(assetManager);
+        //FogFilter fog = new FogFilter();
+        //fog.setFogColor(darkBlue);
+        //fog.setFogDistance(VIEW_DISTANCE * 16 * 0.90f);
+        //fog.setFogDensity(0.8f);
+        //fpp.addFilter(fog);
+        //viewPort.addProcessor(fpp);
         // ─────────────────────────────────────────────────────────────────────
 
         // ── Chunk generator: loads chunkgen.js once and binds the Chunk.* API.
