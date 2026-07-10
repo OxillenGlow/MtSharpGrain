@@ -10,7 +10,8 @@ version = '0.1.0-beta3'
 application {
     applicationName = 'MtSharpGrain'
     mainClass = 'com.mtsharpgrain.Main'
-    applicationDefaultJvmArgs = ['-XstartOnFirstThread']
+    // -XstartOnFirstThread is macOS-only — handled conditionally below,
+    // not baked in here, so Windows/Linux launches aren't broken
 }
 
 repositories {
@@ -70,7 +71,7 @@ dependencies {
 
     implementation "org.graalvm.polyglot:polyglot:24.1.1"
     implementation "org.graalvm.polyglot:js-community:24.1.1"
-    
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     runtimeOnly project(':assets')
@@ -92,8 +93,26 @@ wrapper {
     gradleVersion = '8.6'
 }
 
+// ./gradlew run — only add the mac flag when actually building/running on a Mac
 tasks.withType(JavaExec).configureEach {
-    jvmArgs += ['-XstartOnFirstThread']
+    if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+        jvmArgs += ['-XstartOnFirstThread']
+    }
+}
+
+// distZip/installDist generate one shared unix launch script that has to work
+// on both macOS and Linux — so the mac flag has to be checked at *runtime*
+// (inside the script, via uname) rather than baked in at build time.
+tasks.named('startScripts').configure {
+    doLast {
+        def macBlock = '''if [[ "$(uname)" == *"Darwin"* ]]; then
+    DEFAULT_JVM_OPTS="$DEFAULT_JVM_OPTS \\"-XstartOnFirstThread\\""
+fi
+'''
+        unixScript.text = unixScript.text.replaceFirst(/(?m)^DEFAULT_JVM_OPTS=.*$/) { line ->
+            "${line}\n${macBlock}"
+        }
+    }
 }
 
 tasks.register('jpackage') {
