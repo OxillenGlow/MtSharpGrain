@@ -238,6 +238,16 @@ public class Main extends SimpleApplication {
         cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
         gui.destroy();  // Properly detach and clean up the old GUI
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, newWidth, newHeight);
+                gui.textFont("Interface/Fonts/Console.fnt");
+        gui.textFontStyle("bold");
+        gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
+        
+        gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
+        IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
+
+        gui.textSize(0.025f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("center");
+        IGuiComponent text2 = gui.text("+", .5f, .5f, true);
     }
 
     @Override
