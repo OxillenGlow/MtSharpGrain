@@ -236,7 +236,9 @@ public class Main extends SimpleApplication {
         if (cam == null) return;
         float aspectRatio = (float) width / height;
         cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
-        gui.destroy();  // Properly detach and clean up the old GUI
+        if (!(gui == null)) {
+            gui.destroy();  // Properly detach and clean up the old GUI
+        }
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("Interface/Fonts/Console.fnt");
         gui.textFontStyle("bold");
