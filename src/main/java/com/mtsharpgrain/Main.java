@@ -79,7 +79,10 @@ public class Main extends SimpleApplication {
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
         
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
-        IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, .9f, true);
+        IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
+
+        gui.textSize(0.025f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("center");
+        IGuiComponent text2 = gui.text("+", .5f, .5f, true);
 
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
@@ -149,14 +152,6 @@ public class Main extends SimpleApplication {
         printScript.attach();
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
-
-        BitmapFont guiFonty = assetManager.loadFont("Interface/Fonts/Default.fnt");
-        BitmapText ch = new BitmapText(guiFonty, false);
-        ch.setSize(guiFonty.getCharSet().getRenderedSize() * 2);
-        ch.setText("+");
-        float x = cam.getWidth() / 2f - ch.getLineWidth() / 2f;
-        float y = cam.getHeight() / 2f + ch.getLineHeight() / 2f;
-        ch.setLocalTranslation(x, y, 0);
 
         Check check = new Check(worldAccess, renderManagermg, blockSelector);
         inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
@@ -241,6 +236,8 @@ public class Main extends SimpleApplication {
         if (cam == null) return;
         float aspectRatio = (float) width / height;
         cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
+        gui.destroy();  // Properly detach and clean up the old GUI
+        gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, newWidth, newHeight);
     }
 
     @Override
@@ -251,6 +248,7 @@ public class Main extends SimpleApplication {
         // generation (it won't currently, but keeps shutdown order sane).
         if (chunkGen != null) chunkGen.close();
         super.destroy();
+        
     }
 
     private void extractFiles(String world) {
