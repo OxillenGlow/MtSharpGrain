@@ -25,7 +25,7 @@ A sand box, non voxel game with slightly smooth interconnected blocks rather tha
 ### Download [here](https://github.com/OxillenGlow/MtSharpGrain/releases)
 ---
 
-### Screen shots
+## Screen shots
 <details>
 <summary> Click here to see screen shots</summary>
 
@@ -82,7 +82,7 @@ My todo/doing list:
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)80%
-- **IMPORTANT** Upgrade GUI to use lemur gui manager 0%
+- **IMPORTANT** Upgrade GUI to use newly uploaded images 0% (lemur is a bit too big for me right now, perhaps in the future.
 - At the end of resizing, i should either find a IGUI function that recalculates the screen OR just make a new IGUI object and hope for the best of igui's code and java's gc janitor. 0%
 
 <sup>80% here means it is basically done but could be improved</sup>
