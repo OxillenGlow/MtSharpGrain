@@ -81,8 +81,9 @@ public class Main extends SimpleApplication {
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
         IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
 
-        gui.textSize(0.025f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("center");
-        IGuiComponent text3 = gui.text("+", .5f, .5f, true);
+        gui.imageSize(0.03f, 0.03f).imageAlpha(true).imageColor(ColorRGBA.White)
+           .imageHAlign("center").imageVAlign("center");
+        IGuiComponent crosshair = gui.image("img/pointers.blue_4.png", .5f, .5f, true);
 
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
@@ -248,8 +249,10 @@ public class Main extends SimpleApplication {
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
         IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
 
-        gui.textSize(0.025f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("center");
-        IGuiComponent text3 = gui.text("+", .5f, .5f, true);
+        gui.imageSize(0.03f, 0.03f).imageAlpha(true).imageColor(ColorRGBA.White)
+           .imageHAlign("center").imageVAlign("center");
+        IGuiComponent crosshair = gui.image("img/pointers.blue_4.png", .5f, .5f, true);
+        
     }
 
     @Override
