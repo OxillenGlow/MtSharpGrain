@@ -1,6 +1,6 @@
 package com.mtsharpgrain;
 
-import com.mtsharpgrain.js.mainthread.JSModifier;
+import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +10,7 @@ public final class WorldAccess {
     private final ChunkFileHelper fileHelper;
     private final JsChunkGenerator generator;
     private final long seed;
-    private JSModifier modifier;
+    private ModPackManager modPackManager;
 
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
@@ -18,8 +18,8 @@ public final class WorldAccess {
         this.seed = seed;
     }
 
-    public void addModifier(JSModifier modifier){
-        this.modifier = modifier;
+    public void addModifier(ModPackManager modPackManager){
+        this.modPackManager = modPackManager;
     }
 
     public BufferedChunk ensureChunk(ChunkPos pos){
@@ -77,14 +77,14 @@ public final class WorldAccess {
     }
 
     public void setBlockAt(int worldX, int worldY, int worldZ, int blockId) {
-        ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
-        BufferedChunk chunk = Useful.get(chunkPos);
-        if (chunk == null) {System.out.println("Failed to break block at unrendered chunk: " + chunkPos);return;}
+        //ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
+        //BufferedChunk chunk = Useful.get(chunkPos);
+        //if (chunk == null) {System.out.println("Failed to break block at unrendered chunk: " + chunkPos);return;}
         int localX = worldToLocal(worldX);
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
         
-        modifier.notifyBlockSet(worldX, worldY, worldZ, blockId);
+        modPackManager.notifyBlockSet(worldX, worldY, worldZ, blockId);
         
         chunk.set(localX, localY, localZ, blockId);
     }
