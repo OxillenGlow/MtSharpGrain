@@ -6,7 +6,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
-
+import java.util.HashSet;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
  */
 public class ModPackManager {
 
+    // Render-thread only, same as `packs` — not concurrent-safe by design.
+    private final Set<String> disabledPacks = new HashSet<>();
     private final Map<String, JSModifier> packs = new LinkedHashMap<>();
 
     /**
@@ -92,27 +94,70 @@ public class ModPackManager {
     public JSModifier getMod(String packName) {
         return packs.get(packName);
     }
-
+    
     public Set<String> getPackNames() {
         return packs.keySet();
     }
+    public Set<String> getPackNames() {
+         return packs.keySet();
+     }
+
+    /** Sorted pack names, for stable table rendering. */
+    public List<String> getSortedPackNames() {
+        return packs.keySet().stream().sorted().collect(Collectors.toList());
+    }
+
+   public boolean isEnabled(String packName) {
+        return packs.containsKey(packName) && !disabledPacks.contains(packName);
+    }
+
+    /** Disabling a pack stops its tick/draw/click/validator calls entirely — it goes fully inert. */
+    public void setEnabled(String packName, boolean enabled) {
+        if (!packs.containsKey(packName)) return;
+        if (enabled) disabledPacks.remove(packName);
+        else disabledPacks.add(packName);
+    }
+
+    /** Only the named pack's GuiApi may draw its own elements this frame; all others are gated off. */
+    public void setOnlyDrawing(String packName) {
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            e.getValue().setDraw(e.getKey().equals(packName));
+        }
+    }
+
+    /** No pack may draw its own GuiApi elements this frame. */
+    public void disableAllDrawing() {
+         for (JSModifier m : packs.values()) m.setDraw(false);
+     }
 
     // ── Aggregate lifecycle calls — drive every pack from one place ────────
 
     public void tick(float tpf, String guiTag) {
-        for (JSModifier m : packs.values()) m.tick(tpf, guiTag);
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            if (disabledPacks.contains(e.getKey())) continue;
+            e.getValue().tick(tpf, guiTag);
+        }
     }
 
     public void tickAll(float tpf) {
-        for (JSModifier m : packs.values()) m.tickAll(tpf);
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            if (disabledPacks.contains(e.getKey())) continue;
+            e.getValue().tickAll(tpf);
+        }
     }
 
     public void draw(IGui gui) {
-        for (JSModifier m : packs.values()) m.draw(gui);
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            if (disabledPacks.contains(e.getKey())) continue;
+            e.getValue().draw(gui);
+        }
     }
 
     public void processGuiClicks(float tpf) {
-        for (JSModifier m : packs.values()) m.processGuiClicks(tpf);
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            if (disabledPacks.contains(e.getKey())) continue;
+            e.getValue().processGuiClicks(tpf);
+        }
     }
 
     /**
@@ -127,6 +172,7 @@ public class ModPackManager {
      */
     public void notifyBlockSet(int worldX, int worldY, int worldZ, int blockId) {
         for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            if (disabledPacks.contains(e.getKey())) continue;
             e.getValue().notifyBlockSet(worldX, worldY, worldZ, blockId);
         }
     }
