@@ -9,7 +9,6 @@ import com.mtsharpgrain.js.BlockApi;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -148,7 +147,6 @@ public class JSModifier {
         bootstrap.getGuiApi().setDraw(canD);
     }
 
-    @HostAccess.Export
     public boolean getDraw() {
         return bootstrap.getGuiApi().getDraw();
     }
