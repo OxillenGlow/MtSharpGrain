@@ -204,7 +204,6 @@ public class Main extends SimpleApplication {
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
         modPackManager.tick(tpf, "Update");
-        com.mtsharpgrain.gui.Master.tic(gui);
         modPackManager.draw(gui);
         modPackManager.processGuiClicks(tpf);
     }
