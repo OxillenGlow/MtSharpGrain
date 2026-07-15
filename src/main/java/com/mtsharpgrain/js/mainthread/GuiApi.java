@@ -51,7 +51,8 @@ public class GuiApi {
     private final Map<Long, GuiElement> byHandle = new HashMap<>();
     private final Map<String, GuiElement> byTag = new HashMap<>();
     private final AtomicLong nextHandle = new AtomicLong(1);
-
+    private canDraw = false;
+    
     // ── JS-facing: create/update ────────────────────────────────────────────
 
     @HostAccess.Export
@@ -113,23 +114,25 @@ public class GuiApi {
 
     /** Copies Master.tic()'s push/font/size/color/align/text call shape. */
     public void draw(IGui gui) {
-        gui.push(false);
-        gui.textFont("Interface/Fonts/Default.fnt");
-        gui.textHAlign("center");
-        gui.textVAlign("bottom");
+        if (canDraw = true) {
+            gui.push(false);
+            gui.textFont("Interface/Fonts/Default.fnt");
+            gui.textHAlign("center");
+            gui.textVAlign("bottom");
 
-        for (GuiElement el : drawOrder) {
-            gui.textSize(el.sizePixels);
-            gui.textColor(el.color);
-            gui.text(el.word, el.x, el.y, (event, arg) -> {
-                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                    el.clickRegistered = false;
-                }
-                return true;
-            });
+            for (GuiElement el : drawOrder) {
+                gui.textSize(el.sizePixels);
+                gui.textColor(el.color);
+                gui.text(el.word, el.x, el.y, (event, arg) -> {
+                    if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                        el.clickRegistered = false;
+                    }
+                    return true;
+                });
+            }
+
+            gui.pop();
         }
-
-        gui.pop();
     }
 
     /**
@@ -148,4 +151,12 @@ public class GuiApi {
         }
         return clicked;
     }
+
+    public void setDraw(boolean canD) {
+        this.canDraw = canD;
+    }
+
+    @HostAccess.Export
+    public boolean getDraw() {return canDraw;}
+    
 }
