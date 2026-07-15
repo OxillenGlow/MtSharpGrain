@@ -6,6 +6,7 @@ import com.jme3.math.ColorRGBA;
 import com.mtsharpgrain.node.BlockRegistry;
 import com.mtsharpgrain.node.BlockRegistry.BlockDef;
 import com.mtsharpgrain.Main;
+import com.mtsharpgrain.js.mainthread.ModPackManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,7 @@ public class Master {
     // lower bound of the currently displayed page (10 numbers shown: pageStart..pageStart+9)
     public static int pageStart = 1;
 
-    public static void tic(IGui gui) {
+    public static void tic(IGui gui, ModPackManager modPackManager) {
 
         gui.push(false);
         gui.textFont("Interface/Fonts/Default.fnt");
@@ -36,12 +37,31 @@ public class Master {
         gui.textColor(mousePressedL ? ColorRGBA.Green : ColorRGBA.Blue);
         gui.textHAlign("left");
         gui.textVAlign("top");
-        float spacing = 0.03f;
-        float line = 1;
+        String path = GameState.guiState;
 
-        if (!GameState.isOkPlace()) {
+        if ("play".equals(path)) {
+            // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
+            modPackManager.disableAllDrawing();
+        } else if ("home".equals(path)) {
             drawBlockTypeSelector(gui);
             drawViewDistanceSelector(gui);
+            drawHomeNav(gui);
+            modPackManager.disableAllDrawing();
+        } else if ("home/modview".equals(path)) {
+            drawModTable(gui, modPackManager);
+            modPackManager.disableAllDrawing();
+        } else if (path.startsWith("home/modview/")) {
+            String packName = path.substring("home/modview/".length());
+            drawModDetail(gui, modPackManager, packName);
+            // The ONLY place a mod's own GuiApi elements are allowed to draw.
+            modPackManager.setOnlyDrawing(packName);
+        } else {
+            // Unknown/stale path (e.g. saved from an old session) — fall back to home.
+            GameState.navigateTo("home");
+            drawBlockTypeSelector(gui);
+            drawViewDistanceSelector(gui);
+            drawHomeNav(gui);
+            modPackManager.disableAllDrawing();
         }
 
         gui.pop();
@@ -131,6 +151,84 @@ public class Master {
                 }
                 return true;
             });
+        }
+    }
+
+    // ── Navigation: home -> home/modview ────────────────────────────────
+    private static void drawHomeNav(IGui gui) {
+        gui.textHAlign("right");
+        gui.textVAlign("top");
+        gui.textColor(ColorRGBA.White);
+        // TODO: swap for gui.image(...) once nav-arrow assets are picked from the Hyper pack
+        gui.text("Mods >", 0.95f, 0.95f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                GameState.navigateTo("home/modview");
+            }
+            return true;
+        });
+    }
+
+    // ── home/modview: table of mods with enable/disable ────────────────
+    private static void drawModTable(IGui gui, ModPackManager modPackManager) {
+        gui.textHAlign("left");
+        gui.textVAlign("top");
+
+        gui.textColor(ColorRGBA.White);
+        gui.text("< Back", 0.05f, 0.95f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                GameState.navigateTo("home");
+            }
+            return true;
+        });
+
+        gui.textColor(ColorRGBA.White);
+        gui.text("Installed Mods", 0.05f, 0.88f, null);
+
+        float y = 0.80f;
+        float rowSpacing = 0.05f;
+
+        for (String packName : modPackManager.getSortedPackNames()) {
+            boolean enabled = modPackManager.isEnabled(packName);
+
+            gui.textColor(ColorRGBA.White);
+            gui.text(packName, 0.08f, y, (event, arg) -> {
+                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                    GameState.navigateTo("home/modview/" + packName);
+                }
+                return true;
+            });
+
+            gui.textColor(enabled ? ColorRGBA.Green : ColorRGBA.Red);
+            gui.text(enabled ? "[Enabled]" : "[Disabled]", 0.45f, y, (event, arg) -> {
+                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                    modPackManager.setEnabled(packName, !enabled);
+                }
+                return true;
+            });
+
+            y -= rowSpacing;
+        }
+    }
+
+    // ── home/modview/<pack>: the only place that pack's own GuiApi draws ──
+    private static void drawModDetail(IGui gui, ModPackManager modPackManager, String packName) {
+        gui.textHAlign("left");
+        gui.textVAlign("top");
+
+        gui.textColor(ColorRGBA.White);
+        gui.text("< Back", 0.05f, 0.95f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                GameState.navigateTo("home/modview");
+            }
+            return true;
+        });
+
+        gui.textColor(ColorRGBA.White);
+        gui.text("Viewing: " + packName, 0.05f, 0.88f, null);
+
+        if (modPackManager.getMod(packName) == null) {
+            gui.textColor(ColorRGBA.Red);
+            gui.text("This mod pack no longer exists.", 0.05f, 0.80f, (event, arg) -> true);
         }
     }
 }
