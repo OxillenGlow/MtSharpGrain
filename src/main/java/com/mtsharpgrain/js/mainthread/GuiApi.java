@@ -4,7 +4,6 @@ import com.jme.igui.IGui;
 import com.jme.igui.IGuiMouseEvent;
 import com.jme3.math.ColorRGBA;
 import org.graalvm.polyglot.HostAccess;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +50,7 @@ public class GuiApi {
     private final Map<Long, GuiElement> byHandle = new HashMap<>();
     private final Map<String, GuiElement> byTag = new HashMap<>();
     private final AtomicLong nextHandle = new AtomicLong(1);
-    private canDraw = false;
+    private boolean canDraw = false;
     
     // ── JS-facing: create/update ────────────────────────────────────────────
 
