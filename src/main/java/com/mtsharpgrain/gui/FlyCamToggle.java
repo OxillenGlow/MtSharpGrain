@@ -28,7 +28,12 @@ public class FlyCamToggle implements ActionListener {
             boolean newState = !flyCam.isEnabled();
             flyCam.setEnabled(newState);
             GameState.setokPlace(newState);
-            // Fix: grab mouse when FlyCam is ON, release when OFF
+            if (newState) {
+                GameState.enterPlay();
+            } else {
+                GameState.exitPlay();
+            }
+            
             inputManager.setCursorVisible(!newState);
 
             System.out.println("FlyCam is now " + (newState ? "ON" : "OFF"));
