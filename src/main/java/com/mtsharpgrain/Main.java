@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import com.mtsharpgrain.js.mainthread.JSModifier;
+import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
@@ -64,8 +65,8 @@ public class Main extends SimpleApplication {
     }
 
     private IGui gui;
-    private JSModifier modifier;
-
+    private ModPackManager modPackManager;
+    
     @Override
     public void simpleInitApp() {
 
@@ -168,36 +169,16 @@ public class Main extends SimpleApplication {
         cam.setLocation(spawn);
         player.setWorldPosition(spawn);
 
-
-        // adding JS mods that run on main thread
-        // TODO: Moving to another thread! Very important.
-        modifier = new JSModifier();
-        modifier.init(assetManager, rootNode, worldAccess, renderManagermg, cam);
-        // Main.simpleInitApp — replace the single modifier.runJs(...) block
+        // Mods are loaded with new modPackManager that gives mods different contexts
+        modPackManager = new com.mtsharpgrain.js.mainthread.ModPackManager();
         try {
-            Path modRoot = Paths.get("worlds/my_world/mod");
-            if (Files.exists(modRoot)) {
-                try (var walk = Files.walk(modRoot)) {
-                    walk.filter(p -> p.toString().endsWith(".js"))
-                    .sorted() // deterministic load order across platforms
-                    .forEach(p -> {
-                        try {
-                             modifier.runJs(p.toFile());
-                        } catch (IOException ex) {
-                            Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-                            "Failed to load mod script: " + p, ex);
-                        }
-                    });
-                }
-            } else {
-                Logger.getLogger(Main.class.getName()).log(Level.WARNING,
-                "Mod folder not found, skipping: " + modRoot.toAbsolutePath());
-            }
+            modPackManager.loadAll(Paths.get("worlds/my_world/mod"), assetManager, rootNode,
+                    worldAccess, renderManagermg, cam);
         } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to walk mod folder", ex);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to load mod packs", ex);
         }
 
-        worldAccess.addModifier(modifier);
+        worldAccess.addModifier(modPackManager);
         
         flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
     }
@@ -222,10 +203,10 @@ public class Main extends SimpleApplication {
         com.mtsharpgrain.gui.Master.tic(gui);// just noticed tic is misspelled! wont fix
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
-        modifier.tick(tpf, "Update");
+        modPackManager.tick(tpf, "Update");
         com.mtsharpgrain.gui.Master.tic(gui);
-        modifier.draw(gui);
-        modifier.processGuiClicks(tpf);
+        modPackManager.draw(gui);
+        modPackManager.processGuiClicks(tpf);
     }
 
     @Override
@@ -269,8 +250,9 @@ public class Main extends SimpleApplication {
     private void extractFiles(String world) {
         try {
             AssetConverter.extract("/chunkgen.js", "worlds/"+world+"/chunkgen.js");
-            AssetConverter.extract("/test.js", "worlds/"+world+"/mod/test.js");
-            AssetConverter.extract("/blocktrailmod.js", "worlds/"+world+"/mod/blocktrailmod.js");
+            AssetConverter.extract("/test.js", "worlds/"+world+"/mod/DEFAULT/test.js");
+            AssetConverter.extract("/blocktrailmod.js", "worlds/"+world+"/mod/DEFAULT/blocktrailmod.js");
+            System.out.println("Extracted default mod files");
         } catch (IOException e) {
             throw new RuntimeException("Failed to extract bundled world scripts", e);
         }
