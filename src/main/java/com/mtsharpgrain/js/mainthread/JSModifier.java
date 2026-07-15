@@ -143,4 +143,14 @@ public class JSModifier {
                     + ") to blockId " + blockId + " by a mod validator");
         }
     }
+
+    public void setDraw(boolean canD) {
+        bootstrap.getGuiApi().setDraw(canD);
+    }
+
+    @HostAccess.Export
+    public boolean getDraw() {
+        return bootstrap.getGuiApi().getDraw();
+    }
+    
 }
