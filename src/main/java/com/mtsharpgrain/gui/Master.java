@@ -216,12 +216,20 @@ public class Master {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
+
+        // High, fixed zIndex so a mod's own GuiApi elements (drawn after this,
+        // in a separate push/pop in ModPackManager.draw) can never visually or
+        // click-wise cover the only way out of this screen.
+        float previousZ = gui.getZIndex();
+        gui.zIndex(previousZ + 100f);
+        
         gui.text("< Back", 0.05f, 0.95f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 GameState.navigateTo("home/modview");
             }
             return true;
         });
+        gui.zIndex(previousZ);
 
         gui.textColor(ColorRGBA.White);
         gui.text("Viewing: " + packName, 0.05f, 0.88f, null);
