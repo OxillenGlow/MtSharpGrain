@@ -5,6 +5,8 @@
 !src/
 !src/*/
 !src/**/
+src/main/resources/self/
+src/main/resources/self/*
 !libs/
 !libs/*/
 !libs/**/
