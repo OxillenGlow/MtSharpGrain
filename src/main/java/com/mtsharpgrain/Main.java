@@ -251,6 +251,11 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/chunkgen.js", "worlds/"+world+"/chunkgen.js");
             AssetConverter.extract("/test.js", "worlds/"+world+"/mod/DEFAULT/test.js");
             AssetConverter.extract("/blocktrailmod.js", "worlds/"+world+"/mod/DEFAULT/blocktrailmod.js");
+            AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
+            AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/BridgeBuilder/bridge.js");
+            AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
+            AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/Utilities/teleport.js");
+        
             System.out.println("Extracted default mod files");
         } catch (IOException e) {
             throw new RuntimeException("Failed to extract bundled world scripts", e);
