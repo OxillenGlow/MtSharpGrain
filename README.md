@@ -89,6 +89,7 @@ Done:
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
 - Add buttons for adjusting view distance
+- Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
