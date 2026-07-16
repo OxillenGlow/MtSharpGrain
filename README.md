@@ -74,8 +74,10 @@ My todo/doing list:
 - More content: 0%
     - More blocks: ice, glass, metal, plastic 30%
     - Special blocks: ... 
-    - Person model - i think i should use the java duke model for people
+    - Person model - i think i should use the java duke model for people 
     - Randomly spawned builtings
+    - Using these pixel art stuff i did:
+<img src="src/main/resources/self/pixel art.png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (1).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (2).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (3).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (4).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (5).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (6).png" align="left" width="25" style="margin-right: 20px;" />and more...
 - GUI > afterwards customisable with scripts 80%
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
