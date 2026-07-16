@@ -1,13 +1,13 @@
 package com.mtsharpgrain;
 
-import java.io.*;
+import com.tools.ChunkZipper;
+
+import java.io.IOException;
 import java.nio.file.*;
 
 public final class ChunkFileHelper {
 
     private final Path folder;
-    // 16 * 16 * 16 blocks * 4 bytes per int = 16384 bytes
-    private static final long EXPECTED_SIZE = BufferedChunk.SIZE * BufferedChunk.SIZE * BufferedChunk.SIZE * 4L;
 
     public ChunkFileHelper(String worldFolder) {
         folder = Paths.get(worldFolder, "chunks");
@@ -27,14 +27,14 @@ public final class ChunkFileHelper {
         Path finalPath = chunkPath(pos.x, pos.y, pos.z);
         Path tempPath = finalPath.resolveSibling(finalPath.getFileName() + ".tmp");
 
-        try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(tempPath)))) {
-            int[][][] b = chunk.getRaw();
-            for (int x = 0; x < BufferedChunk.SIZE; x++)
-                for (int y = 0; y < BufferedChunk.SIZE; y++)
-                    for (int z = 0; z < BufferedChunk.SIZE; z++)
-                        dos.writeInt(b[x][y][z]);
-            
-            dos.flush();
+        byte[] compressed = ChunkZipper.Compress(chunk.getRaw());
+        if (compressed == null) {
+            System.err.println("Failed to compress chunk at " + pos + " - not saving");
+            return;
+        }
+
+        try {
+            Files.write(tempPath, compressed);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -52,32 +52,37 @@ public final class ChunkFileHelper {
 
         if (!Files.exists(p)) return null;
 
-        // --- FIX: Check for corrupted/empty files ---
+        byte[] compressed;
         try {
-            if (Files.size(p) < EXPECTED_SIZE) {
-                System.err.println("Deleting corrupted chunk file (too small): " + p);
-                Files.delete(p);
-                return null;
-            }
-        } catch (IOException e) {
-            return null;
-        }
-
-        BufferedChunk chunk = new BufferedChunk();
-        try (DataInputStream dis = new DataInputStream(new BufferedInputStream(Files.newInputStream(p)))) {
-            int[][][] b = chunk.getRaw();
-            for (int x = 0; x < BufferedChunk.SIZE; x++)
-                for (int y = 0; y < BufferedChunk.SIZE; y++)
-                    for (int z = 0; z < BufferedChunk.SIZE; z++)
-                        b[x][y][z] = dis.readInt();
-        } catch (EOFException e) {
-            System.err.println("EOF reached unexpectedly in " + p);
-            try { Files.delete(p); } catch (IOException ignore) {}
-            return null;
+            compressed = Files.readAllBytes(p);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+
+        // --- FIX: Check for corrupted/empty files ---
+        // Compressed size varies with content, so we can no longer sanity-check
+        // against a fixed expected byte count (was EXPECTED_SIZE for raw ints).
+        // An empty file is still an unambiguous corruption signal though.
+        if (compressed.length == 0) {
+            System.err.println("Deleting corrupted chunk file (empty): " + p);
+            try { Files.delete(p); } catch (IOException ignore) {}
+            return null;
+        }
+
+        int[][][] raw = ChunkZipper.Decompress(compressed);
+        if (raw == null) {
+            // ChunkZipper.Decompress prints its own stack trace and returns null on failure
+            System.err.println("Deleting corrupted chunk file (failed to inflate): " + p);
+            try { Files.delete(p); } catch (IOException ignore) {}
+            return null;
+        }
+
+        BufferedChunk chunk = new BufferedChunk();
+        int[][][] dest = chunk.getRaw();
+        for (int x = 0; x < BufferedChunk.SIZE; x++)
+            for (int y = 0; y < BufferedChunk.SIZE; y++)
+                System.arraycopy(raw[x][y], 0, dest[x][y], 0, BufferedChunk.SIZE);
 
         return chunk;
     }
