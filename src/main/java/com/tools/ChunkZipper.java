@@ -1,3 +1,5 @@
+package com.tools;
+    
 import java.io.ByteArrayOutputStream;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
