@@ -26,9 +26,14 @@ My own pixel art
 
 <img src="pixel art (13).png" align="left" width="25" style="margin-right: 200px;" />
 
+
 ---
 ---
 ---
 
-[LICENSE]
-anything is ok as i didn't spend that much time on it but attribution and linking to https://github.com/OxillenGlow/ or https://github.com/OxillenGlow/MtSharpGrain/ is appreciated.
+<sup><sup> by oxillenglow/P.L. </sup></sup>
+
+--- 
+> [!IMPORTANT]
+> [LICENSE]
+> anything is ok as i didn't spend that much time on it but attribution and linking to https://github.com/OxillenGlow/ or https://github.com/OxillenGlow/MtSharpGrain/ is appreciated.
