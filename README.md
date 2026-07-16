@@ -66,8 +66,6 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 ### Important? stuff
 #### What am i working on now?
-<details>
-<summary>What am i working on now?</summary>
     
 My todo/doing list:
 - simple world generation 70%
@@ -76,7 +74,7 @@ My todo/doing list:
 - More content: 0%
     - More blocks: ice, glass, metal, plastic 30%
     - Special blocks: ... 
-    - Person model - i think i should use the java drake model for people
+    - Person model - i think i should use the java duke model for people
     - Randomly spawned builtings
 - GUI > afterwards customisable with scripts 80%
 - Npc with behavior > afterwards, scripts to control npc 0%
@@ -91,8 +89,6 @@ Done:
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
 - Add buttons for adjusting view distance
-
-</details>
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
