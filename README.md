@@ -82,7 +82,7 @@ My todo/doing list:
 - Npc with behavior > afterwards, scripts to control npc 0%
 - PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)80%
-- **IMPORTANT** Upgrade GUI to use newly uploaded images 20% (lemur is a bit too big for me right now, perhaps in the future.)
+- **IMPORTANT** Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
 - At the end of resizing, i should either find a IGUI function that recalculates the screen OR just make a new IGUI object and hope for the best of igui's code and java's gc janitor. 70%
 
 <sup>80% here means it is basically done but could be improved</sup>
@@ -118,7 +118,7 @@ Available at: https://minkmin.itch.io/hyper-starter-pack
 
 #### AI?
 
-Yes, I use claude a lot, perhaps too much? idk just speeds things up and removes need for constantly checking the API of whatever thing is implemented.
+Yes, I use claude a lot, perhaps too much? idk just speeds things up and removes need for constantly checking the API of whatever thing is implemented. Also, to be honest, Claude write code with less bugs and faster than me.
 
 This is only for code, all assets/ideas are human made (not that i use a lot of assets).
 
