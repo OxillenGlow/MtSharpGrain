@@ -82,7 +82,7 @@ public class Main extends SimpleApplication {
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
         IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
 
-        gui.imageSize(0.1f, 0.1f).imageAlpha(true).imageColor(ColorRGBA.White)
+        gui.imageSize(0.04f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
            .imageHAlign("center").imageVAlign("center");
         IGuiComponent crosshair = gui.image("img/pointers.blue_4.png", .5f, .5f, true);
 
@@ -228,7 +228,7 @@ public class Main extends SimpleApplication {
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
         IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
 
-        gui.imageSize(0.03f, 0.03f).imageAlpha(true).imageColor(ColorRGBA.White)
+        gui.imageSize(0.04f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
            .imageHAlign("center").imageVAlign("center");
         IGuiComponent crosshair = gui.image("img/pointers.blue_4.png", .5f, .5f, true);
         

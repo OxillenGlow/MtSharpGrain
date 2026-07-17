@@ -38,12 +38,18 @@ public class JsApiBootstrap {
         this.guiApi = new GuiApi();
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT)
                 .allowArrayAccess(true)
+                .targetTypeMapping(
+                        Double.class,
+                        Float.class,
+                        null,
+                        Double::floatValue
+                )
                 .build();
         this.context = Context.newBuilder("js")
-                .allowHostAccess(access)
-                .allowHostClassLookup(name -> false)
-                .build();
-
+                        .allowHostAccess(access)
+                        .allowHostClassLookup(name -> false)
+                        .build();
+  
         context.getBindings("js").putMember("Scene", sceneApi);
         context.getBindings("js").putMember("Engine", tickRegistry);
         context.getBindings("js").putMember("Gui", guiApi);
