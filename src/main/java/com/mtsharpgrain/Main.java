@@ -249,7 +249,6 @@ public class Main extends SimpleApplication {
       
         try {
             AssetConverter.extract("/chunkgen.js", "worlds/"+world+"/chunkgen.js");
-            AssetConverter.extract("/test.js", "worlds/"+world+"/mod/DEFAULT/test.js");
             AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/DEFAULT/blocktrailmod.js");
             AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
             AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/BridgeBuilder/bridge.js");
@@ -258,7 +257,7 @@ public class Main extends SimpleApplication {
         
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("failed"+ex);   
         }
         
     }

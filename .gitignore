@@ -1,5 +1,6 @@
-# Ignore everything
-*
+bin/*
+build/*
+worlds/*
 
 # But do NOT ignore these specific files/folders
 !src/
@@ -29,6 +30,7 @@ src/main/resources/self/*
 !**/*.fnt
 !**/*.jar
 !**/*.properties
+*.log
 
 **/.DS_Store
 
