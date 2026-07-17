@@ -113,7 +113,7 @@ public class GuiApi {
 
     /** Copies Master.tic()'s push/font/size/color/align/text call shape. */
     public void draw(IGui gui) {
-        if (canDraw = true) {
+        if (canDraw) {
             gui.push(false);
             gui.textFont("Interface/Fonts/Default.fnt");
             gui.textHAlign("center");
