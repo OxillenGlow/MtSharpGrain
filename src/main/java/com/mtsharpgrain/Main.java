@@ -159,8 +159,7 @@ public class Main extends SimpleApplication {
         inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
-
-        guiNode.attachChild(ch);
+        
         //CompletableFuture.runAsync(() -> {
         //    ScriptRunner.loadAndExecuteVisualScript();
         //});
@@ -200,7 +199,7 @@ public class Main extends SimpleApplication {
             cam.setLocation(camPos.subtract(shift));
         }
         
-        com.mtsharpgrain.gui.Master.tic(gui);// just noticed tic is misspelled! wont fix
+        com.mtsharpgrain.gui.Master.tic(gui, modPackManager);// just noticed tic is misspelled! wont fix
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
         modPackManager.tick(tpf, "Update");
@@ -247,18 +246,20 @@ public class Main extends SimpleApplication {
     }
 
     private void extractFiles(String world) {
+      
         try {
             AssetConverter.extract("/chunkgen.js", "worlds/"+world+"/chunkgen.js");
             AssetConverter.extract("/test.js", "worlds/"+world+"/mod/DEFAULT/test.js");
-            AssetConverter.extract("/blocktrailmod.js", "worlds/"+world+"/mod/DEFAULT/blocktrailmod.js");
+            AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/DEFAULT/blocktrailmod.js");
             AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
             AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/BridgeBuilder/bridge.js");
             AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
             AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/Utilities/teleport.js");
         
             System.out.println("Extracted default mod files");
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to extract bundled world scripts", e);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
 }

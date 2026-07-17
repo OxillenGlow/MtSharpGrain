@@ -98,9 +98,6 @@ public class ModPackManager {
     public Set<String> getPackNames() {
         return packs.keySet();
     }
-    public Set<String> getPackNames() {
-         return packs.keySet();
-     }
 
     /** Sorted pack names, for stable table rendering. */
     public List<String> getSortedPackNames() {
