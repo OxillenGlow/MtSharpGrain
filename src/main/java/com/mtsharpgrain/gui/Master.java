@@ -31,26 +31,45 @@ public class Master {
     public static void tic(IGui gui, ModPackManager modPackManager) {
 
         gui.push(false);
-        gui.textFont("Interface/Fonts/Default.fnt");
+        gui.textFont("Interface/Fonts/Console.fnt");
 
         gui.textSize(0.02f);
         gui.textColor(mousePressedL ? ColorRGBA.Green : ColorRGBA.Blue);
         gui.textHAlign("left");
         gui.textVAlign("top");
         String path = GameState.guiState;
-
+        
+        
+        
         if ("play".equals(path)) {
             // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
             modPackManager.disableAllDrawing();
         } else if ("home".equals(path)) {
+            drawBGandButtons(gui);
             drawBlockTypeSelector(gui);
             drawViewDistanceSelector(gui);
             drawHomeNav(gui);
             modPackManager.disableAllDrawing();
         } else if ("home/modview".equals(path)) {
+            gui.textFont("Interface/Fonts/Console.fnt");
+            gui.textHAlign("center");
+            gui.textVAlign("center");
+            gui.textColor(new ColorRGBA(0f, 0f, 0f, 1f)); // 60% opaque black
+            gui.textSize(5f); // step below is tuned to roughly match this glyph size
+
+            gui.text("-", 0.5f, 1.9f, null);
+            gui.text("-", 0.5f, 0.5f, null);
             drawModTable(gui, modPackManager);
             modPackManager.disableAllDrawing();
         } else if (path.startsWith("home/modview/")) {
+            gui.textFont("Interface/Fonts/Console.fnt");
+            gui.textHAlign("center");
+            gui.textVAlign("center");
+            gui.textColor(new ColorRGBA(0f, 0f, 0f, 1f)); // 60% opaque black
+            gui.textSize(5f); // step below is tuned to roughly match this glyph size
+
+            gui.text("-", 0.5f, 1.9f, null);
+            gui.text("-", 0.5f, 0.5f, null);
             String packName = path.substring("home/modview/".length());
             drawModDetail(gui, modPackManager, packName);
             // The ONLY place a mod's own GuiApi elements are allowed to draw.
@@ -159,6 +178,7 @@ public class Master {
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textColor(ColorRGBA.White);
+        gui.textSize(0.06f);
         // TODO: swap for gui.image(...) once nav-arrow assets are picked from the Hyper pack
         gui.text("Mods >", 0.95f, 0.95f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
@@ -166,6 +186,7 @@ public class Master {
             }
             return true;
         });
+        gui.textSize(0.02f);
     }
 
     // ── home/modview: table of mods with enable/disable ────────────────
@@ -174,30 +195,35 @@ public class Master {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
+        
+        gui.textSize(0.04f);
         gui.text("< Back", 0.05f, 0.95f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 GameState.navigateTo("home");
             }
             return true;
         });
+        gui.textSize(0.02f);
 
         gui.textColor(ColorRGBA.White);
-        gui.text("Installed Mods", 0.05f, 0.88f, null);
-
-        float y = 0.80f;
-        float rowSpacing = 0.05f;
+        gui.text("Installed Mods:\n*click* on one to veiw it      press[Buttons] to disable", 0.05f, 0.85f, null);
+        gui.textSize(0.013f);
+        
+        float y = 0.76f;
+        float rowSpacing = 0.03f;
 
         for (String packName : modPackManager.getSortedPackNames()) {
             boolean enabled = modPackManager.isEnabled(packName);
 
             gui.textColor(ColorRGBA.White);
-            gui.text(packName, 0.08f, y, (event, arg) -> {
+            
+            gui.text("- world/my_world/mod/  " + packName, 0.08f, y, (event, arg) -> {
                 if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                     GameState.navigateTo("home/modview/" + packName);
                 }
                 return true;
             });
-
+            
             gui.textColor(enabled ? ColorRGBA.Green : ColorRGBA.Red);
             gui.text(enabled ? "[Enabled]" : "[Disabled]", 0.45f, y, (event, arg) -> {
                 if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
@@ -208,6 +234,7 @@ public class Master {
 
             y -= rowSpacing;
         }
+        gui.textSize(0.02f);
     }
 
     // ── home/modview/<pack>: the only place that pack's own GuiApi draws ──
@@ -223,12 +250,14 @@ public class Master {
         float previousZ = gui.getZIndex();
         gui.zIndex(previousZ + 100f);
         
+        gui.textSize(0.04f);
         gui.text("< Back", 0.05f, 0.95f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 GameState.navigateTo("home/modview");
             }
             return true;
         });
+        gui.textSize(0.02f);
         gui.zIndex(previousZ);
 
         gui.textColor(ColorRGBA.White);
@@ -239,4 +268,29 @@ public class Master {
             gui.text("This mod pack no longer exists.", 0.05f, 0.80f, (event, arg) -> true);
         }
     }
+    
+    private static void drawBGandButtons(IGui gui) {
+        gui.push(false);
+
+        gui.textFont("Interface/Fonts/Console.fnt");
+        gui.textHAlign("center");
+        gui.textVAlign("center");
+        gui.textColor(new ColorRGBA(0f, 0f, 0f, 1f)); // 60% opaque black
+        gui.textSize(5f); // step below is tuned to roughly match this glyph size
+
+        gui.text("-", 0.5f, 1f, null);
+        gui.text("-", 0.5f, 0.0f, null);
+        // ── Big Play button ──────────────────────────────────────────────────
+        gui.textColor(ColorRGBA.White);
+        gui.textSize(0.04f);
+        gui.text("Press [F] to play", 0.5f, 0.5f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                GameState.guiState = "game";
+                
+            }
+            return true;
+        });
+
+        gui.pop();
+}
 }
