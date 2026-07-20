@@ -3,6 +3,8 @@ package com.mtsharpgrain.js.mainthread;
 import com.jme3.asset.AssetManager;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import org.graalvm.polyglot.Value;
+import java.nio.file.Path;
 import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
 import com.mtsharpgrain.js.BlockApi;
@@ -46,10 +48,10 @@ public class JSModifier {
      * @param cam camera for moving
      */
     
-    public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam) {
+    public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam, Path packDir, String packName, ModPackManager modPackManager) {
         WorldAccessor worldAccessor = new RealWorldAccessor(worldAccess);
         BlockApi blockApi = new BlockApi(worldAccess, renderManager);
-        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi, cam, rootNode);
+        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi, cam, rootNode, packDir, packName, modPackManager);
         this.bootstrap.getNodeRegistry().registerFixed(0L, rootNode);
     }
 
@@ -151,4 +153,20 @@ public class JSModifier {
         return bootstrap.getGuiApi().getDraw();
     }
     
+    /**
+     * Calls this pack's own top-level {@code onReceive(data, fromModName)}
+     * JS function, if it defined one. No-op if it didn't — most mods won't
+     * implement a receiver. Used by ModPackManager.broadcast() to deliver
+     * Mod.send() messages from other packs.
+     */
+    public void deliverMessage(String data, String fromPack) {
+        requireInitialized();
+        Value fn = bootstrap.getContext().getBindings("js").getMember("onReceive");
+        if (fn == null || !fn.canExecute()) return;
+        try {
+            fn.execute(data, fromPack);
+        } catch (PolyglotException e) {
+            System.err.println("[JSModifier] onReceive threw (message from '" + fromPack + "'): " + e.getMessage());
+        }
+    }     
 }
