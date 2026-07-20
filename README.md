@@ -8,7 +8,7 @@
 
 
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-A sand box, non voxel game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java (openGL lwjgl and jme).
+A sand box, non voxel, highly modifiable game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java (openGL lwjgl and jme).
 
 ### What's in it so far
 
