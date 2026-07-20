@@ -1,6 +1,7 @@
 bin/*
 build/*
 worlds/*
+.gradle/*
 
 # But do NOT ignore these specific files/folders
 !src/
