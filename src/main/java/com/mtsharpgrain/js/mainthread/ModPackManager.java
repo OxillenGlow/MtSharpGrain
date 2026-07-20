@@ -87,7 +87,7 @@ public class ModPackManager {
             String packName = dir.getFileName().toString();
 
             JSModifier modifier = new JSModifier();
-            modifier.init(assetManager, rootNode, worldAccess, renderManager, cam);
+            modifier.init(assetManager, rootNode, worldAccess, renderManager, cam, dir, packName, this);
 
             try (var walk = Files.walk(dir)) {
                 walk.filter(p -> p.toString().endsWith(".js"))
@@ -202,6 +202,20 @@ public class ModPackManager {
     public void disableAllDrawing() {
         for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
             e.getValue().setDraw(isAlwaysOn(e.getKey()));
+        }
+    }
+
+    /**
+     * Delivers a Mod.send(data) message from `fromPack` to every OTHER
+     * pack's onReceive(data, fromModName), skipping disabled packs as
+     * recipients (the sender itself is also skipped — no self-echo).
+     */
+    public void broadcast(String fromPack, String data) {
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            String name = e.getKey();
+            if (name.equals(fromPack)) continue;
+            if (disabledPacks.contains(name)) continue;
+            e.getValue().deliverMessage(data, fromPack);
         }
     }
 }
