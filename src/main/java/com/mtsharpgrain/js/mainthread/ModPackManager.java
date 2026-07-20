@@ -49,7 +49,7 @@ public class ModPackManager {
     // across every gui path. Positioning itself (which x/y to draw at) is still
     // entirely up to the mod's own JS via Gui.guiWord — this only controls
     // *whether* GuiApi.draw() is allowed to run for that pack each frame.
-    private static final String[] ALWAYS_ON_PREFIXES = {"LFT", "RHT", "BTM","UTIL"};
+    private static final String[] ALWAYS_ON_PREFIXES = {"LFT", "RHT", "BTM", "UTIL", "MODE"};
 
     private static boolean isAlwaysOn(String packName) {
         for (String prefix : ALWAYS_ON_PREFIXES) {
