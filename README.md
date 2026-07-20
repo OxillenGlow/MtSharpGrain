@@ -95,19 +95,11 @@ My todo/doing list:
     - Using these pixel art stuff i did:
 <img src="src/main/resources/self/pixel art.png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (1).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (2).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (3).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (4).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (5).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (6).png" align="left" width="25" style="margin-right: 20px;" />and more...
 - Npc with behavior > afterwards, scripts to control npc 0%
-- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)80%
-- **IMPORTANT** Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
-- Extend JS API further
-    - Simple save data api with XML
-    - Intermod communication API
-    - Multi player support (real multiplayer comes much later)
-    - Utility constant display support for prefixing mods with:
-        - LFT
-        - RHT
-        - BTM
-        - to constantly display gui on left, right bottom of screen.
+- Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
 - Survival as a JavaScript mod
-- At the end of resizing, i should either find a IGUI function that recalculates the screen OR just make a new IGUI object and hope for the best of igui's code and java's gc janitor. 70%
+- Multi player support for mods (real multiplayer comes much later) 0%
+- Adding a star system so that stared and important mods can have navigation buttons in home screen. 0%
+- Adding a clickable play button 0%
 
 <sup>80% here means it is basically done but could be improved</sup>
 
@@ -120,6 +112,16 @@ Done:
     - random generation 90%
     - World making / hand sculpting 30%
 - GUI > afterwards customisable with scripts 80%
+- Extend JS API further
+    - Simple save data api with XML 90%
+    - Intermod communication API 100%
+    - Utility constant display support for prefixing mods with:
+        - LFT
+        - RHT
+        - BTM
+        - to constantly display gui on left, right bottom of screen. 60%
+- At the end of resizing, i should either find a IGUI function that recalculates the screen OR just make a new IGUI object and hope for the best of igui's code and java's gc janitor. 90% relying on java GC, seems ok.
+- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)80%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
