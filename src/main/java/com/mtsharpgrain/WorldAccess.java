@@ -85,7 +85,7 @@ public final class WorldAccess {
         int localZ = worldToLocal(worldZ);
         try {
             modPackManager.notifyBlockSet(worldX, worldY, worldZ, blockId);
-        } catch (Exceprion e) {System.out.println("Placement rejected and handled:" + e);}
+        } catch (Exception e) {System.out.println("Placement rejected and handled:" + e);}
         
         chunk.set(localX, localY, localZ, blockId);
     }
