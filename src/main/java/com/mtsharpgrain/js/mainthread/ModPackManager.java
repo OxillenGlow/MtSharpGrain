@@ -42,6 +42,22 @@ import java.util.stream.Collectors;
  */
 public class ModPackManager {
 
+    // ── Utility "always-on" packs ───────────────────────────────────────────
+    // A pack whose folder name starts with one of these is exempt from the
+    // normal draw gating (setOnlyDrawing/disableAllDrawing) — it's meant to be
+    // a persistent HUD element (left/right/bottom dock), so it stays visible
+    // across every gui path. Positioning itself (which x/y to draw at) is still
+    // entirely up to the mod's own JS via Gui.guiWord — this only controls
+    // *whether* GuiApi.draw() is allowed to run for that pack each frame.
+    private static final String[] ALWAYS_ON_PREFIXES = {"LFT", "RHT", "BTM"};
+
+    private static boolean isAlwaysOn(String packName) {
+        for (String prefix : ALWAYS_ON_PREFIXES) {
+            if (packName.startsWith(prefix)) return true;
+        }
+        return false;
+    }
+
     // Render-thread only, same as `packs` — not concurrent-safe by design.
     private final Set<String> disabledPacks = new HashSet<>();
     private final Map<String, JSModifier> packs = new LinkedHashMap<>();
@@ -171,6 +187,21 @@ public class ModPackManager {
         for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
             if (disabledPacks.contains(e.getKey())) continue;
             e.getValue().notifyBlockSet(worldX, worldY, worldZ, blockId);
+        }
+    }
+
+    /** Only the named pack's GuiApi may draw its own elements this frame; all others are gated off. */
+    public void setOnlyDrawing(String packName) {
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            String name = e.getKey();
+            e.getValue().setDraw(name.equals(packName) || isAlwaysOn(name));
+        }
+    }
+
+    /** No pack may draw its own GuiApi elements this frame, except always-on utility packs. */
+    public void disableAllDrawing() {
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            e.getValue().setDraw(isAlwaysOn(e.getKey()));
         }
     }
 }
