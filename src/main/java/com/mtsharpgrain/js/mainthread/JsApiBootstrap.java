@@ -6,6 +6,7 @@ import org.graalvm.polyglot.HostAccess;
 import com.mtsharpgrain.js.BlockApi;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import java.nio.file.Path;
 
 /**
  * Wires together the registries/APIs and builds the Graal Context.
@@ -28,14 +29,20 @@ public class JsApiBootstrap {
     private final NodeRegistry nodeRegistry = new NodeRegistry();
     private final TickRegistry tickRegistry = new TickRegistry();
     private final GuiApi guiApi;
+    private final DataApi dataApi;
+    private final MessagingApi messagingApi;
     private final BlockChangeRegistry blockChangeRegistry = new BlockChangeRegistry();
     private final SceneApi sceneApi;
     private final Context context;
     
-    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam, Node rootNode) {
+    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam, Node rootNode, Path packDir, String packName, ModPackManager modPackManager) {
+        // Init all APIs
         this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
-        
+        this.dataApi = new DataApi(packDir);
+        this.messagingApi = new MessagingApi(packName, modPackManager);
         this.guiApi = new GuiApi();
+
+        
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT)
                 .allowArrayAccess(true)
                 .targetTypeMapping(
@@ -53,10 +60,12 @@ public class JsApiBootstrap {
         context.getBindings("js").putMember("Scene", sceneApi);
         context.getBindings("js").putMember("Engine", tickRegistry);
         context.getBindings("js").putMember("Gui", guiApi);
-
+        context.getBindings("js").putMember("Data", dataApi);
+        context.getBindings("js").putMember("Mod", messagingApi);
         context.getBindings("js").putMember("__BlockApi", blockApi);
         context.getBindings("js").putMember("__BlockChangeRegistry", blockChangeRegistry);
         context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode));
+        
         context.eval("js",
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
@@ -91,5 +100,13 @@ public class JsApiBootstrap {
     
     public BlockChangeRegistry getBlockChangeRegistry() {
         return blockChangeRegistry;
+    }
+
+    public DataApi getDataApi() {
+        return dataApi;
+    }
+
+    public MessagingApi getMessagingApi() {
+        return messagingApi;
     }
 }
