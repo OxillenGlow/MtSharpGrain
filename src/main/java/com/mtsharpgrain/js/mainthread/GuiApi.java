@@ -157,5 +157,16 @@ public class GuiApi {
 
     @HostAccess.Export
     public boolean getDraw() {return canDraw;}
+
+    /**
+     * Exposes the current gui path (e.g. "home", "play", "home/modview/LFTsidebar")
+     * to JS, so an always-on pack can suppress its own drawing in specific
+     * states (e.g. hide itself while its own modview detail page is open).
+     * Read-only from JS's perspective — Gui.getGuiState() only.
+     */
+    @HostAccess.Export
+    public String getGuiState() {
+        return com.mtsharpgrain.gui.GameState.guiState;
+    }
     
 }
