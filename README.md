@@ -68,9 +68,7 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 #### What am i working on now?
     
 My todo/doing list:
-- simple world generation 70%
-    - random generation 90%
-    - World making / hand sculpting 30%
+
 - More content: 0%
     - More blocks: ice, glass, metal, plastic 30%
     - Special blocks: ... 
@@ -78,11 +76,19 @@ My todo/doing list:
     - Randomly spawned builtings
     - Using these pixel art stuff i did:
 <img src="src/main/resources/self/pixel art.png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (1).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (2).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (3).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (4).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (5).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (6).png" align="left" width="25" style="margin-right: 20px;" />and more...
-- GUI > afterwards customisable with scripts 80%
 - Npc with behavior > afterwards, scripts to control npc 0%
-- PBR, idk if it will actually make the game look "better" 0% (not going to implement unless there is a big jump in computing power)
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)80%
 - **IMPORTANT** Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
+- Extend JS API further
+    - Simple save data api with XML
+    - Intermod communication API
+    - Multi player support (real multiplayer comes much later)
+    - Utility constant display support for prefixing mods with:
+        - LFT
+        - RHT
+        - BTM
+        - to constantly display gui on left, right bottom of screen.
+- Survival as a JavaScript mod
 - At the end of resizing, i should either find a IGUI function that recalculates the screen OR just make a new IGUI object and hope for the best of igui's code and java's gc janitor. 70%
 
 <sup>80% here means it is basically done but could be improved</sup>
@@ -92,6 +98,10 @@ Done:
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
 - Add buttons for adjusting view distance
 - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
+- simple world generation 90%
+    - random generation 90%
+    - World making / hand sculpting 30%
+- GUI > afterwards customisable with scripts 80%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
