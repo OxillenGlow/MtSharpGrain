@@ -10,17 +10,33 @@
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
 A sand box, non voxel, highly modifiable game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java (openGL lwjgl and jme).
 
-### What's in it so far
+---
 
-- **Semi-smooth node meshes** — blocks connect with rounded transitions rather than hard cube edges
-- **JavaScript modifier API** - much more powerful than JVisualScripting, mostly complete API with:
+### What's in it so far:
+
+#### Semi-smooth node meshes
+blocks are connect with rounded transitions rather than hard cube edges
+#### [JavaScript modifier system](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) 
+much more powerful than JVisualScripting, mostly complete API with:
     - end-node place/destroy
     - gui management
     - procedural world generation
     - end-node placement listener
     - player location getter/setter
-- **[jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor** (depricating) — block based visual coding system, mostly wired into the game now with console comand system.
-- **Console command system** — `!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
+ 
+Why mods:
+- I am a single person and do not have the resources to make a gull game
+- I will **not** be able to make my game fit everyone's tast.
+
+Modding solves both as **anyone including you!** can make their own mini game without messing with boring parts. This is more true with AI.
+
+See [here](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) for more.
+##### [jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor (depricating) 
+block based visual coding system, mostly wired into the game now with console comand system.
+##### Console command system
+`!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
+
+---
 
 ### Download [here](https://github.com/OxillenGlow/MtSharpGrain/releases)
 ---
@@ -36,7 +52,9 @@ Using jVisualScript to break and place blocks (too bad i did not do a GIF)
 Just interesting to see how it is loading.
 
 ![](Pictures/v0.1.0-beta2.png)
-This is a picture from current version.
+This is a picture the last version.
+
+![](Pictures/Poster.png)
 
 </details>
 
