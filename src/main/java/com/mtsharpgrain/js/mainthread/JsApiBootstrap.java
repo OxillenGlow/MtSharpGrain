@@ -70,6 +70,7 @@ public class JsApiBootstrap {
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
             "  destroy: function(x, y, z) { __BlockApi.destroyBlock(x, y, z); },\n" +
+            "  forceSet: function(x, y, z, blockId) { __BlockApi.forceSetBlock(x, y, z, blockId); },\n" +
             "  get: function(x, y, z) { return __BlockApi.getBlock(x, y, z); }\n" +
             "};\n" +
             "globalThis.Engine.onBlockChange = function(fn) { __BlockChangeRegistry.onBlockChange(fn); };\n"
