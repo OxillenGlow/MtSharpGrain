@@ -61,20 +61,23 @@ public class ModPackManager {
     // Render-thread only, same as `packs` — not concurrent-safe by design.
     private final Set<String> disabledPacks = new HashSet<>();
     private final Map<String, JSModifier> packs = new LinkedHashMap<>();
-
+    private SavedModsStore savedModsStore;
+    
     /**
      * Discovers immediate subdirectories of {@code modRoot}, gives each its
      * own initialized {@link JSModifier}, and recursively loads every .js
      * file under that subdirectory (alphabetically) into it. Files directly
      * inside {@code modRoot} (not in a subfolder) are intentionally ignored.
      */
-    public void loadAll(Path modRoot, AssetManager assetManager, Node rootNode,
-                         WorldAccess worldAccess, RenderManager renderManager, Camera cam) throws IOException {
+    public void loadAll(Path modRoot, AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam) throws IOException {
         if (!Files.exists(modRoot)) {
             Logger.getLogger(ModPackManager.class.getName()).log(Level.WARNING,
                     "Mod folder not found, skipping: " + modRoot.toAbsolutePath());
             return;
         }
+
+        Path worldFolder = modRoot.getParent() != null ? modRoot.getParent() : modRoot;
+        savedModsStore = new SavedModsStore(worldFolder);
 
         List<Path> packDirs;
         try (var stream = Files.list(modRoot)) {
