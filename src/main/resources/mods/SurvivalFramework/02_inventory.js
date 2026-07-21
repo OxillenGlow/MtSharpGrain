@@ -57,12 +57,10 @@ loadInventory();
 var selectedBlock = 2; // Stone, sane default
 
 // ── Place / break gate ──────────────────────────────────────────────────
-// NOTE (flagging, not deciding for you): Block.place() below re-enters
-// WorldAccess.setBlockAt(), which today calls modPackManager.notifyBlockSet
-// again — i.e. this exact validator — which would recurse. Per your note
-// you're adding a non-notifying WorldAccess path for API-driven placement;
-// this code assumes Block.place() (or whatever replaces it) does NOT
-// re-trigger onBlockChange for its own write.
+// Block.forcePlace() below goes through WorldAccess.forceSetBlockAt(), which
+// does NOT call modPackManager.notifyBlockSet — so it can't recurse back
+// into this validator. Block.place() would have (setBlockAt -> notifyBlockSet
+// -> this same onBlockChange callback), which is why forcePlace exists.
 Engine.onBlockChange(function (x, y, z, blockId) {
     var existing = Block.get(x, y, z);
 
@@ -75,7 +73,7 @@ Engine.onBlockChange(function (x, y, z, blockId) {
     // Target cell is air/reserved -> this is a place attempt.
     var have = getInvCount(selectedBlock);
     if (have >= 1) {
-        Block.place(x, y, z, selectedBlock);
+        Block.forceSet(x, y, z, selectedBlock);
         addInv(selectedBlock, -1);
     }
     // Either we already placed it ourselves, or we're refusing for lack of
