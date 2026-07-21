@@ -26,5 +26,5 @@ Engine.onTick(function(tpf, tag) {
     const x = Math.floor(p[0]);
     const y = Math.floor(p[1]) - 1;
     const z = Math.floor(p[2]);
-    Block.place(x, y, z, 10);
+    Block.forceSet(x, y, z, 10);
 }, "Update");
