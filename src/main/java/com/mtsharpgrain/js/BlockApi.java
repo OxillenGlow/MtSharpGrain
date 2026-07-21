@@ -27,6 +27,12 @@ public class BlockApi {
     }
 
     @HostAccess.Export
+    public void forceSetBlock(int x, int y, int z, int blockId) {
+        worldAccess.forceSetBlockAt(x, y, z, blockId);
+        renderManager.onBlockChanged(x, y, z);
+    }
+
+    @HostAccess.Export
     public int getBlock(int x, int y, int z) {
         return worldAccess.getBlockAt(x, y, z);
     }
