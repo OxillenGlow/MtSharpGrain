@@ -60,10 +60,10 @@ This is a picture the last version.
 
 ---
 
-#### Links
+### Links
 
-- 📖 [Wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)
-- 💬 [Discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)
+- 📖 **[Wiki](https://github.com/OxillenGlow/MtSharpGrain/wiki)**
+- 💬 **[Discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)**
 
 ---
 
@@ -91,15 +91,18 @@ My todo/doing list:
     - More blocks: ice, glass, metal, plastic 30%
     - Special blocks: ... 
     - Person model - i think i should use the java duke model for people 
-    - Randomly spawned builtings
+    - **Important** Randomly spawned buildings
+        - Ground buildings 0/100
+        - Air buildings 0/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
     - Using these pixel art stuff i did:
 <img src="src/main/resources/self/pixel art.png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (1).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (2).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (3).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (4).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (5).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (6).png" align="left" width="25" style="margin-right: 20px;" />and more...
 - Npc with behavior > afterwards, scripts to control npc 0%
 - Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
 - Survival as a JavaScript mod
 - Multi player support for mods (real multiplayer comes much later) 0%
-- Adding a star system so that stared and important mods can have navigation buttons in home screen. 0%
 - Adding a clickable play button 0%
+- Add a Sun 20%
+- Modify the click listener for JS made objects 0%
 
 <sup>80% here means it is basically done but could be improved</sup>
 
