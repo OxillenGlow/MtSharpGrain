@@ -109,4 +109,24 @@ public final class WorldAccess {
     public void putLoadedChunk(ChunkPos pos, BufferedChunk chunk) {
         Useful.put(pos, chunk);
     }
+
+    /**
+     * Bypasses modPackManager.notifyBlockSet() validation entirely — for mod
+     * code that needs to force a block change regardless of what any pack's
+     * onBlockChange validators say (e.g. world-gen assist, admin tools, a mod
+     * correcting its own prior placement). Unlike setBlockAt(), this can also
+     * write into an unloaded chunk (via ensureChunk) instead of silently no-op'ing.
+     *
+     * FLAG: since this skips validators, it also skips whatever protections
+     * those validators exist to enforce (griefing prevention, etc. if you ever
+     * add that). Only wire this to trusted/internal call paths.
+     */
+    public void forceSetBlockAt(int worldX, int worldY, int worldZ, int blockId) {
+        ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
+        BufferedChunk chunk = ensureChunk(chunkPos); // generates/loads if not already resident
+        int localX = worldToLocal(worldX);
+        int localY = worldToLocal(worldY);
+        int localZ = worldToLocal(worldZ);
+        chunk.set(localX, localY, localZ, blockId);
+    }
 }
