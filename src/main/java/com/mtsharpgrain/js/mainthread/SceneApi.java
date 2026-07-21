@@ -9,6 +9,11 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.light.Light;
+import com.jme3.light.PointLight;
+import com.jme3.scene.control.LightControl;
+import java.util.HashMap;
+import java.util.Map;
 import org.graalvm.polyglot.HostAccess;
 
 /**
@@ -25,6 +30,13 @@ public class SceneApi {
     private final AssetManager assets;
     private final WorldAccessor world;
     private final Node rootNode;
+
+    // handle -> Light, for handles that are light-carrier nodes created by
+    // createLight(). Not every registry handle has an entry here — only
+    // ones that came from createLight(). Checked in destroy() so removing
+    // the node also removes the light from rootNode's light list, instead
+    // of leaving it registered (and shining) with no owning Spatial.
+    private final Map<Long, Light> lightsByHandle = new HashMap<>();
 
     public SceneApi(NodeRegistry registry, AssetManager assets, WorldAccessor world, Node rootNode) {
         this.rootNode = rootNode;
@@ -55,6 +67,22 @@ public class SceneApi {
     @HostAccess.Export
     public long createCube(String name, float size) {
         Box box = new Box(size / 2f, size / 2f, size / 2f);
+        Geometry geom = new Geometry(name, box);
+
+        Material mat = new Material(assets, "Common/MatDefs/Light/Lighting.j3md");
+        mat.setBoolean("UseMaterialColors", true);
+        mat.setColor("Ambient", new ColorRGBA(0.2f, 0.2f, 0.2f, 1f));
+        mat.setColor("Diffuse", ColorRGBA.White);
+        mat.setColor("Specular", ColorRGBA.White);
+        mat.setFloat("Shininess", 16f);
+        geom.setMaterial(mat);
+
+        return registry.register(geom);
+    }
+
+    @HostAccess.Export
+    public long createRectangle(String name, float x, float y, float z) {
+        Box box = new Box(x / 2f, y / 2f, z / 2f);
         Geometry geom = new Geometry(name, box);
 
         Material mat = new Material(assets, "Common/MatDefs/Light/Lighting.j3md");
@@ -127,13 +155,6 @@ public class SceneApi {
         }
     }
 
-    @HostAccess.Export
-    public void destroy(long handle) {
-        Spatial spatial = registry.get(handle);
-        spatial.removeFromParent();
-        registry.free(handle);
-    }
-
     /**
      * Returns the block id at the given world block coordinates.
      * Forwards to {@link WorldAccessor} - wire a real implementation in there.
@@ -143,5 +164,71 @@ public class SceneApi {
     @HostAccess.Export
     public int getBlockId(int x, int y, int z) {
         return world.getBlockId(x, y, z);
+    }
+
+    /**
+     * Creates a PointLight and an invisible carrier Node wired together via
+     * LightControl (see jME wiki: "Light Follows Spatial") — the control
+     * copies the node's world translation into the light's position every
+     * frame, so the returned handle behaves like any other Scene node for
+     * positioning purposes: setPosition/getPosition/attachChild all work on
+     * it unmodified.
+     *
+     * NOTE (flagging, not deciding): the light is added to rootNode's light
+     * list, so — same as createCube — it lights everything under rootNode
+     * regardless of where the carrier node itself gets attached. If a script
+     * ever needs a light scoped to a subtree instead of the whole scene,
+     * this would need an overload that takes a parent handle for both the
+     * addLight() call and the attach.
+     *
+     * @param radius world-space falloff distance
+     */
+    @HostAccess.Export
+    public long createLight(String name, float r, float g, float b, float radius) {
+        PointLight light = new PointLight();
+        light.setColor(new ColorRGBA(r, g, b, 1f));
+        light.setRadius(radius);
+        rootNode.addLight(light);
+
+        Node carrier = new Node(name);
+        carrier.addControl(new LightControl(light));
+
+        long handle = registry.register(carrier);
+        lightsByHandle.put(handle, light);
+        return handle;
+    }
+
+    @HostAccess.Export
+    public void setLightColor(long handle, float r, float g, float b) {
+        Light light = lightsByHandle.get(handle);
+        if (light == null) {
+            throw new IllegalArgumentException("Handle " + handle + " is not a light");
+        }
+        ((PointLight) light).setColor(new ColorRGBA(r, g, b, 1f));
+    }
+
+    @HostAccess.Export
+    public void setLightRadius(long handle, float radius) {
+        Light light = lightsByHandle.get(handle);
+        if (light == null) {
+            throw new IllegalArgumentException("Handle " + handle + " is not a light");
+        }
+        ((PointLight) light).setRadius(radius);
+    }
+
+    @HostAccess.Export
+    public void destroy(long handle) {
+        Spatial spatial = registry.get(handle);
+        spatial.removeFromParent();
+        registry.free(handle);
+
+        // If this handle was a light carrier, the light itself has to be
+        // pulled out of rootNode's light list explicitly — removeFromParent()
+        // above only detaches the invisible carrier node, it does not touch
+        // the light, which was added via rootNode.addLight(), not attachChild().
+        Light light = lightsByHandle.remove(handle);
+        if (light != null) {
+            rootNode.removeLight(light);
+        }
     }
 }
