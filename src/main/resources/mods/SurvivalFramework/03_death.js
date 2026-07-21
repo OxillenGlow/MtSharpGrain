@@ -1,8 +1,8 @@
 // ============================================================================
 // 03_death.js — Deadly-Inventory Survival Framework
 //
-// Listens for "!die <playerId> <reason>" broadcasts sent by ANY pack via
-// Mod.send() (playerId is ignored for now — single-player; reason uses
+// Listens for json broadcasts sent by ANY pack via
+// Mod.send() (playerId is ignored for now — single-player but please add the field as a stub anyways; reason uses
 // underscores instead of spaces, e.g. "fell_into_lava", and is de-underscored
 // for display).
 //
@@ -25,14 +25,20 @@ var deathActive = false;
 var deathTimer = 0.0;
 var deathMsgHandle = -1;
 
+// Handles JSON messages of shape: { messageType: "die", playerId: ..., reason: "fell_into_lava" }
+// Anything that isn't valid JSON, or doesn't have messageType === "die", is silently ignored —
+// this pack shares the Mod.send() channel with every other pack, so most messages aren't for us.
 function onReceive(data, fromPack) {
-    if (typeof data !== "string") return;
-    if (data.substring(0, 5) !== "!die ") return;
+    var msg;
+    try {
+        msg = JSON.parse(data);
+    } catch (e) {
+        return; // not JSON — not meant for us
+    }
+    if (!msg || msg.messageType !== "die") return;
 
-    var parts = data.split(" ");
-    if (parts.length < 3) return;
-    // parts[1] = player id — ignored for now
-    var reason = parts.slice(2).join(" ").split("_").join(" ");
+    // reason keeps the same underscore-separated convention as before, just carried in a JSON field now.
+    var reason = (msg.reason || "unknown").split("_").join(" ");
     triggerDeath(reason);
 }
 
