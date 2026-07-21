@@ -192,7 +192,8 @@ public class SceneApi {
 
         Node carrier = new Node(name);
         carrier.addControl(new LightControl(light));
-
+        rootNode.attachChild(carrier);// just for lights so less buggs later down the road
+        
         long handle = registry.register(carrier);
         lightsByHandle.put(handle, light);
         return handle;
