@@ -47,9 +47,9 @@ Engine.onTick(function(tpf, tag) {
         var z = Math.round(start[2] + dz * t);
         var y = Math.round(start[1] + (end[1] - start[1]) * t);
 
-        Block.place(x, y, z, BridgeBuilder.bridgeBlockId);       // walkway
-        Block.place(x, y + 1, z - 1, BridgeBuilder.railBlockId); // rail (assumes a roughly X-aligned bridge)
-        Block.place(x, y + 1, z + 1, BridgeBuilder.railBlockId); // rail
+        Block.forceSet(x, y, z, BridgeBuilder.bridgeBlockId);       // walkway
+        Block.forceSet(x, y + 1, z - 1, BridgeBuilder.railBlockId); // rail (assumes a roughly X-aligned bridge)
+        Block.forceSet(x, y + 1, z + 1, BridgeBuilder.railBlockId); // rail
     }
 
     BridgeBuilder.startPos = null;
