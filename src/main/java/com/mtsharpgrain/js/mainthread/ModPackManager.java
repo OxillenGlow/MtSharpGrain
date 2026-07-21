@@ -221,4 +221,20 @@ public class ModPackManager {
             e.getValue().deliverMessage(data, fromPack);
         }
     }
+
+    public boolean isSaved(String packName) {
+        return savedModsStore != null && savedModsStore.isSaved(packName);
+    }
+
+    public void setSaved(String packName, boolean saved) {
+        if (savedModsStore != null) savedModsStore.setSaved(packName, saved);
+    }
+
+    /** Saved names filtered to packs that are currently loaded — stale entries (deleted/renamed mods) are hidden here but stay in the file. */
+    public List<String> getSavedPackNames() {
+        if (savedModsStore == null) return List.of();
+        return savedModsStore.getSavedNames().stream()
+                .filter(packs::containsKey)
+                .collect(Collectors.toList());
+    }
 }
