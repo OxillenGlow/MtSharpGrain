@@ -10,6 +10,7 @@ import com.mtsharpgrain.js.mainthread.ModPackManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
 
 /**
  *
@@ -45,12 +46,13 @@ public class Master {
             // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
             modPackManager.disableAllDrawing();
         } else if ("home".equals(path)) {
+            modPackManager.disableAllDrawing();
             drawBGandButtons(gui);
-            drawBlockTypeSelector(gui);
             drawViewDistanceSelector(gui);
             drawHomeNav(gui);
-            modPackManager.disableAllDrawing();
+            drawSavedModsList(gui, modPackManager);
         } else if ("home/modview".equals(path)) {
+            modPackManager.disableAllDrawing();
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
@@ -60,7 +62,7 @@ public class Master {
             gui.text("-", 0.5f, 1.9f, null);
             gui.text("-", 0.5f, 0.5f, null);
             drawModTable(gui, modPackManager);
-            modPackManager.disableAllDrawing();
+            
         } else if (path.startsWith("home/modview/")) {
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
@@ -77,7 +79,7 @@ public class Master {
         } else {
             // Unknown/stale path (e.g. saved from an old session) — fall back to home.
             GameState.navigateTo("home");
-            drawBlockTypeSelector(gui);
+            drawSavedModsList(gui, modPackManager);
             drawViewDistanceSelector(gui);
             drawHomeNav(gui);
             modPackManager.disableAllDrawing();
@@ -232,6 +234,15 @@ public class Master {
                 return true;
             });
 
+            boolean isSaved = modPackManager.isSaved(packName);
+            gui.textColor(isSaved ? ColorRGBA.Yellow : ColorRGBA.Gray);
+            gui.text(isSaved ? "[Saved]" : "[Save]", 0.65f, y, (event, arg) -> {
+                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                    modPackManager.setSaved(packName, !isSaved);
+                }
+                return true;
+            });
+
             y -= rowSpacing;
         }
         gui.textSize(0.02f);
@@ -292,5 +303,38 @@ public class Master {
         });
 
         gui.pop();
-}
+    }
+
+    // ── home: saved mods list, right side ───────────────────────────────
+    private static void drawSavedModsList(IGui gui, ModPackManager modPackManager) {
+        gui.textHAlign("right");
+        gui.textVAlign("top");
+
+        gui.textColor(ColorRGBA.White);
+        gui.textSize(0.025f);
+        gui.text("Saved Mods:", 0.95f, 0.85f, null);
+
+        gui.textSize(0.018f);
+        float y = 0.80f;
+        float rowSpacing = 0.03f;
+
+        List<String> savedNames = modPackManager.getSavedPackNames();
+        if (savedNames.isEmpty()) {
+            gui.textColor(ColorRGBA.Gray);
+            gui.text("(none)", 0.95f, y, null);
+        } else {
+            for (String packName : savedNames) {
+                gui.textColor(ColorRGBA.Yellow);
+                gui.text(packName, 0.95f, y, (event, arg) -> {
+                    if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                        GameState.navigateTo("home/modview/" + packName);
+                    }
+                    return true;
+                });
+                y -= rowSpacing;
+            }
+        }
+    
+        gui.textSize(0.02f); // restore the size tic() set before this call
+    }
 }
