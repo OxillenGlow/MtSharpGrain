@@ -169,4 +169,10 @@ public class JSModifier {
             System.err.println("[JSModifier] onReceive threw (message from '" + fromPack + "'): " + e.getMessage());
         }
     }     
+
+    /** Flushes this pack's DataApi buffer to disk. Call once at app shutdown. */
+    public void onClose() {
+        requireInitialized();
+        bootstrap.getDataApi().save();
+    }
 }
