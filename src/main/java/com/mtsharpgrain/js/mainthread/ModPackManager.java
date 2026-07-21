@@ -237,4 +237,11 @@ public class ModPackManager {
                 .filter(packs::containsKey)
                 .collect(Collectors.toList());
     }
+
+    /** Flushes every pack's DataApi buffer to disk. Call once at app shutdown, from Main.destroy(). */
+    public void onClose() {
+        for (JSModifier m : packs.values()) {
+            m.onClose();
+        }
+}
 }
