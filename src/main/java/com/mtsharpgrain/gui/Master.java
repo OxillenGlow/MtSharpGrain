@@ -321,7 +321,7 @@ public class Master {
         List<String> savedNames = modPackManager.getSavedPackNames();
         if (savedNames.isEmpty()) {
             gui.textColor(ColorRGBA.Gray);
-            gui.text("(none)", 0.95f, y, null);
+            gui.text("(none)", 0.80f, y, null);
         } else {
             for (String packName : savedNames) {
                 gui.textColor(ColorRGBA.Yellow);
