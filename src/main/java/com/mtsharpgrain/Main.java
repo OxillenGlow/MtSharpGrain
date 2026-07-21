@@ -260,7 +260,8 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/SurvivalFramework/02_inventory.js", "worlds/"+world+"/mod/Open_Inventory/02_inventory.js");
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/Open_Inventory/03_death.js");
             AssetConverter.extract("/mods/SurvivalFramework/04_ui.js", "worlds/"+world+"/mod/Open_Inventory/04_ui.js");
-                 
+            AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/Open_Inventory/05_location.js");
+           
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {
             System.out.println("failed"+ex);   
