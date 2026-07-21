@@ -243,5 +243,5 @@ public class ModPackManager {
         for (JSModifier m : packs.values()) {
             m.onClose();
         }
-}
+    }
 }
