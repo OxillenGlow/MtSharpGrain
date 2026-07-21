@@ -241,6 +241,8 @@ public class Main extends SimpleApplication {
         // Must happen after saveAll() in case anything triggers a last-second
         // generation (it won't currently, but keeps shutdown order sane).
         if (chunkGen != null) chunkGen.close();
+        if (modPackManager != null) modPackManager.onClose();
+        
         super.destroy();
         
     }
