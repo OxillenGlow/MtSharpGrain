@@ -11,61 +11,70 @@ import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 /**
- * Simple per-pack XML save-data API, exposed to JS as the {@code Data} global:
- *   Data.save(data, location)
- *   Data.get(location)
+ * Per-pack save-data API, exposed to JS as the {@code Data} global:
+ *   Data.save(data, location)   — sets a key in the in-memory buffer
+ *   Data.get(location)          — reads a key from the in-memory buffer
  *
- * Each pack gets its own storage folder so mods can't read/clobber each
- * other's save data:
- *   worlds/<world>/mod/<packName>/data/<location>.xml
+ * One file per pack now, not one file per key:
+ *   worlds/<world>/mod/<packName>/data.xml
  *
- * Values are always strings from JS's perspective — for structured data,
- * mods should JSON.stringify() before save() and JSON.parse() after get().
- * Uses java.util.Properties' storeToXML/loadFromXML under a single "value"
- * key, and writes via a temp file + atomic move (same pattern as
- * ChunkFileHelper.saveChunk) so a crash mid-write can't corrupt the file.
+ * Loaded once at construction into an in-memory Properties buffer. Data.save()
+ * only mutates the buffer — it does NOT touch disk. The buffer is written out
+ * only when save() (no-arg, Java-only) is called, which is wired up to fire
+ * once at shutdown via JSModifier.onClose() -> ModPackManager.onClose() ->
+ * Main.destroy(). This avoids a disk write on every single key set, at the
+ * cost of losing unsaved changes on a crash (same trade-off ChunkFileHelper's
+ * in-memory-then-flush pattern makes elsewhere, just applied here too).
  */
 public class DataApi {
 
-    private final Path dataRoot; // worlds/<world>/mod/<packName>/data
+    private final Path dataFile; // worlds/<world>/mod/<packName>/data.xml
+    private final Properties buffer = new Properties();
 
     public DataApi(Path packDir) {
-        this.dataRoot = packDir.resolve("data");
+        this.dataFile = packDir.resolve("data.xml");
+        load();
     }
 
+    private void load() {
+        if (!Files.exists(dataFile)) return;
+        try (InputStream is = Files.newInputStream(dataFile)) {
+            buffer.loadFromXML(is);
+        } catch (IOException e) {
+            System.err.println("[DataApi] failed to load " + dataFile + ": " + e.getMessage());
+        }
+    }
+
+    /** Sets a key in the in-memory buffer. Does NOT write to disk — call save() for that. */
     @HostAccess.Export
     public void save(String data, String location) {
-        String safe = sanitize(location);
-        Path file = dataRoot.resolve(safe + ".xml");
-        Path temp = file.resolveSibling(file.getFileName() + ".tmp");
-        try {
-            Files.createDirectories(dataRoot);
-            Properties props = new Properties();
-            props.setProperty("value", data == null ? "" : data);
-            try (OutputStream os = Files.newOutputStream(temp)) {
-                props.storeToXML(os, "MtSharpGrain save data: " + safe);
-            }
-            Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (IOException e) {
-            System.err.println("[DataApi] failed to save '" + location + "': " + e.getMessage());
-        }
+        buffer.setProperty(sanitize(location), data == null ? "" : data);
     }
 
     @HostAccess.Export
     public String get(String location) {
-        Path file = dataRoot.resolve(sanitize(location) + ".xml");
-        if (!Files.exists(file)) return null;
-        try (InputStream is = Files.newInputStream(file)) {
-            Properties props = new Properties();
-            props.loadFromXML(is);
-            return props.getProperty("value");
+        return buffer.getProperty(sanitize(location));
+    }
+
+    /**
+     * Writes the entire in-memory buffer to data.xml. NOT exported to JS —
+     * this is a Java-only lifecycle call, driven by JSModifier.onClose().
+     * Temp-file + atomic-move, same crash-safety pattern as ChunkFileHelper.
+     */
+    public void save() {
+        Path temp = dataFile.resolveSibling(dataFile.getFileName() + ".tmp");
+        try {
+            Files.createDirectories(dataFile.getParent());
+            try (OutputStream os = Files.newOutputStream(temp)) {
+                buffer.storeToXML(os, "MtSharpGrain save data");
+            }
+            Files.move(temp, dataFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
-            System.err.println("[DataApi] failed to load '" + location + "': " + e.getMessage());
-            return null;
+            System.err.println("[DataApi] failed to save " + dataFile + ": " + e.getMessage());
         }
     }
 
-    /** Strips anything that isn't alnum/_/- so "location" can't path-traverse out of dataRoot. */
+    /** Strips anything that isn't alnum/_/- so "location" can't path-traverse or collide with a bad key. */
     private static String sanitize(String location) {
         if (location == null || location.isEmpty()) return "default";
         return location.replaceAll("[^a-zA-Z0-9_\\-]", "_");
