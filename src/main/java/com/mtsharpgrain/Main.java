@@ -14,6 +14,8 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
+import com.jme3.scene.Spatial;
+import com.jme3.util.SkyFactory;
 import com.tools.AssetConverter;
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +125,18 @@ public class Main extends SimpleApplication {
         //fog.setFogDensity(0.8f);
         //fpp.addFilter(fog);
         //viewPort.addProcessor(fpp);
-        // ─────────────────────────────────────────────────────────────────────
+        // ───────────────────────────────────────────────────────────────[...]
+
+        // ── Skybox setup ─────────────────────────────────────────────────────
+        try {
+            // Load the skybox as an equirectangular map from the single SkyBox.png image
+            Spatial sky = SkyFactory.createSky(assetManager, "SkyBox.png", SkyFactory.EnvMapType.EquirectangularMap);
+            rootNode.attachChild(sky);
+        } catch (Exception e) {
+            System.err.println("Failed to load skybox: " + e.getMessage());
+            e.printStackTrace();
+        }
+        // ───────────────────────────────────────────────────────────────[...]
 
         // ── Chunk generator: loads chunkgen.js once and binds the Chunk.* API.
         // templatesRoot must be the directory CONTAINING storageAir/ and
