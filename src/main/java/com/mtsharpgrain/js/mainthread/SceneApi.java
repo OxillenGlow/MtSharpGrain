@@ -107,9 +107,20 @@ public class SceneApi {
 
     @HostAccess.Export
     public void setPosition(long handle, float x, float y, float z) {
-        registry.get(handle).setLocalTranslation(x, y, z);
-    }
+        Spatial spatial = registry.get(handle);
 
+        // Same render-space conversion PlayerApi.setPosition already does:
+        // "true world" -> render space is (+ rootNode's current floating-origin shift).
+        Vector3f renderSpaceTarget = new Vector3f(x, y, z).addLocal(rootNode.getLocalTranslation());
+
+        Spatial parent = spatial.getParent();
+        Vector3f localPos = (parent != null)
+                ? parent.worldToLocal(renderSpaceTarget, new Vector3f())
+                : renderSpaceTarget; // no parent (e.g. rootNode itself) — nothing to convert against
+
+        spatial.setLocalTranslation(localPos);
+    }
+    
     /**
      * Returns the WORLD position (not local translation) of the given handle.
      * In JS: {@code const p = Scene.getPosition(handle); p[0], p[1], p[2]}
