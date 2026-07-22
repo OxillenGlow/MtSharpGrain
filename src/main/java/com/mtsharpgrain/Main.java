@@ -89,7 +89,7 @@ public class Main extends SimpleApplication {
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
         cam.setFrustumPerspective(70f, aspectRatio, 0.5f, 5000.0f);
-        cam.setFrustumFar((VIEW_DISTANCE * 16f) + 100);
+        cam.setFrustumFar(180f);
 
         
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
