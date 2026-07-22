@@ -243,4 +243,12 @@ public class SceneApi {
             rootNode.removeLight(light);
         }
     }
+
+    /** Parent-relative placement — sets local translation directly, i.e. an offset from
+     *  whatever this handle's current parent is. Use for things that should move with
+     *  their parent (a light offset from a carrier, a turret on a moving base, etc). */
+    @HostAccess.Export
+    public void setRelativePosition(long handle, float x, float y, float z) {
+       registry.get(handle).setLocalTranslation(x, y, z);
+    }
 }
