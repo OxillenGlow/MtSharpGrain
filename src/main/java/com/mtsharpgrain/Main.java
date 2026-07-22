@@ -63,6 +63,7 @@ public class Main extends SimpleApplication {
         
         var app = new Main();
         app.setSettings(settings);
+        app.setShowSettings(false);
         app.start();
     }
 

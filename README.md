@@ -102,6 +102,7 @@ My todo/doing list:
 - Multi player support for mods (real multiplayer comes much later) 0%
 - Adding a clickable play button 0%
 - Modify the click listener for JS made objects 0%
+- **IMPORTANT** fix the 0_2 inventory mod something about onblock place not working
 
 <sup>80% here means it is basically done but could be improved</sup>
 
