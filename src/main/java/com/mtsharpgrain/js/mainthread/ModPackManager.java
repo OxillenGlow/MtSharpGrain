@@ -134,18 +134,6 @@ public class ModPackManager {
         else disabledPacks.add(packName);
     }
 
-    /** Only the named pack's GuiApi may draw its own elements this frame; all others are gated off. */
-    public void setOnlyDrawing(String packName) {
-        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
-            e.getValue().setDraw(e.getKey().equals(packName));
-        }
-    }
-
-    /** No pack may draw its own GuiApi elements this frame. */
-    public void disableAllDrawing() {
-         for (JSModifier m : packs.values()) m.setDraw(false);
-     }
-
     // ── Aggregate lifecycle calls — drive every pack from one place ────────
 
     public void tick(float tpf, String guiTag) {

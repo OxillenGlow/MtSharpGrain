@@ -61,23 +61,23 @@ var selectedBlock = 2; // Stone, sane default
 // does NOT call modPackManager.notifyBlockSet — so it can't recurse back
 // into this validator. Block.place() would have (setBlockAt -> notifyBlockSet
 // -> this same onBlockChange callback), which is why forcePlace exists.
-Engine.onBlockChange(function (x, y, z, blockId) {
-    var existing = Block.get(x, y, z);
-
-    if (existing !== 0 && existing !== 1) {
-        // Something solid is already there -> this is a break, not a place.
-        addInv(existing, 1);
-        return true; // let the normal break proceed
-    }
-
-    // Target cell is air/reserved -> this is a place attempt.
-    var have = getInvCount(selectedBlock);
-    if (have >= 1) {
-        Block.forceSet(x, y, z, selectedBlock);
-        addInv(selectedBlock, -1);
-    }
-    // Either we already placed it ourselves, or we're refusing for lack of
-    // material — reject the original request either way so the caller's
-    // raw blockId never gets applied on top of what we just did.
-    return false;
-});
+//Engine.onBlockChange(function (x, y, z, blockId) {
+//    var existing = Block.get(x, y, z);
+//
+//    if (existing !== 0 && existing !== 1) {
+//        // Something solid is already there -> this is a break, not a place.
+//        addInv(existing, 1);
+//        return true; // let the normal break proceed
+//    }
+//
+//    // Target cell is air/reserved -> this is a place attempt.
+//    var have = getInvCount(selectedBlock);
+//    if (have >= 1) {
+//        Block.forceSet(x, y, z, selectedBlock);
+//        addInv(selectedBlock, -1);
+//    }
+//    // Either we already placed it ourselves, or we're refusing for lack of
+//    // material — reject the original request either way so the caller's
+//    // raw blockId never gets applied on top of what we just did.
+//    return false;
+//});

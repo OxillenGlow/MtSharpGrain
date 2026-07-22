@@ -130,7 +130,7 @@ public class Main extends SimpleApplication {
         // ── Skybox setup ─────────────────────────────────────────────────────
         try {
             // Load the skybox as an equirectangular map from the single SkyBox.png image
-            Spatial sky = SkyFactory.createSky(assetManager, "/SkyBox.png", SkyFactory.EnvMapType.EquirectangularMap);
+            Spatial sky = SkyFactory.createSky(assetManager, "/SkyBox.png", SkyFactory.EnvMapType.EquirectMap);
             rootNode.attachChild(sky);
         } catch (Exception e) {
             System.err.println("Failed to load skybox: " + e.getMessage());
