@@ -101,19 +101,18 @@ My todo/doing list:
 - Survival as a JavaScript mod
 - Multi player support for mods (real multiplayer comes much later) 0%
 - Adding a clickable play button 0%
-- Add a Sun 20%
 - Modify the click listener for JS made objects 0%
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
+- Add a Sun 70%
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
-- Add buttons for adjusting view distance
 - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
 - simple world generation 90%
     - random generation 90%
-    - World making / hand sculpting 30%
+30%
 - GUI > afterwards customisable with scripts 80%
 - Extend JS API further
     - Simple save data api with XML 90%
