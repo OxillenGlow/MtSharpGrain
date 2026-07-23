@@ -152,3 +152,10 @@ tasks.register('jpackage') {
         }
     }
 }
+tasks.named('run', JavaExec) {
+    doFirst {
+            
+        println "JVM ARGS: ${jvmArgs}"
+    }
+}
+
