@@ -58,14 +58,14 @@ public class JsApiBootstrap {
                         .build();
   
         context.getBindings("js").putMember("Scene", sceneApi);
-        context.getBindings("js").putMember("Engine", tickRegistry);
+        context.getBindings("js").putMember("__TickRegistry", tickRegistry);
         context.getBindings("js").putMember("Gui", guiApi);
         context.getBindings("js").putMember("Data", dataApi);
         context.getBindings("js").putMember("Mod", messagingApi);
         context.getBindings("js").putMember("__BlockApi", blockApi);
         context.getBindings("js").putMember("__BlockChangeRegistry", blockChangeRegistry);
         context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode));
-        
+
         context.eval("js",
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
@@ -73,7 +73,10 @@ public class JsApiBootstrap {
             "  forceSet: function(x, y, z, blockId) { __BlockApi.forceSetBlock(x, y, z, blockId); },\n" +
             "  get: function(x, y, z) { return __BlockApi.getBlock(x, y, z); }\n" +
             "};\n" +
-            "globalThis.Engine.onBlockChange = function(fn) { __BlockChangeRegistry.onBlockChange(fn); };\n"
+            "globalThis.Engine = {\n" +
+            "  onTick: function(fn, tag) { __TickRegistry.onTick(fn, tag === undefined ? \"\" : tag); },\n" +
+            "  onBlockChange: function(fn) { __BlockChangeRegistry.onBlockChange(fn); }\n" +
+            "};\n"
         );
     }
 
