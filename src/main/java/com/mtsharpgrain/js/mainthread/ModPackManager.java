@@ -98,7 +98,7 @@ public class ModPackManager {
                         .forEach(p -> {
                             try {
                                 modifier.runJs(p.toFile());
-                            } catch (IOException ex) {
+                            } catch (Exception ex) {
                                 Logger.getLogger(ModPackManager.class.getName()).log(Level.SEVERE,
                                         "Failed to load mod script '" + p + "' in pack '" + packName + "'", ex);
                             }
