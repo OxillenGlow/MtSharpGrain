@@ -56,15 +56,21 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) throws IOException {
         System.out.println(java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
-        AppSettings settings = new AppSettings(true);
+        AppSettings settings = new AppSettings(false);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
         settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
         settings.setResizable(true);
+        System.out.println("new Main");
         
         var app = new Main();
+        System.out.println("set settings settings");
         app.setSettings(settings);
+        System.out.println("show settings false");
+        
         app.setShowSettings(false);
+        System.out.println("Calling start()...");
+        
         app.start();
     }
 
