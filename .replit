@@ -1,0 +1,7 @@
+modules = ["java-graalvm22.3", "nodejs-20"]
+
+[nix]
+channel = "stable-25_05"
+
+[agent]
+expertMode = true
