@@ -103,6 +103,7 @@ My todo/doing list:
 - Adding a clickable play button 0%
 - Modify the click listener for JS made objects 0%
 - **IMPORTANT** fix the 0_2 inventory mod something about onblock place not working
+- **Important** fix compilation errors in GitHub actions.
 
 <sup>80% here means it is basically done but could be improved</sup>
 
@@ -124,7 +125,7 @@ Done:
         - BTM
         - to constantly display gui on left, right bottom of screen. 60%
 - At the end of resizing, i should either find a IGUI function that recalculates the screen OR just make a new IGUI object and hope for the best of igui's code and java's gc janitor. 90% relying on java GC, seems ok.
-- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)80%
+- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)100%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
