@@ -226,6 +226,30 @@ public class ModPackManager {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Notifies every enabled pack that a non-chunk spatial with the given name
+     * was left-clicked. Packs use {@code Engine.onSpatialLeftClick(fn)} to
+     * subscribe to these events.
+     */
+    public void notifySpatialLeftClick(String spatialName) {
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            if (disabledPacks.contains(e.getKey())) continue;
+            e.getValue().notifySpatialLeftClick(spatialName);
+        }
+    }
+
+    /**
+     * Notifies every enabled pack that a non-chunk spatial with the given name
+     * was right-clicked. Packs use {@code Engine.onSpatialRightClick(fn)} to
+     * subscribe to these events.
+     */
+    public void notifySpatialRightClick(String spatialName) {
+        for (Map.Entry<String, JSModifier> e : packs.entrySet()) {
+            if (disabledPacks.contains(e.getKey())) continue;
+            e.getValue().notifySpatialRightClick(spatialName);
+        }
+    }
+
     /** Flushes every pack's DataApi buffer to disk. Call once at app shutdown, from Main.destroy(). */
     public void onClose() {
         for (JSModifier m : packs.values()) {

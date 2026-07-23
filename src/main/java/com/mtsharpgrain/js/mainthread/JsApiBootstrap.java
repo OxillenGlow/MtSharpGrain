@@ -32,6 +32,7 @@ public class JsApiBootstrap {
     private final DataApi dataApi;
     private final MessagingApi messagingApi;
     private final BlockChangeRegistry blockChangeRegistry = new BlockChangeRegistry();
+    private final SpatialClickRegistry spatialClickRegistry = new SpatialClickRegistry();
     private final SceneApi sceneApi;
     private final Context context;
     
@@ -64,6 +65,7 @@ public class JsApiBootstrap {
         context.getBindings("js").putMember("Mod", messagingApi);
         context.getBindings("js").putMember("__BlockApi", blockApi);
         context.getBindings("js").putMember("__BlockChangeRegistry", blockChangeRegistry);
+        context.getBindings("js").putMember("__SpatialClickRegistry", spatialClickRegistry);
         context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode));
 
         context.eval("js",
@@ -75,7 +77,9 @@ public class JsApiBootstrap {
             "};\n" +
             "globalThis.Engine = {\n" +
             "  onTick: function(fn, tag) { __TickRegistry.onTick(fn, tag === undefined ? \"\" : tag); },\n" +
-            "  onBlockChange: function(fn) { __BlockChangeRegistry.onBlockChange(fn); }\n" +
+            "  onBlockChange: function(fn) { __BlockChangeRegistry.onBlockChange(fn); },\n" +
+            "  onSpatialLeftClick:  function(fn) { __SpatialClickRegistry.onLeftClick(fn); },\n" +
+            "  onSpatialRightClick: function(fn) { __SpatialClickRegistry.onRightClick(fn); }\n" +
             "};\n"
         );
     }
@@ -104,6 +108,10 @@ public class JsApiBootstrap {
     
     public BlockChangeRegistry getBlockChangeRegistry() {
         return blockChangeRegistry;
+    }
+
+    public SpatialClickRegistry getSpatialClickRegistry() {
+        return spatialClickRegistry;
     }
 
     public DataApi getDataApi() {

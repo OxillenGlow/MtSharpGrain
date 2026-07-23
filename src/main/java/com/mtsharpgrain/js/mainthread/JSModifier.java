@@ -170,6 +170,24 @@ public class JSModifier {
         }
     }     
 
+    /**
+     * Notifies this pack's {@code Engine.onSpatialLeftClick} handlers that a
+     * non-chunk spatial with the given name was left-clicked.
+     */
+    public void notifySpatialLeftClick(String spatialName) {
+        requireInitialized();
+        bootstrap.getSpatialClickRegistry().notifyLeftClick(spatialName);
+    }
+
+    /**
+     * Notifies this pack's {@code Engine.onSpatialRightClick} handlers that a
+     * non-chunk spatial with the given name was right-clicked.
+     */
+    public void notifySpatialRightClick(String spatialName) {
+        requireInitialized();
+        bootstrap.getSpatialClickRegistry().notifyRightClick(spatialName);
+    }
+
     /** Flushes this pack's DataApi buffer to disk. Call once at app shutdown. */
     public void onClose() {
         requireInitialized();

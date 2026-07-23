@@ -1,0 +1,1 @@
+- [Spatial click system](spatial-click-system.md) — chunk vs non-chunk detection is name-only (regex); how the JS API is exposed to mods.

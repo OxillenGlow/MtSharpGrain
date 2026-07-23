@@ -41,6 +41,7 @@ public class Main extends SimpleApplication {
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
+    private com.mtsharpgrain.node.Check check;
     public static final float ZONE_SIZE = 100f;
     
 
@@ -176,7 +177,7 @@ public class Main extends SimpleApplication {
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
 
-        Check check = new Check(worldAccess, renderManagermg, blockSelector);
+        check = new Check(worldAccess, renderManagermg, blockSelector);
         inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
@@ -199,6 +200,7 @@ public class Main extends SimpleApplication {
         }
 
         worldAccess.addModifier(modPackManager);
+        check.setModPackManager(modPackManager); // enable spatial-click events now that mods are loaded
         
         flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
     }
