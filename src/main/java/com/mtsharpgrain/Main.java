@@ -55,6 +55,7 @@ public class Main extends SimpleApplication {
     private static final long WORLD_SEED = 1234L;
 
     public static void main(String[] args) throws IOException {
+        System.out.println(java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
