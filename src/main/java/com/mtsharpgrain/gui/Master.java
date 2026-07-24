@@ -225,6 +225,18 @@ public class Master {
                 }
                 return true;
             });
+
+            gui.textColor(ColorRGBA.Yellow);
+            gui.text("[Reload mod]", 0.20f, 0.95f, (event, arg) -> {
+                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                    try {
+                        modPackManager.reloadPack(packName);
+                    } catch (IOException ex) {
+                        System.err.println("Failed to reload pack '" + packName + "': " + ex.getMessage());
+                    }
+                }
+                return true;
+            });
             
             gui.textColor(enabled ? ColorRGBA.Green : ColorRGBA.Red);
             gui.text(enabled ? "[Enabled]" : "[Disabled]", 0.45f, y, (event, arg) -> {
