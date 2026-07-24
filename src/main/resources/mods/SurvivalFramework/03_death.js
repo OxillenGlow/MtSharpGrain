@@ -81,9 +81,12 @@ function respawnPlayer() {
 }
 
 function loadHeartPoints() {return;}// not ready yet
-
+var firstframe = true;
 Engine.onTick(function (tpf, tag) {
-    if (firstframe){loadHeartPoints();}
+    if (firstframe2){
+        firstframe2 = false;
+        loadHeartPoints();
+    }
     if (!deathActive) return;
     deathTimer -= tpf;
     if (deathTimer <= 0) {
