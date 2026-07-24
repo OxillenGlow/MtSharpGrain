@@ -279,6 +279,8 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/BridgeBuilder/bridge.js");
             AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
             AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/Utilities/teleport.js");
+            AssetConverter.extract("/mods/gravity.js", "worlds/"+world+"/mod/Gravity/gravity.js");
+            AssetConverter.extract("/mods/sun.js", "worlds/"+world+"/mod/Sol/sun.js");
             AssetConverter.extract("/mods/SurvivalFramework/01_blocknames.js", "worlds/"+world+"/mod/Open_Inventory/01_blocknames.js");
             AssetConverter.extract("/mods/SurvivalFramework/02_inventory.js", "worlds/"+world+"/mod/Open_Inventory/02_inventory.js");
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/Open_Inventory/03_death.js");
