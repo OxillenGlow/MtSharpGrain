@@ -24,6 +24,8 @@ var RESPAWN_MIN_Y = -100;
 var deathActive = false;
 var deathTimer = 0.0;
 var deathMsgHandle = -1;
+var lastReason;
+var heartPoints = 100;
 
 // Handles JSON messages of shape: { messageType: "die", playerId: ..., reason: "fell_into_lava" }
 // Anything that isn't valid JSON, or doesn't have messageType === "die", is silently ignored —
@@ -35,11 +37,14 @@ function onReceive(data, fromPack) {
     } catch (e) {
         return; // not JSON — not meant for us
     }
-    if (!msg || msg.messageType !== "die") return;
-
-    // reason keeps the same underscore-separated convention as before, just carried in a JSON field now.
-    var reason = (msg.reason || "unknown").split("_").join(" ");
-    triggerDeath(reason);
+    if (!msg || (msg.messageType !== "die" && msg.messageType !== "looseHeartPoints")) return;
+    if (msg.messageType == "die") {    // reason keeps the same underscore-separated convention as before, just carried in a JSON field now.
+        var reason = (msg.reason || "unknown").split("_").join(" ");
+        triggerDeath(reason);
+    } else {
+        heartPoints -= (msg.percentage || 10);
+        lastReason = (msg.reason || "unknown");
+    }
 }
 
 function triggerDeath(reason) {
@@ -75,7 +80,10 @@ function respawnPlayer() {
     Player.setPosition(x, y, z);
 }
 
+function loadHeartPoints() {return;}// not ready yet
+
 Engine.onTick(function (tpf, tag) {
+    if (firstframe){loadHeartPoints();}
     if (!deathActive) return;
     deathTimer -= tpf;
     if (deathTimer <= 0) {
@@ -86,4 +94,6 @@ Engine.onTick(function (tpf, tag) {
         }
         respawnPlayer();
     }
+
+    if (heartPoints < 0) {triggerDeath(lastReason)}
 }, "Update");
