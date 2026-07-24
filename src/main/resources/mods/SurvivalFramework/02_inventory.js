@@ -67,6 +67,7 @@ Engine.onBlockChange(function (x, y, z, blockId) {
     if (existing !== 0 && existing !== 1) {
         // Something solid is already there -> this is a break, not a place.
         addInv(existing, 1);
+        notifyBlockChange(x, y, z, existing, 0);
         return true; // let the normal break proceed
     }
 
@@ -75,9 +76,21 @@ Engine.onBlockChange(function (x, y, z, blockId) {
     if (have >= 1) {
         Block.forceSet(x, y, z, selectedBlock);
         addInv(selectedBlock, -1);
+        notifyBlockChange(x, y, z, existing, selectedBlock);
     }
+
+    
     // Either we already placed it ourselves, or we're refusing for lack of
     // material — reject the original request either way so the caller's
     // raw blockId never gets applied on top of what we just did.
     return false;
 });
+
+function notifyBlockChange(x, y, z, pre, post) {
+    Mod.send(JSON.stringify({
+        messageType: "blockNotifyFromFramework",
+        x: x, y: y, z: z,
+        pre: pre,
+        post: post
+    }));
+}
