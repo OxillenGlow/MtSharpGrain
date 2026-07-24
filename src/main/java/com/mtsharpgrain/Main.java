@@ -69,7 +69,7 @@ public class Main extends SimpleApplication {
         app.setSettings(settings);
         System.out.println("show settings false");
         
-        app.setShowSettings(false);
+        app.setShowSettings(false);// for other people compiling a jmonkeyengine game for mac, remember to set this orelse its a bunch of buggs later.
         System.out.println("Calling start()...");
         
         app.start();
