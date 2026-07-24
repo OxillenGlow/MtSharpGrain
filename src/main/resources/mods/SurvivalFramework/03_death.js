@@ -11,7 +11,7 @@
 // a random point in a ring around (10000, ?, 0), scanning downward from
 // y = 40 for the first solid ground.
 // ============================================================================
-
+var firstframe2 = true;
 var DEATH_GUI_TAG = "deadlyInv_deathMsg";
 var DEATH_LIFT_HEIGHT = 8;       // blocks — lifted out of immediate danger
 var DEATH_RESPAWN_DELAY = 10.0;  // seconds
@@ -81,7 +81,7 @@ function respawnPlayer() {
 }
 
 function loadHeartPoints() {return;}// not ready yet
-var firstframe = true;
+
 Engine.onTick(function (tpf, tag) {
     if (firstframe2){
         firstframe2 = false;

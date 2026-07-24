@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 public class Main extends SimpleApplication {
 
     public static String version = "v0.1.1(beta)";
-    public static int VIEW_DISTANCE = 2;
+    public static int VIEW_DISTANCE = 1;
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
@@ -117,7 +117,7 @@ public class Main extends SimpleApplication {
         
         // Testing shadows
         com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
-            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
+            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024, 1);
         dlsr.setLight(sun);
         
         viewPort.addProcessor(dlsr);
