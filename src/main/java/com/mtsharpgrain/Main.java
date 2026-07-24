@@ -57,7 +57,7 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) throws IOException {
         System.out.println(java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
-        AppSettings settings = new AppSettings(false);
+        AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
         settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
@@ -104,8 +104,8 @@ public class Main extends SimpleApplication {
 
         
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
-        flyCam.setEnabled(false);
         
+        flyCam.setEnabled(false);
         com.jme3.light.DirectionalLight sun = null;
         for (com.jme3.light.Light l : rootNode.getLocalLightList()) {
             if (l instanceof com.jme3.light.DirectionalLight) {
