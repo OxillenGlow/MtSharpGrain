@@ -38,6 +38,10 @@ var gravityEnabled = true;
 var fallVelocity = 0;
 var firstFrame = true;
 
+function toBlockCoord(v) {
+    return Math.floor(v + 0.5);
+}
+
 // ── Persistence ─────────────────────────────────────────────────────────
 // One JSON blob holds both fields — same "in-memory buffer, flush on close"
 // pattern as every other Data.save() call in this codebase.
@@ -128,9 +132,9 @@ Engine.onTick(function (tpf, tag) {
     }
 
     var p = Player.getPosition();
-    var px = Math.floor(p[0]);
-    var py = Math.floor(p[1]); // HEAD position
-    var pz = Math.floor(p[2]);
+    var px = toBlockCoord(p[0]); // Round not floor
+    var py = toBlockCoord(p[1]); // HEAD position
+    var pz = toBlockCoord(p[2]);
 
     var head = Block.get(px, py, pz);         // the head/camera cell itself
     var feet = Block.get(px, py - 1, pz);      // one below head

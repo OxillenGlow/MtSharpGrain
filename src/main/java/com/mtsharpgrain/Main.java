@@ -263,7 +263,13 @@ public class Main extends SimpleApplication {
         // Shuts down the js-chunk-gen thread and closes the GraalVM Context.
         // Must happen after saveAll() in case anything triggers a last-second
         // generation (it won't currently, but keeps shutdown order sane).
-        if (chunkGen != null) chunkGen.close();
+        if (chunkGen != null) {
+            try {
+                chunkGen.close();
+            } catch (IllegalStateException e) {
+                System.err.println("[Main] chunkGen.close() failed to close cleanly: " + e.getMessage());
+            }
+        }
         if (modPackManager != null) modPackManager.onClose();
         
         super.destroy();
