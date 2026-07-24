@@ -62,6 +62,13 @@ public class ModPackManager {
     private final Set<String> disabledPacks = new HashSet<>();
     private final Map<String, JSModifier> packs = new LinkedHashMap<>();
     private SavedModsStore savedModsStore;
+    private Path modRoot; // cached so reloadPack() can find a pack's folder: modRoot/<packName>
+    // Cached dependencies for reloading
+    private AssetManager cachedAssetManager;
+    private Node cachedRootNode;
+    private WorldAccess cachedWorldAccess;
+    private com.mtsharpgrain.RenderManager cachedRenderManager;
+    private com.jme3.renderer.Camera cachedCam;
     
     /**
      * Discovers immediate subdirectories of {@code modRoot}, gives each its
@@ -75,6 +82,14 @@ public class ModPackManager {
                     "Mod folder not found, skipping: " + modRoot.toAbsolutePath());
             return;
         }
+
+        // Cached so reloadPack() can rebuild a pack later without new arguments
+        this.modRoot = modRoot;
+        this.cachedAssetManager = assetManager;
+        this.cachedRootNode = rootNode;
+        this.cachedWorldAccess = worldAccess;
+        this.cachedRenderManager = renderManager;
+        this.cachedCam = cam;
 
         Path worldFolder = modRoot.getParent() != null ? modRoot.getParent() : modRoot;
         savedModsStore = new SavedModsStore(worldFolder);
@@ -255,5 +270,54 @@ public class ModPackManager {
         for (JSModifier m : packs.values()) {
             m.onClose();
         }
+    }
+
+    /**
+     * Reloads a single mod pack: saves+closes the old instance, then creates a
+     * fresh JSModifier and re-runs every .js file under worlds/<world>/mod/<packName>/.
+     *
+     * FLAG: any Scene nodes the mod created (Scene.createCube etc.) are NOT
+     * auto-removed — they'll stay in the world unless the mod cleans up after
+     * itself. Also, if the pack was disabled before reload, it comes back enabled
+     * (packs.put() doesn't touch disabledPacks) — let me know if you'd rather it
+     * stay disabled.
+     */
+    public void reloadPack(String packName) throws IOException {
+        JSModifier oldMod = packs.get(packName);
+        if (oldMod == null) {
+            System.err.println("[ModPackManager] Pack '" + packName + "' not found, cannot reload");
+            return;
+        }
+    
+        Path dir = modRoot.resolve(packName); // same convention loadAll() used
+        if (!Files.isDirectory(dir)) {
+            System.err.println("[ModPackManager] Pack folder missing on disk: " + dir);
+            return;
+        }
+    
+        System.out.println("[ModPackManager] Reloading pack: " + packName);
+
+        oldMod.onClose(); // flushes DataApi to disk BEFORE we throw the old Context away
+        packs.remove(packName);
+
+        JSModifier newMod = new JSModifier();
+        newMod.init(cachedAssetManager, cachedRootNode, cachedWorldAccess,
+                    cachedRenderManager, cachedCam, dir, packName, this);
+
+        try (var walk = Files.walk(dir)) {
+            walk.filter(p -> p.toString().endsWith(".js"))
+                .sorted()
+                .forEach(p -> {
+                    try {
+                        newMod.runJs(p.toFile());
+                    } catch (Exception ex) {
+                        Logger.getLogger(ModPackManager.class.getName()).log(Level.SEVERE,
+                                "Failed to reload mod script '" + p + "' in pack '" + packName + "'", ex);
+                    }
+                });
+        }
+
+        packs.put(packName, newMod);
+        System.out.println("[ModPackManager] Pack '" + packName + "' reloaded successfully");
     }
 }
