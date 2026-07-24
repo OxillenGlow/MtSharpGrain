@@ -21,7 +21,7 @@ function drawInventory() {
         var label = "[" + id + "] " + blockName(id) + "  x" + count;
         var y = INV_TOP_Y - i * INV_ROW_SPACING;
 
-        var handle = Gui.guiWord(label, 0.15, y, 0, 0.03, "invRow" + i);
+        var handle = Gui.guiWord(label, 0.5, y, 0, 0.03, "inventory" + i);
 
         if (id === selectedBlock) {
             Gui.setColor(handle, 0.2, 1.0, 0.2, 1.0); // green = currently selected
@@ -32,10 +32,10 @@ function drawInventory() {
         }
     }
 
-    var upHandle = Gui.guiWord("^ Prev Page", 0.15, INV_TOP_Y + INV_ROW_SPACING, 0, 0.025, "invPagePrev");
+    var upHandle = Gui.guiWord("^ Prev Page", 0.5, INV_TOP_Y + INV_ROW_SPACING, 0, 0.025, "invPagePrev");
     Gui.setColor(upHandle, 0.4, 0.6, 1.0, 1.0);
 
-    var downHandle = Gui.guiWord("v Next Page", 0.15, INV_TOP_Y - INV_ROWS_PER_PAGE * INV_ROW_SPACING, 0, 0.025, "invPageNext");
+    var downHandle = Gui.guiWord("v Next Page", 0.5, INV_TOP_Y - INV_ROWS_PER_PAGE * INV_ROW_SPACING, 0, 0.025, "invPageNext");
     Gui.setColor(downHandle, 0.4, 0.6, 1.0, 1.0);
 }
 
