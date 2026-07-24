@@ -98,17 +98,21 @@ My todo/doing list:
 <img src="src/main/resources/self/pixel art.png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (1).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (2).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (3).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (4).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (5).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (6).png" align="left" width="25" style="margin-right: 20px;" />and more...
 - Npc with behavior > afterwards, scripts to control npc 0%
 - Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
-- Survival as a JavaScript mod
 - Multi player support for mods (real multiplayer comes much later) 0%
 - Adding a clickable play button 0%
 - Modify the click listener for JS made objects 0%
-- **IMPORTANT** fix the 0_2 inventory mod something about onblock place not working
-- **Important** fix compilation errors in GitHub actions.
+- **IMPORTANT** fix the 0_2 inventory mod not registering me breaking blocks
+- **Important** fix compilation errors in GitHub actions. 50%
+- Fix collision stuff
+- Add a fall damage mod (not that you can fall much in this game
+- Fix the sun.js mod, its broken now
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
-- Add a Sun 70%
+
+- Survival as a JavaScript mod 80%
+- Added skybox 100%
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
 - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
