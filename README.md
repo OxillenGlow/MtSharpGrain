@@ -87,10 +87,10 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
     
 My todo/doing list:
 
-    - Person model - i think i should use the java duke model for people 
-    - **Important** Randomly spawned buildings
-        - Ground buildings 0/100
-        - Air buildings 0/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
+  - Person model - i think i should use the java duke model for people 
+  - **Important** Randomly spawned buildings
+    - Ground buildings 0/100
+    - Air buildings 0/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
 - **Important** Npc with behavior > afterwards, scripts to control npc 0%
 - Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
 - Multi player support for mods (real multiplayer comes much later) 0%
