@@ -29,7 +29,7 @@ public class Master {
     // lower bound of the currently displayed page (10 numbers shown: pageStart..pageStart+9)
     public static int pageStart = 1;
 
-    public static void tic(IGui gui, ModPackManager modPackManager) {
+    public static void tic(IGui gui, ModPackManager modPackManager, Inventory inventory)) {
 
         gui.push(false);
         gui.textFont("Interface/Fonts/Console.fnt");
@@ -45,12 +45,14 @@ public class Master {
         if ("play".equals(path)) {
             // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
             modPackManager.disableAllDrawing();
+            inventory.drawMini(gui);
         } else if ("home".equals(path)) {
             modPackManager.disableAllDrawing();
             drawBGandButtons(gui);
             drawViewDistanceSelector(gui);
             drawHomeNav(gui);
             drawSavedModsList(gui, modPackManager);
+            inventory.draw(gui);
         } else if ("home/modview".equals(path)) {
             modPackManager.disableAllDrawing();
             gui.textFont("Interface/Fonts/Console.fnt");
@@ -83,6 +85,7 @@ public class Master {
             drawViewDistanceSelector(gui);
             drawHomeNav(gui);
             modPackManager.disableAllDrawing();
+            inventory.draw(gui);
         }
 
         gui.pop();
