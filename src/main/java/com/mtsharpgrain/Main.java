@@ -43,7 +43,7 @@ public class Main extends SimpleApplication {
     private WorldAccess worldAccess;
     private com.mtsharpgrain.node.Check check;
     public static final float ZONE_SIZE = 100f;
-    
+    private Sun sun;
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -113,6 +113,8 @@ public class Main extends SimpleApplication {
                 break;
             }
         }
+
+        sun = new Sun(assetManager, rootNode); fg the 
         
         
         // Testing shadows
@@ -228,6 +230,8 @@ public class Main extends SimpleApplication {
         modPackManager.tick(tpf, "Update");
         modPackManager.draw(gui);
         modPackManager.processGuiClicks(tpf);
+
+        sun.update(tpf, trueWorldPos);
     }
 
     @Override
