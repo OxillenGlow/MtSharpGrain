@@ -48,6 +48,10 @@ public class ChunkMeshBuilder {
                     boolean pz = isAir(chunk, x, y, z + 1);
                     boolean nz = isAir(chunk, x, y, z - 1);
 
+                    if (!px && !nx && !py && !ny && !pz && !nz && !(x == 15) && !(y == 15) && !(z == 15) && !(x == 0) && !(y == 0) && !(z == 0) ) {
+                        continue;
+                    }
+                    
                     BlockDef def = BlockRegistry.get(block);
                     String meshBuilder = (def != null) ? def.meshBuilder() : "Py";
 
