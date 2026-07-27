@@ -1,0 +1,133 @@
+package com.mtsharpgrain;
+
+import com.jme3.asset.AssetManager;
+import com.jme3.light.PointLight;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.control.LightControl;
+import com.jme3.scene.shape.Box;
+
+/**
+ * Orbiting day/night sun: a small shaded cube + a PointLight riding a
+ * carrier node (via LightControl, same "light follows spatial" pattern
+ * SceneApi.createLight() uses for JS mods), circling the player in a
+ * vertical plane.
+ *
+ * This is a straight Java port of mods/sun.js so the game has a sun even
+ * with no mod packs installed. Both attach a cube+light and both use the
+ * same dawn/noon/night color model, on purpose, so behavior matches if you
+ * ever compare them side by side.
+ */
+public class Sun {
+
+    // ── Tunables ─────────────────────────────────────────────────────────
+    private final float orbitRadius;
+    private final float lightRadius;
+    private float rotationPeriodSeconds;
+
+    // ── Color model — same three anchor colors as sun.js ────────────────
+    private static final ColorRGBA DAWN_COLOR  = new ColorRGBA(0.35f, 0.05f, 0f,   1f);
+    private static final ColorRGBA NOON_COLOR  = new ColorRGBA(1.0f,  0.55f, 0.15f, 1f);
+    private static final ColorRGBA NIGHT_COLOR = new ColorRGBA(0f,    0f,    0f,   1f);
+
+    private final Geometry cube;
+    private final Node lightCarrier;
+    private final PointLight light;
+
+    private float angleDeg = 0f; // 0 = dawn, 90 = noon, 180 = dusk, 180-360 = night
+
+    /** Convenience constructor — same defaults as sun.js (170 orbit, ~1.04 cube, 400 falloff, 12 min period). */
+    public Sun(AssetManager assetManager, Node rootNode) {
+        this(assetManager, rootNode, 170f, 1.04f, 400f, 720f);
+    }
+
+    public Sun(AssetManager assetManager, Node rootNode,
+               float orbitRadius, float size, float lightRadius, float rotationPeriodSeconds) {
+        this.orbitRadius = orbitRadius;
+        this.lightRadius = lightRadius;
+        this.rotationPeriodSeconds = rotationPeriodSeconds;
+
+        // ── Visible cube ────────────────────────────────────────────────
+        Box box = new Box(size / 2f, size / 2f, size / 2f);
+        cube = new Geometry("SunCube", box);
+
+        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat.setBoolean("UseMaterialColors", true);
+        mat.setColor("Ambient", new ColorRGBA(0.2f, 0.2f, 0.2f, 1f));
+        mat.setColor("Diffuse", ColorRGBA.White);   // overwritten every update()
+        mat.setColor("Specular", ColorRGBA.White);
+        mat.setFloat("Shininess", 16f);
+        cube.setMaterial(mat);
+        rootNode.attachChild(cube);
+
+        // ── Light, on an invisible carrier node (LightControl keeps the
+        // light's position synced to the carrier's world translation) ────
+        light = new PointLight();
+        light.setRadius(lightRadius);
+        rootNode.addLight(light);
+
+        lightCarrier = new Node("SunLightCarrier");
+        lightCarrier.addControl(new LightControl(light));
+        rootNode.attachChild(lightCarrier);
+    }
+
+    /**
+     * Advances the orbit and repositions/recolors the sun.
+     *
+     * @param tpf                time per frame
+     * @param playerTrueWorldPos player's TRUE world position (e.g. what
+     *                           PlayerApi.getPosition()/cam - rootNode.translation
+     *                           gives you — NOT raw cam.getLocation()).
+     *                           Because cube/lightCarrier are direct children
+     *                           of rootNode, setting their local translation
+     *                           to a "true world" coordinate lands them in
+     *                           the correct render-space spot automatically
+     *                           — same math SceneApi.setPosition relies on.
+     */
+    public void update(float tpf, Vector3f playerTrueWorldPos) {
+        float degPerSecond = 360f / rotationPeriodSeconds;
+        angleDeg = (angleDeg + degPerSecond * tpf) % 360f;
+        float rad = angleDeg * FastMath.DEG_TO_RAD;
+
+        float x = playerTrueWorldPos.x + FastMath.cos(rad) * orbitRadius;
+        float y = playerTrueWorldPos.y + FastMath.sin(rad) * orbitRadius;
+        float z = playerTrueWorldPos.z;
+
+        Vector3f pos = new Vector3f(x, y, z);
+        cube.setLocalTranslation(pos);
+        lightCarrier.setLocalTranslation(pos);
+
+        ColorRGBA c = colorForAngle(angleDeg);
+        cube.getMaterial().setColor("Diffuse", c);
+        light.setColor(c);
+    }
+
+    private static ColorRGBA colorForAngle(float deg) {
+        if (deg > 180f && deg < 360f) return NIGHT_COLOR;
+
+        // deg in [0, 180] — triangle wave peaking at 90 (noon)
+        float t = 1f - Math.abs(deg - 90f) / 90f; // 0 at dawn/dusk, 1 at noon
+        return new ColorRGBA(
+            DAWN_COLOR.r + (NOON_COLOR.r - DAWN_COLOR.r) * t,
+            DAWN_COLOR.g + (NOON_COLOR.g - DAWN_COLOR.g) * t,
+            DAWN_COLOR.b + (NOON_COLOR.b - DAWN_COLOR.b) * t,
+            1f
+        );
+    }
+
+    public void setRotationPeriodSeconds(float seconds) {
+        this.rotationPeriodSeconds = seconds;
+    }
+
+    public float getRotationPeriodSeconds() {
+        return rotationPeriodSeconds;
+    }
+
+    public float getAngleDeg() {
+        return angleDeg;
+    }
+}
