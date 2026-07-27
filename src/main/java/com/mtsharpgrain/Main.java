@@ -114,7 +114,7 @@ public class Main extends SimpleApplication {
             }
         }
 
-        sun = new Sun(assetManager, rootNode); fg the 
+        sun = new Sun(assetManager, rootNode);
         
         
         // Testing shadows
