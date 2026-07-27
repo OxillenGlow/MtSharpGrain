@@ -24,8 +24,6 @@ import com.jme3.scene.shape.Box;
  */
 public class Sun {
 
-    // ── Tunables ─────────────────────────────────────────────────────────
-    private final float orbitRadius;
     private final float lightRadius;
     private float rotationPeriodSeconds;
 
@@ -42,13 +40,11 @@ public class Sun {
 
     /** Convenience constructor — same defaults as sun.js (170 orbit, ~1.04 cube, 400 falloff, 12 min period). */
     public Sun(AssetManager assetManager, Node rootNode) {
-        this(assetManager, rootNode, 170f, 1.04f, 400f, 720f);
+        this(assetManager, rootNode, 1.04f, 720f);
     }
 
-    public Sun(AssetManager assetManager, Node rootNode,
-               float orbitRadius, float size, float lightRadius, float rotationPeriodSeconds) {
-        this.orbitRadius = orbitRadius;
-        this.lightRadius = lightRadius;
+    public Sun(AssetManager assetManager, Node rootNode, float size, float rotationPeriodSeconds) {
+        this.lightRadius = 5*32;
         this.rotationPeriodSeconds = rotationPeriodSeconds;
 
         // ── Visible cube ────────────────────────────────────────────────
@@ -92,7 +88,7 @@ public class Sun {
         float degPerSecond = 360f / rotationPeriodSeconds;
         angleDeg = (angleDeg + degPerSecond * tpf) % 360f;
         float rad = angleDeg * FastMath.DEG_TO_RAD;
-
+        var orbitRadius = Main.VIEW_DISTANCE*16;
         float x = playerTrueWorldPos.x + FastMath.cos(rad) * orbitRadius;
         float y = playerTrueWorldPos.y + FastMath.sin(rad) * orbitRadius;
         float z = playerTrueWorldPos.z;
