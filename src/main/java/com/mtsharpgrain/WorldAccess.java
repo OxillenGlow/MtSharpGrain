@@ -2,6 +2,7 @@ package com.mtsharpgrain;
 
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.JsChunkGenerator;
+import com.mtsharpgrain.gui.Inventory;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class WorldAccess {
@@ -11,7 +12,8 @@ public final class WorldAccess {
     private final JsChunkGenerator generator;
     private final long seed;
     private ModPackManager modPackManager;
-
+    private Inventory inventory;
+    
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
         this.generator = generator;
@@ -20,6 +22,11 @@ public final class WorldAccess {
 
     public void addModifier(ModPackManager modPackManager){
         this.modPackManager = modPackManager;
+    }
+
+    /** Wires the core inventory into setBlockAt's gate. Safe to leave unset (interception simply no-ops). */
+    public void setInventory(Inventory inventory){
+        this.inventory = inventory;
     }
 
     public BufferedChunk ensureChunk(ChunkPos pos){
@@ -85,6 +92,14 @@ public final class WorldAccess {
         try {
             modPackManager.notifyBlockSet(worldX, worldY, worldZ, blockId);
         } catch (Exception e) {
+            return;
+        }
+
+        // Core inventory gate. Runs AFTER the mod validators on purpose: since
+        // nothing after this can still fail, we never end up mutating inventory
+        // counts for a change that then gets rejected further down the line.
+        // forceSetBlockAt intentionally does NOT go through this.
+        if (inventory != null && !inventory.handleBlockChange(chunk.get(localX, localY, localZ), blockId)) {
             return;
         }
 
