@@ -284,18 +284,13 @@ public class Main extends SimpleApplication {
       
         try {
             AssetConverter.extract("/chunkgen.js", "worlds/"+world+"/chunkgen.js");
-            AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/DEFAULT/blocktrailmod.js");
+            AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/BlockTrail/blocktrailmod.js");
             AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
-            AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/BridgeBuilder/bridge.js");
+            AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/InstantBridges/bridge.js");
             AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
-            AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/Utilities/teleport.js");
-            AssetConverter.extract("/mods/gravity.js", "worlds/"+world+"/mod/Gravity/gravity.js");
-            AssetConverter.extract("/mods/sun.js", "worlds/"+world+"/mod/Sol/sun.js");
-            AssetConverter.extract("/mods/SurvivalFramework/01_blocknames.js", "worlds/"+world+"/mod/Open_Inventory/01_blocknames.js");
-            AssetConverter.extract("/mods/SurvivalFramework/02_inventory.js", "worlds/"+world+"/mod/Open_Inventory/02_inventory.js");
-            AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/Open_Inventory/03_death.js");
-            AssetConverter.extract("/mods/SurvivalFramework/04_ui.js", "worlds/"+world+"/mod/Open_Inventory/04_ui.js");
-            AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/Open_Inventory/05_location.js");
+            AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/TeleportMe/teleport.js");
+            AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/SurvivalFramework/death.js");
+            AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");
            
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {
