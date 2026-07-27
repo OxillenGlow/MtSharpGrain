@@ -5,6 +5,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.graalvm.polyglot.Value;
 import java.nio.file.Path;
+import com.mtsharpgrain.gui.Inventory;
 import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
 import com.mtsharpgrain.js.BlockApi;
@@ -48,10 +49,10 @@ public class JSModifier {
      * @param cam camera for moving
      */
     
-    public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam, Path packDir, String packName, ModPackManager modPackManager) {
+    public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam, Path packDir, String packName, ModPackManager modPackManager, Inventory inventory) {
         WorldAccessor worldAccessor = new RealWorldAccessor(worldAccess);
         BlockApi blockApi = new BlockApi(worldAccess, renderManager);
-        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi, cam, rootNode, packDir, packName, modPackManager);
+        this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi, cam, rootNode, packDir, packName, modPackManager, inventory);
         this.bootstrap.getNodeRegistry().registerFixed(0L, rootNode);
     }
 
