@@ -6,6 +6,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
+import com.mtsharpgrain.gui.Inventory;
 import java.util.HashSet;
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +70,7 @@ public class ModPackManager {
     private WorldAccess cachedWorldAccess;
     private com.mtsharpgrain.RenderManager cachedRenderManager;
     private com.jme3.renderer.Camera cachedCam;
+    private Inventory cachedInventory;
     
     /**
      * Discovers immediate subdirectories of {@code modRoot}, gives each its
@@ -76,7 +78,7 @@ public class ModPackManager {
      * file under that subdirectory (alphabetically) into it. Files directly
      * inside {@code modRoot} (not in a subfolder) are intentionally ignored.
      */
-    public void loadAll(Path modRoot, AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam) throws IOException {
+    public void loadAll(Path modRoot, AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam, Inventory inventory) throws IOException {
         if (!Files.exists(modRoot)) {
             Logger.getLogger(ModPackManager.class.getName()).log(Level.WARNING,
                     "Mod folder not found, skipping: " + modRoot.toAbsolutePath());
@@ -90,6 +92,7 @@ public class ModPackManager {
         this.cachedWorldAccess = worldAccess;
         this.cachedRenderManager = renderManager;
         this.cachedCam = cam;
+        this.cachedInventory = inventory;
 
         Path worldFolder = modRoot.getParent() != null ? modRoot.getParent() : modRoot;
         savedModsStore = new SavedModsStore(worldFolder);
@@ -105,7 +108,7 @@ public class ModPackManager {
             String packName = dir.getFileName().toString();
 
             JSModifier modifier = new JSModifier();
-            modifier.init(assetManager, rootNode, worldAccess, renderManager, cam, dir, packName, this);
+            modifier.init(assetManager, rootNode, worldAccess, renderManager, cam, dir, packName, this, inventory);
 
             try (var walk = Files.walk(dir)) {
                 walk.filter(p -> p.toString().endsWith(".js"))
@@ -302,7 +305,7 @@ public class ModPackManager {
 
         JSModifier newMod = new JSModifier();
         newMod.init(cachedAssetManager, cachedRootNode, cachedWorldAccess,
-                    cachedRenderManager, cachedCam, dir, packName, this);
+                    cachedRenderManager, cachedCam, dir, packName, this, cachedInventory);
 
         try (var walk = Files.walk(dir)) {
             walk.filter(p -> p.toString().endsWith(".js"))
