@@ -28,6 +28,7 @@ import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
+import com.mtsharpgrain.gui.Inventory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -43,7 +44,8 @@ public class Main extends SimpleApplication {
     private WorldAccess worldAccess;
     private com.mtsharpgrain.node.Check check;
     public static final float ZONE_SIZE = 100f;
-    private Sun sun;
+    private Sun sunObject;
+    private Inventory inventory;
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -114,7 +116,7 @@ public class Main extends SimpleApplication {
             }
         }
 
-        sun = new Sun(assetManager, rootNode);
+        this.sunObject = new Sun(assetManager, rootNode);
         
         
         // Testing shadows
@@ -166,6 +168,8 @@ public class Main extends SimpleApplication {
         // WorldAccess now needs the generator + seed so ensureChunk() can run
         // chunkBuild() instead of falling back to the flat-fill BufferedChunk(pos) constructor.
         worldAccess = new WorldAccess("worlds/my_world", chunkGen, WORLD_SEED);
+        inventory = new Inventory("worlds/my_world");
+        worldAccess.setInventory(inventory);
         var player = new Player();
         player.setWorldPosition(new Vector3f(1, 1, 1));
         // Same chunkGen + seed handed to RenderManager so streamed chunks use
@@ -196,7 +200,7 @@ public class Main extends SimpleApplication {
         modPackManager = new com.mtsharpgrain.js.mainthread.ModPackManager();
         try {
             modPackManager.loadAll(Paths.get("worlds/my_world/mod"), assetManager, rootNode,
-                    worldAccess, renderManagermg, cam);
+                    worldAccess, renderManagermg, cam, inventory);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to load mod packs", ex);
         }
@@ -224,14 +228,14 @@ public class Main extends SimpleApplication {
             cam.setLocation(camPos.subtract(shift));
         }
         
-        com.mtsharpgrain.gui.Master.tic(gui, modPackManager);// just noticed tic is misspelled! wont fix
+        com.mtsharpgrain.gui.Master.tic(gui, modPackManager, inventory);// just noticed tic is misspelled! wont fix
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
         modPackManager.tick(tpf, "Update");
         modPackManager.draw(gui);
         modPackManager.processGuiClicks(tpf);
 
-        sun.update(tpf, trueWorldPos);
+        sunObject.update(tpf, trueWorldPos);
     }
 
     @Override
@@ -275,6 +279,7 @@ public class Main extends SimpleApplication {
             }
         }
         if (modPackManager != null) modPackManager.onClose();
+        if (inventory != null) inventory.onClose();
         
         super.destroy();
         
