@@ -33,7 +33,7 @@ import java.util.Properties;
  *
  * Same in-memory-buffer-then-flush-on-close pattern as DataApi: mutations
  * only touch the in-memory map, onClose() is the only thing that writes to
- * disk (worlds/&lt;world&gt;/inventory.xml).
+ * disk (worlds/<world>/inventory.xml).
  *
  * Like every other JS-bound registry in this project (NodeRegistry, GuiApi,
  * TickRegistry...), this is NOT thread-safe on purpose - every call (from
@@ -48,6 +48,22 @@ public class Inventory {
     private static final String[] NAMES = {
         "Air", "Reserved", "Stone", "Dirt", "Grass",
         "Crystal Ore", "Ice Sludge", "Silicon", "Sulfur", "Metal Block", "Glass"
+    };
+
+    // Icon paths for each block id (0..10). These point into the assets root/cc0 folder.
+    // Filenames provided by the user; prefixed with /cc0/ to reference the cc0 asset pack.
+    private static final String[] ICONS = {
+        "/cc0/air.png",                   // 0 Air
+        "/cc0/reserved.png",              // 1 Reserved
+        "/cc0/dirtCaveRockLarge.png",     // 2 Stone
+        "/cc0/dirt.png",                  // 3 Dirt
+        "/cc0/weat_stage1.png",           // 4 Grass
+        "/cc0/ore_diamond.png",           // 5 Crystal Ore
+        "/cc0/dirtCaveBottom.png",        // 6 Ice Sludge
+        "/cc0/platformPack_tile054.png",  // 7 Silicon
+        "/cc0/ore_sulpher.png",           // 8 Sulfur
+        "/cc0/metalBlock.png",            // 9 Metal Block
+        "/cc0/glass.png"                  // 10 Glass
     };
 
     private final LinkedHashMap<Integer, Integer> counts = new LinkedHashMap<>();
@@ -177,7 +193,7 @@ public class Inventory {
         return selectedItem;
     }
 
-    // ── GUI ──────────────────────────────────────────────────────────────
+    // ── GUI ────────────────────────────────────────────────────────────��[...]
 
     private List<Map.Entry<Integer, Integer>> sortedEntries() {
         List<Map.Entry<Integer, Integer>> list = new ArrayList<>(counts.entrySet());
@@ -207,6 +223,10 @@ public class Inventory {
             gui.textColor(ColorRGBA.Gray);
             gui.text("(empty)", 0.05f, y, null);
         } else {
+            // prepare small icon drawing parameters: left-aligned, center vertical
+            gui.imageSize(0.02f, 0.02f).imageAlpha(true).imageColor(ColorRGBA.White)
+               .imageHAlign("left").imageVAlign("center");
+
             for (Map.Entry<Integer, Integer> entry : entries) {
                 final int blockId = entry.getKey();
                 final int amount = entry.getValue();
@@ -218,6 +238,19 @@ public class Inventory {
                 } else {
                     BlockRegistry.BlockDef def = BlockRegistry.get(blockId);
                     nameColor = def != null ? def.diffuse() : ColorRGBA.White;
+                }
+
+                // draw icon (if we have one for this id) to the left of the name
+                if (blockId >= 0 && blockId < ICONS.length) {
+                    String iconPath = ICONS[blockId];
+                    if (iconPath != null && !iconPath.isEmpty()) {
+                        try {
+                            // place icon slightly left of the text (text x=0.05f)
+                            gui.image(iconPath, 0.03f, y, true);
+                        } catch (Exception e) {
+                            // silently ignore missing assets; fall back to text only
+                        }
+                    }
                 }
 
                 gui.textColor(nameColor);
