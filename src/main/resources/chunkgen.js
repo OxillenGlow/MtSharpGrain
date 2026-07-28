@@ -45,7 +45,7 @@ var MAX_REACH = 600; // must be >= half the largest feature dimension below
 
 // Returns a feature descriptor for this cell, or null if the cell is empty.
 function featureAt(cellX, cellZ, seed) {
-    if (hash2(cellX, cellZ, seed) > 0.08) return null; // ~8% of cells spawn something
+    if (hash2(cellX, cellZ, seed) > 0.40) return null; // ~40% of cells spawn something (~20% mountain, ~20% slash)
 
     var cx = cellX * CELL_SIZE + hash2(cellX * 7 + 1, cellZ * 13 + 2, seed) * CELL_SIZE;
     var cz = cellZ * CELL_SIZE + hash2(cellX * 17 + 3, cellZ * 23 + 5, seed) * CELL_SIZE;
