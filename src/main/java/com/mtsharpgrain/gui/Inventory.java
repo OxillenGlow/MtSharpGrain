@@ -53,8 +53,8 @@ public class Inventory {
     // Icon paths for each block id (0..10). These point into the assets root/cc0 folder.
     // Filenames provided by the user; prefixed with /cc0/ to reference the cc0 asset pack.
     private static final String[] ICONS = {
-        "/cc0/air.png",                   // 0 Air
-        "/cc0/reserved.png",              // 1 Reserved
+        "/cc0/clouds.png",                // 0 Air
+        "/cc0/clouds.png",                // 1 Reserved
         "/cc0/dirtCaveRockLarge.png",     // 2 Stone
         "/cc0/dirt.png",                  // 3 Dirt
         "/cc0/weat_stage1.png",           // 4 Grass
