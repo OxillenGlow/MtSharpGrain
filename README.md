@@ -92,36 +92,31 @@ My todo/doing list:
     - Ground buildings 0/100
     - Air buildings 0/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
 - **Important** Npc with behavior > afterwards, scripts to control npc 0%
-- Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
+- Upgrade GUI...
 - Multi player support for mods (real multiplayer comes much later) 0%
 - Adding a clickable play button 0%
-- Fix compilation problems in GitHub actions. 90
-- Physics as java
+- Physics as java 0%
     - Fix collision stuff
     - Add a fall(acceleration) damage mod (not that you can fall much in this game yet)
-- Make a sun java controller, no js mods for sun
-- Make inventory Java and not a JavaScript mod.
+- Add to wiki new additions to inventory API
 - Minimize mod refresh rate to speed up main thread
     - remove mod thread from main thread.
-- Mod blocks with a ModBlockAPI
+- Mod blocks with a ModBlockAPI 0%
     - On [left/right] click
     - On place
     - listeners
-- Squeeze existing mods into packs
-- Add some random flux to terrain
+
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
 
+- Add some random flux to terrain
 - Survival as a JavaScript mod 80%
 - Added skybox 70% - i need to refine skybox
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
 - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
 - simple world generation 70%
-    - random generation 90%
-30%
-- GUI > afterwards customisable with scripts 80%
 - Extend JS API further
     - Simple save data api with XML 90%
     - Intermod communication API 100%
@@ -131,6 +126,7 @@ Done:
         - BTM
         - to constantly display gui on left, right bottom of screen. 60%
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)100%
+- Make inventory Java and not a JavaScript mod. 90%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
