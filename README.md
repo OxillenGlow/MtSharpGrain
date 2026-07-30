@@ -99,8 +99,6 @@ My todo/doing list:
     - Fix collision stuff
     - Add a fall(acceleration) damage mod (not that you can fall much in this game yet)
 - Add to wiki new additions to inventory API
-- Minimize mod refresh rate to speed up main thread
-    - remove mod thread from main thread.
 - Mod blocks with a ModBlockAPI 0%
     - On [left/right] click
     - On place
@@ -110,6 +108,8 @@ My todo/doing list:
 
 Done:
 
+- Minimize mod refresh rate to speed up main thread 90%
+- remove mod thread from main thread. 70% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754))
 - Add some random flux to terrain
 - Survival as a JavaScript mod 80%
 - Added skybox 70% - i need to refine skybox
