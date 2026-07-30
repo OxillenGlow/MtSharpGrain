@@ -51,7 +51,8 @@ public class JSModifier {
     
     public void init(AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam, Path packDir, String packName, ModPackManager modPackManager, Inventory inventory) {
         WorldAccessor worldAccessor = new RealWorldAccessor(worldAccess);
-        BlockApi blockApi = new BlockApi(worldAccess, renderManager);
+        // BlockApi no longer takes a RenderManager - WorldAccess will notify render manager itself
+        BlockApi blockApi = new BlockApi(worldAccess);
         this.bootstrap = new JsApiBootstrap(assetManager, worldAccessor, blockApi, cam, rootNode, packDir, packName, modPackManager, inventory);
         this.bootstrap.getNodeRegistry().registerFixed(0L, rootNode);
     }
