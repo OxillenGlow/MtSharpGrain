@@ -180,8 +180,6 @@ public class Main extends SimpleApplication {
             worldAccess, rootNode, assetManager, player, this, chunkGen, WORLD_SEED
         );
 
-        worldAccess.setRenderManager(this.renderManagermg);
-
         OnPrintScript printScript = new OnPrintScript();
         printScript.attach();
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
