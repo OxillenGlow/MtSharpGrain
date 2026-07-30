@@ -24,6 +24,7 @@ import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import com.mtsharpgrain.js.mainthread.JSModifier;
 import com.mtsharpgrain.js.mainthread.ModPackManager;
+import com.mtsharpgrain.js.mainthread.EngineAccess;
 import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
@@ -46,6 +47,7 @@ public class Main extends SimpleApplication {
     public static final float ZONE_SIZE = 100f;
     private Sun sunObject;
     private Inventory inventory;
+    private EngineAccess engineAccess;
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -198,6 +200,11 @@ public class Main extends SimpleApplication {
 
         // Mods are loaded with new modPackManager that gives mods different contexts
         modPackManager = new com.mtsharpgrain.js.mainthread.ModPackManager();
+        // Captures the SimpleApplication render thread. Every mod virtual
+        // thread uses this gateway for synchronous-looking engine queries.
+        engineAccess = new EngineAccess(this);
+        modPackManager.setEngineAccess(engineAccess);
+        worldAccess.addModifier(modPackManager);
         try {
             modPackManager.loadAll(Paths.get("worlds/my_world/mod"), assetManager, rootNode,
                     worldAccess, renderManagermg, cam, inventory);
@@ -205,7 +212,6 @@ public class Main extends SimpleApplication {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to load mod packs", ex);
         }
 
-        worldAccess.addModifier(modPackManager);
         check.setModPackManager(modPackManager); // enable spatial-click events now that mods are loaded
         
         flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
@@ -229,6 +235,13 @@ public class Main extends SimpleApplication {
         }
         
         com.mtsharpgrain.gui.Master.tic(gui, modPackManager, inventory);// just noticed tic is misspelled! wont fix
+        // Validation futures are completed by mod virtual threads. World
+        // mutation stays on this render thread and therefore remains safe for
+        // jME and the existing chunk data structures.
+        worldAccess.processPendingBlockChanges();
+        for (int[] change : worldAccess.drainCommittedChanges()) {
+            renderManagermg.onBlockChanged(change[0], change[1], change[2]);
+        }
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
         modPackManager.tick(tpf, "Update");

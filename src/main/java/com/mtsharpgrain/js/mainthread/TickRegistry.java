@@ -20,9 +20,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * }</pre>
  *
  * IMPORTANT: {@link #tick(float)} and {@link #tickTag(float, String)} must
- * always be called from the same thread that created the Graal Context these
- * callbacks belong to (the render/main thread) - a polyglot Context is not
- * safe to use across multiple threads.
+ * always be called from the virtual thread that owns the Graal Context these
+ * callbacks belong to. ModBridge ensures the render thread never calls them
+ * directly.
  */
 public class TickRegistry {
 

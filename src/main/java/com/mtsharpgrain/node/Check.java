@@ -56,8 +56,6 @@ public class Check implements ActionListener {
                 worldAccess.removeBlockAt(selection.x, selection.y, selection.z);
                 System.out.println("Removed block at " + selection);
             }
-            renderManager.onBlockChanged(selection.x, selection.y, selection.z);
-
         } else {
             // ── Hit a non-chunk spatial — fire spatial-click events to mods ──
             String hitName = BlockSelector.resolveHitName(hit);

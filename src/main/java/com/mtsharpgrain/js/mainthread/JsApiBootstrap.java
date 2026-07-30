@@ -22,8 +22,9 @@ import java.nio.file.Path;
  * bootstrap.tick(tpf);
  * }</pre>
  *
- * Construction and {@link #tick(float)} must both happen on the render/main
- * thread - the Context is not thread-safe to use otherwise.
+ * Construction, script evaluation, and {@link #tick(float)} happen on the
+ * owning mod virtual thread. Engine-facing API calls marshal separately
+ * through EngineAccess because the Context and jME are both thread-affine.
  */
 public class JsApiBootstrap {
 
@@ -34,12 +35,16 @@ public class JsApiBootstrap {
     private final MessagingApi messagingApi;
     private final BlockChangeRegistry blockChangeRegistry = new BlockChangeRegistry();
     private final SpatialClickRegistry spatialClickRegistry = new SpatialClickRegistry();
-    private final SceneApi sceneApi;
+    private final SceneApi sceneDelegate;
+    private final EngineSceneApi sceneApi;
     private final Context context;
     
-    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam, Node rootNode, Path packDir, String packName, ModPackManager modPackManager, Inventory inventory) {
+    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi,
+                          Camera cam, Node rootNode, Path packDir, String packName,
+                          ModPackManager modPackManager, Inventory inventory, EngineAccess engine) {
         // Init all APIs
-        this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
+        this.sceneDelegate = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
+        this.sceneApi = new EngineSceneApi(sceneDelegate, engine);
         this.dataApi = new DataApi(packDir);
         this.messagingApi = new MessagingApi(packName, modPackManager);
         this.guiApi = new GuiApi();
@@ -60,15 +65,15 @@ public class JsApiBootstrap {
                         .build();
   
         context.getBindings("js").putMember("Scene", sceneApi);
-        context.getBindings("js").putMember("__InventoryApi", inventory);
+        context.getBindings("js").putMember("__InventoryApi", new InventoryApi(inventory, engine));
         context.getBindings("js").putMember("__TickRegistry", tickRegistry);
-        context.getBindings("js").putMember("Gui", guiApi);
+        context.getBindings("js").putMember("Gui", new EngineGuiApi(guiApi, engine));
         context.getBindings("js").putMember("Data", dataApi);
         context.getBindings("js").putMember("Mod", messagingApi);
         context.getBindings("js").putMember("__BlockApi", blockApi);
         context.getBindings("js").putMember("__BlockChangeRegistry", blockChangeRegistry);
         context.getBindings("js").putMember("__SpatialClickRegistry", spatialClickRegistry);
-        context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode));
+        context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode, engine));
 
         context.eval("js",
             "globalThis.Block = {\n" +

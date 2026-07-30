@@ -45,7 +45,8 @@ public class SpatialClickRegistry {
 
     /**
      * Fires every registered left-click handler with the spatial's name.
-     * Called on the render thread when a non-chunk spatial is left-clicked.
+     * Called on the owning mod virtual thread after the render thread submits
+     * a non-chunk spatial click.
      */
     public void notifyLeftClick(String spatialName) {
         for (Value fn : leftHandlers) {
@@ -59,7 +60,8 @@ public class SpatialClickRegistry {
 
     /**
      * Fires every registered right-click handler with the spatial's name.
-     * Called on the render thread when a non-chunk spatial is right-clicked.
+     * Called on the owning mod virtual thread after the render thread submits
+     * a non-chunk spatial click.
      */
     public void notifyRightClick(String spatialName) {
         for (Value fn : rightHandlers) {

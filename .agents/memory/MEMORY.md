@@ -1,1 +1,2 @@
 - [Spatial click system](spatial-click-system.md) — chunk vs non-chunk detection is name-only (regex); how the JS API is exposed to mods.
+- [Virtual-thread mod runtime](loom-mod-runtime.md) — each pack owns its GraalJS context on a virtual thread; engine access crosses the render-thread gateway.

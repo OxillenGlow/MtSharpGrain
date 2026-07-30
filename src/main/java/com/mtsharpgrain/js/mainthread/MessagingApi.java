@@ -7,10 +7,9 @@ import org.graalvm.polyglot.HostAccess;
  *   Mod.send(data)
  *
  * Broadcasts `data` (a string — JSON.stringify it yourself for structured
- * payloads) to every OTHER pack, synchronously, on the render/main thread.
- * Delivery is done by JSModifier.deliverMessage(), which calls that pack's
- * own top-level `onReceive(data, fromModName)` JS function if it defined
- * one — mods that don't care about messages simply never define it.
+ * payloads) to every OTHER pack. Delivery is queued through each recipient's
+ * ModBridge, and the recipient's virtual thread calls its own top-level
+ * `onReceive(data, fromModName)` function if it defined one.
  *
  * Disabled packs are excluded on both ends: their tick callbacks don't run
  * (so nothing calls Mod.send() from a disabled pack in the first place),

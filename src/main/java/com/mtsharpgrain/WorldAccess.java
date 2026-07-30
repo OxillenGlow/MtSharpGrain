@@ -4,6 +4,10 @@ import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import com.mtsharpgrain.gui.Inventory;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class WorldAccess {
 
@@ -13,6 +17,22 @@ public final class WorldAccess {
     private final long seed;
     private ModPackManager modPackManager;
     private Inventory inventory;
+    private final ConcurrentLinkedQueue<PendingBlockChange> pendingChanges = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<int[]> committedChanges = new ConcurrentLinkedQueue<>();
+
+    private static final class PendingBlockChange {
+        final int x, y, z, blockId;
+        final CompletableFuture<Boolean> validation;
+        final CompletableFuture<Boolean> result = new CompletableFuture<>();
+
+        PendingBlockChange(int x, int y, int z, int blockId, CompletableFuture<Boolean> validation) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.blockId = blockId;
+            this.validation = validation;
+        }
+    }
     
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
@@ -83,31 +103,84 @@ public final class WorldAccess {
         return chunk.get(localX, localY, localZ);
     }
 
-    public void setBlockAt(int worldX, int worldY, int worldZ, int blockId) {
-        ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
-        BufferedChunk chunk = Useful.get(chunkPos);
-        int localX = worldToLocal(worldX);
-        int localY = worldToLocal(worldY);
-        int localZ = worldToLocal(worldZ);
-        try {
-            modPackManager.notifyBlockSet(worldX, worldY, worldZ, blockId);
-        } catch (Exception e) {
-            return;
+    /**
+     * Requests a validated block change. Validation runs on mod virtual
+     * threads; the actual world mutation is committed by
+     * {@link #processPendingBlockChanges()} on the render thread.
+     */
+    public CompletableFuture<Boolean> requestBlockChange(int worldX, int worldY, int worldZ, int blockId) {
+        CompletableFuture<Boolean> validation;
+        if (modPackManager == null) {
+            validation = CompletableFuture.completedFuture(true);
+        } else {
+            validation = modPackManager.validateBlockChangeAsync(worldX, worldY, worldZ, blockId);
         }
-
-        // Core inventory gate. Runs AFTER the mod validators on purpose: since
-        // nothing after this can still fail, we never end up mutating inventory
-        // counts for a change that then gets rejected further down the line.
-        // forceSetBlockAt intentionally does NOT go through this.
-        if (inventory != null && !inventory.handleBlockChange(chunk.get(localX, localY, localZ), blockId)) {
-            return;
-        }
-
-        chunk.set(localX, localY, localZ, blockId);
+        PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId, validation);
+        pendingChanges.offer(change);
+        return change.result;
     }
 
+    /**
+     * Commits validation-complete changes on the render thread. A validator
+     * result is never applied from a mod virtual thread.
+     */
+    public void processPendingBlockChanges() {
+        int count = pendingChanges.size();
+        for (int i = 0; i < count; i++) {
+            PendingBlockChange change = pendingChanges.poll();
+            if (change == null) break;
+            if (!change.validation.isDone()) {
+                pendingChanges.offer(change);
+                continue;
+            }
+
+            boolean allowed;
+            try {
+                allowed = change.validation.join();
+            } catch (Exception e) {
+                allowed = false;
+            }
+            if (!allowed) {
+                change.result.complete(false);
+                continue;
+            }
+
+            ChunkPos chunkPos = worldToChunk(change.x, change.y, change.z);
+            BufferedChunk chunk = ensureChunk(chunkPos);
+            int localX = worldToLocal(change.x);
+            int localY = worldToLocal(change.y);
+            int localZ = worldToLocal(change.z);
+            if (inventory != null && !inventory.handleBlockChange(
+                    chunk.get(localX, localY, localZ), change.blockId)) {
+                change.result.complete(false);
+                continue;
+            }
+            chunk.set(localX, localY, localZ, change.blockId);
+            committedChanges.offer(new int[]{change.x, change.y, change.z});
+            change.result.complete(true);
+        }
+    }
+
+    /** Returns successful edits since the last render-frame drain. */
+    public List<int[]> drainCommittedChanges() {
+        List<int[]> result = new ArrayList<>();
+        int[] change;
+        while ((change = committedChanges.poll()) != null) result.add(change);
+        return result;
+    }
+
+    public CompletableFuture<Boolean> requestRemoveBlock(int worldX, int worldY, int worldZ) {
+        return requestBlockChange(worldX, worldY, worldZ, 0);
+    }
+
+    /** Legacy game-side entry point. It intentionally does not wait. */
+    public void setBlockAt(int worldX, int worldY, int worldZ, int blockId) {
+        requestBlockChange(worldX, worldY, worldZ, blockId);
+    }
+
+    /** Legacy game-side entry point. It intentionally does not wait. */
     public void removeBlockAt(int worldX, int worldY, int worldZ) {
-        setBlockAt(worldX, worldY, worldZ, 0); // 0 = air/empty
+        requestRemoveBlock(worldX, worldY, worldZ);
     }
 
     private int worldToLocal(int worldCoord) {

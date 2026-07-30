@@ -9,23 +9,29 @@ public class PlayerApi {
 
     private final Camera cam;
     private final Node rootNode;
+    private final EngineAccess engine;
 
-    public PlayerApi(Camera cam, Node rootNode) {
+    public PlayerApi(Camera cam, Node rootNode, EngineAccess engine) {
         this.cam = cam;
         this.rootNode = rootNode;
+        this.engine = engine;
     }
 
     // cam.getLocation() is render-space (shifts with the floating origin).
     // Scripts should only ever see/set true world coordinates.
     @HostAccess.Export
     public float[] getPosition() {
-        Vector3f p = cam.getLocation().subtract(rootNode.getLocalTranslation());
-        return new float[]{ p.x, p.y, p.z };
+        return engine.call(() -> {
+            Vector3f p = cam.getLocation().subtract(rootNode.getLocalTranslation());
+            return new float[]{ p.x, p.y, p.z };
+        });
     }
 
     @HostAccess.Export
     public void setPosition(float x, float y, float z) {
-        Vector3f trueWorldPos = new Vector3f(x, y, z);
-        cam.setLocation(trueWorldPos.add(rootNode.getLocalTranslation()));
+        engine.run(() -> {
+            Vector3f trueWorldPos = new Vector3f(x, y, z);
+            cam.setLocation(trueWorldPos.add(rootNode.getLocalTranslation()));
+        });
     }
 }

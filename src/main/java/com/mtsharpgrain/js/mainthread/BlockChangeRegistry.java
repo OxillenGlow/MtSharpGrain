@@ -16,13 +16,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * });
  * }</pre>
  *
- * Distinct from {@link TickRegistry}: not tagged/dispatched by tick group -
- * runs synchronously on every block edit and its return value decides
- * whether the edit is allowed.
+ * Distinct from {@link TickRegistry}: not tagged/dispatched by tick group.
+ * Each validator runs on its owning pack's virtual thread and its return value
+ * decides whether the edit is allowed. WorldAccess commits the edit later on
+ * the render thread after all validator futures complete.
  *
- * Must run on the same thread as the owning Graal Context. setBlockAt() is
- * called from the render/main thread today, so this is safe as-is - if any
- * chunk-gen-thread code path ever calls setBlockAt directly, that breaks.
+ * This registry must only be called by the virtual thread that owns its
+ * GraalJS Context. ModPackManager enforces that boundary through ModBridge.
  */
 public class BlockChangeRegistry {
 
