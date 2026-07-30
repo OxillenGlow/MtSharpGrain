@@ -4,7 +4,6 @@ import com.jme3.collision.CollisionResult;
 import com.jme3.input.controls.ActionListener;
 import com.mtsharpgrain.BlockSelection;
 import com.mtsharpgrain.BlockSelector;
-import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import static com.mtsharpgrain.gui.Master.blockType;
@@ -15,7 +14,6 @@ public class Check implements ActionListener {
     public static final String MOUSE_RIGHT = "MouseRight";
 
     private final WorldAccess worldAccess;
-    private final RenderManager renderManager;
     private final BlockSelector blockSelector;
 
     /**
@@ -25,9 +23,8 @@ public class Check implements ActionListener {
      */
     private ModPackManager modPackManager;
 
-    public Check(WorldAccess worldAccess, RenderManager renderManager, BlockSelector blockSelector) {
+    public Check(WorldAccess worldAccess, BlockSelector blockSelector) {
         this.worldAccess   = worldAccess;
-        this.renderManager = renderManager;
         this.blockSelector = blockSelector;
     }
 

@@ -49,6 +49,15 @@ public final class WorldAccess {
         this.inventory = inventory;
     }
 
+    /**
+     * Set the RenderManager instance so WorldAccess can notify it when a block
+     * change has been successfully applied. Call this at startup after both
+     * WorldAccess and RenderManager are constructed.
+     */
+    public void setRenderManager(RenderManager renderManager) {
+        this.renderManager = renderManager;
+    }
+
     public BufferedChunk ensureChunk(ChunkPos pos){
         BufferedChunk c = Useful.get(pos);
         if(c!=null) return c;
@@ -217,5 +226,10 @@ public final class WorldAccess {
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
         chunk.set(localX, localY, localZ, blockId);
+
+        // Notify RenderManager that this forced change was applied (if wired).
+        if (renderManager != null) {
+            renderManager.onBlockChanged(worldX, worldY, worldZ);
+        }
     }
 }

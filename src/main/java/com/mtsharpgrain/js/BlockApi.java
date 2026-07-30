@@ -1,10 +1,14 @@
 package com.mtsharpgrain.js;
 
-import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
 import org.graalvm.polyglot.HostAccess;
 import com.mtsharpgrain.js.mainthread.EngineAccess;
 
+/**
+ * Exposes block operations to JS. Delegates all changes to WorldAccess only.
+ * WorldAccess is responsible for notifying the RenderManager when a change
+ * fully completes.
+ */
 public class BlockApi {
 
     private final WorldAccess worldAccess;
