@@ -4,6 +4,7 @@ import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import com.mtsharpgrain.gui.Inventory;
 import java.util.concurrent.ConcurrentHashMap;
+import com.mtsharpgrain.RenderManager;
 
 public final class WorldAccess {
 
@@ -13,7 +14,8 @@ public final class WorldAccess {
     private final long seed;
     private ModPackManager modPackManager;
     private Inventory inventory;
-    
+    private RenderManager renderManager; // new field to hold the render manager
+
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
         this.generator = generator;
@@ -27,6 +29,15 @@ public final class WorldAccess {
     /** Wires the core inventory into setBlockAt's gate. Safe to leave unset (interception simply no-ops). */
     public void setInventory(Inventory inventory){
         this.inventory = inventory;
+    }
+
+    /**
+     * Set the RenderManager instance so WorldAccess can notify it when a block
+     * change has been successfully applied. Call this at startup after both
+     * WorldAccess and RenderManager are constructed.
+     */
+    public void setRenderManager(RenderManager renderManager) {
+        this.renderManager = renderManager;
     }
 
     public BufferedChunk ensureChunk(ChunkPos pos){
@@ -104,6 +115,11 @@ public final class WorldAccess {
         }
 
         chunk.set(localX, localY, localZ, blockId);
+
+        // Notify RenderManager that this block change was applied (if wired).
+        if (renderManager != null) {
+            renderManager.onBlockChanged(worldX, worldY, worldZ);
+        }
     }
 
     public void removeBlockAt(int worldX, int worldY, int worldZ) {
@@ -144,5 +160,10 @@ public final class WorldAccess {
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
         chunk.set(localX, localY, localZ, blockId);
+
+        // Notify RenderManager that this forced change was applied (if wired).
+        if (renderManager != null) {
+            renderManager.onBlockChanged(worldX, worldY, worldZ);
+        }
     }
 }
