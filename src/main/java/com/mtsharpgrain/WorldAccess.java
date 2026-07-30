@@ -11,6 +11,7 @@ public final class WorldAccess {
     private final JsChunkGenerator generator;
     private final long seed;
     private ModPackManager modPackManager;
+    private RenderManager renderManager;
 
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
@@ -20,6 +21,14 @@ public final class WorldAccess {
 
     public void addModifier(ModPackManager modPackManager){
         this.modPackManager = modPackManager;
+    }
+
+    /**
+     * Connects world mutations to rendering. RenderManager calls this during
+     * its construction, before any block-edit input can be processed.
+     */
+    void setRenderManager(RenderManager renderManager) {
+        this.renderManager = renderManager;
     }
 
     public BufferedChunk ensureChunk(ChunkPos pos){
@@ -89,6 +98,7 @@ public final class WorldAccess {
         }
 
         chunk.set(localX, localY, localZ, blockId);
+        notifyRenderManager(worldX, worldY, worldZ);
     }
 
     public void removeBlockAt(int worldX, int worldY, int worldZ) {
@@ -129,5 +139,17 @@ public final class WorldAccess {
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
         chunk.set(localX, localY, localZ, blockId);
+        notifyRenderManager(worldX, worldY, worldZ);
+    }
+
+    /**
+     * Rendering is notified only after the in-memory block mutation has
+     * completed successfully. All callers therefore use WorldAccess as the
+     * single block-edit entry point.
+     */
+    private void notifyRenderManager(int worldX, int worldY, int worldZ) {
+        if (renderManager != null) {
+            renderManager.onBlockChanged(worldX, worldY, worldZ);
+        }
     }
 }

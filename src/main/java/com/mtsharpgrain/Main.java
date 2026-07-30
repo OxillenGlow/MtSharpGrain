@@ -174,10 +174,10 @@ public class Main extends SimpleApplication {
 
         OnPrintScript printScript = new OnPrintScript();
         printScript.attach();
-        CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
+        CommandListener commandListener = new CommandListener(worldAccess);
         printScript.addListener(commandListener);
 
-        check = new Check(worldAccess, renderManagermg, blockSelector);
+        check = new Check(worldAccess, blockSelector);
         inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
@@ -194,7 +194,7 @@ public class Main extends SimpleApplication {
         modPackManager = new com.mtsharpgrain.js.mainthread.ModPackManager();
         try {
             modPackManager.loadAll(Paths.get("worlds/my_world/mod"), assetManager, rootNode,
-                    worldAccess, renderManagermg, cam);
+                    worldAccess, cam);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to load mod packs", ex);
         }

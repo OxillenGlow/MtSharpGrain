@@ -34,6 +34,7 @@ public final class RenderManager {
     public RenderManager(WorldAccess worldAccess, Node nd, AssetManager am, Player player,
                           SimpleApplication app, JsChunkGenerator chunkGen, long worldSeed) {
         this.worldAccess = worldAccess;
+        worldAccess.setRenderManager(this);
         this.nd = nd;
         this.assetManager = am;
         this.player = player;

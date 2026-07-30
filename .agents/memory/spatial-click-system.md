@@ -25,3 +25,11 @@ Engine.onSpatialLeftClick(function(name) { /* name = spatial's creation-time nam
 Engine.onSpatialRightClick(function(name) { /* same */ });
 ```
 Backed by `SpatialClickRegistry` (new class in `com.mtsharpgrain.js.mainthread`), wired via `JsApiBootstrap`. Uses `@HostAccess.Export` on `onLeftClick`/`onRightClick` — required because the context uses `HostAccess.EXPLICIT`.
+
+## Block edit ownership
+
+All block mutations must go through `WorldAccess` only. `Check`, console commands, and `BlockApi` do not call `RenderManager` directly. `RenderManager` registers itself with `WorldAccess` during construction, and `WorldAccess` calls `onBlockChanged` only after a successful in-memory mutation.
+
+**Why:** A block edit and its render invalidation must be one ordered operation; duplicate caller-side notifications could rebuild stale geometry or be missed by a new caller.
+
+**How to apply:** Add new edit APIs to `WorldAccess`, not to callers that separately notify rendering. Keep the renderer callback after `chunk.set(...)`; rejected validator changes must not notify rendering.

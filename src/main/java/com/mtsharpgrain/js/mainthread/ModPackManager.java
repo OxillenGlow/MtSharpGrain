@@ -4,7 +4,6 @@ import com.jme.igui.IGui;
 import com.jme3.asset.AssetManager;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
-import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
 import java.util.HashSet;
 import java.io.File;
@@ -69,7 +68,7 @@ public class ModPackManager {
      * file under that subdirectory (alphabetically) into it. Files directly
      * inside {@code modRoot} (not in a subfolder) are intentionally ignored.
      */
-    public void loadAll(Path modRoot, AssetManager assetManager, Node rootNode, WorldAccess worldAccess, RenderManager renderManager, Camera cam) throws IOException {
+    public void loadAll(Path modRoot, AssetManager assetManager, Node rootNode, WorldAccess worldAccess, Camera cam) throws IOException {
         if (!Files.exists(modRoot)) {
             Logger.getLogger(ModPackManager.class.getName()).log(Level.WARNING,
                     "Mod folder not found, skipping: " + modRoot.toAbsolutePath());
@@ -90,7 +89,7 @@ public class ModPackManager {
             String packName = dir.getFileName().toString();
 
             JSModifier modifier = new JSModifier();
-            modifier.init(assetManager, rootNode, worldAccess, renderManager, cam, dir, packName, this);
+            modifier.init(assetManager, rootNode, worldAccess, cam, dir, packName, this);
 
             try (var walk = Files.walk(dir)) {
                 walk.filter(p -> p.toString().endsWith(".js"))
