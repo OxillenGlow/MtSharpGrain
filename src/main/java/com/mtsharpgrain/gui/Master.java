@@ -159,14 +159,12 @@ public class Master {
         gui.textColor(ColorRGBA.White);
         gui.text("View Distance: [" + Main.VIEW_DISTANCE + "]", 0.5f, y + 0.045f, null);
 
-        float leftMargin = 0.35f;
-        float rightMargin = 0.65f;
-        int slots = 5; // 1..5
-        float slotSpacing = (rightMargin - leftMargin) / (slots - 1);
+        int slots = 9;
+        float slotSpacing = 0.1f;
 
         for (int i = 1; i <= slots; i++) {
             final int dist = i;
-            float xpos = leftMargin + slotSpacing * (i - 1);
+            float xpos = (float) (0.5f + (slotSpacing * (i - (float)slots/2)));
 
             gui.textColor(dist == Main.VIEW_DISTANCE ? ColorRGBA.Green : ColorRGBA.Blue);
             gui.text("[" + dist + "]", xpos, y, (event, arg) -> {

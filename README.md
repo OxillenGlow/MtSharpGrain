@@ -90,26 +90,33 @@ My todo/doing list:
   - Person model - i think i should use the java duke model for people 
   - **Important** Randomly spawned buildings
     - Ground buildings 0/100
-    - Air buildings 0/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
+    - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
 - **Important** Npc with behavior > afterwards, scripts to control npc 0%
 - Upgrade GUI...
 - Multi player support for mods (real multiplayer comes much later) 0%
-- Adding a clickable play button 0%
 - Physics as java 0%
     - Fix collision stuff
-    - Add a fall(acceleration) damage mod (not that you can fall much in this game yet)
-- Add to wiki new additions to inventory API
+    - Add a fall(acceleration) damage _mod_ (not that you can fall much in this game yet)
 - Mod blocks with a ModBlockAPI 0%
     - On [left/right] click
     - On place
     - listeners
+- Fix buggs caused by refactoring to multi thread
+    - **IMPORTANT** Mods went crazy and is triggering for no reason
+    - **IMPORTANT** Closing these mods did not work
+    - Fix 2 second lag spike - probably mod update
+- After multithreading and decreasing amount o blocks drawn, Now i can increase renderdistance :D!!!
+Even my horible computer can run 5+ render distance easily
+- Placement problems - placing seemed remarkably slow sometimes, same for destroying. Most likely cause is waiting for scripts to validate while some scripts refuse.
+- Fix strange bug - chunks zipping around (can only be seen with window bug)
+- Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this)
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
 
 - Minimize mod refresh rate to speed up main thread 90%
-- remove mod thread from main thread. 70% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754))
+- remove mod thread from main thread. 90% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754))
 - Add some random flux to terrain
 - Survival as a JavaScript mod 80%
 - Added skybox 70% - i need to refine skybox
