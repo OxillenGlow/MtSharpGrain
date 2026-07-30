@@ -2,6 +2,7 @@ package com.mtsharpgrain;
 
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.JsChunkGenerator;
+import com.mtsharpgrain.gui.Inventory;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class WorldAccess {
@@ -11,8 +12,8 @@ public final class WorldAccess {
     private final JsChunkGenerator generator;
     private final long seed;
     private ModPackManager modPackManager;
-    private RenderManager renderManager;
-
+    private Inventory inventory;
+    
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
         this.generator = generator;
@@ -23,12 +24,9 @@ public final class WorldAccess {
         this.modPackManager = modPackManager;
     }
 
-    /**
-     * Connects world mutations to rendering. RenderManager calls this during
-     * its construction, before any block-edit input can be processed.
-     */
-    void setRenderManager(RenderManager renderManager) {
-        this.renderManager = renderManager;
+    /** Wires the core inventory into setBlockAt's gate. Safe to leave unset (interception simply no-ops). */
+    public void setInventory(Inventory inventory){
+        this.inventory = inventory;
     }
 
     public BufferedChunk ensureChunk(ChunkPos pos){
@@ -97,8 +95,15 @@ public final class WorldAccess {
             return;
         }
 
+        // Core inventory gate. Runs AFTER the mod validators on purpose: since
+        // nothing after this can still fail, we never end up mutating inventory
+        // counts for a change that then gets rejected further down the line.
+        // forceSetBlockAt intentionally does NOT go through this.
+        if (inventory != null && !inventory.handleBlockChange(chunk.get(localX, localY, localZ), blockId)) {
+            return;
+        }
+
         chunk.set(localX, localY, localZ, blockId);
-        notifyRenderManager(worldX, worldY, worldZ);
     }
 
     public void removeBlockAt(int worldX, int worldY, int worldZ) {
@@ -139,17 +144,5 @@ public final class WorldAccess {
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
         chunk.set(localX, localY, localZ, blockId);
-        notifyRenderManager(worldX, worldY, worldZ);
-    }
-
-    /**
-     * Rendering is notified only after the in-memory block mutation has
-     * completed successfully. All callers therefore use WorldAccess as the
-     * single block-edit entry point.
-     */
-    private void notifyRenderManager(int worldX, int worldY, int worldZ) {
-        if (renderManager != null) {
-            renderManager.onBlockChanged(worldX, worldY, worldZ);
-        }
     }
 }

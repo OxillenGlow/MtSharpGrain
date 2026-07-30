@@ -28,6 +28,7 @@ import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
+import com.mtsharpgrain.gui.Inventory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -36,14 +37,15 @@ import java.util.logging.Logger;
 
 public class Main extends SimpleApplication {
 
-    public static String version = "v0.1.0-beta";
-    public static int VIEW_DISTANCE = 2;
+    public static String version = "v0.1.1(beta)";
+    public static int VIEW_DISTANCE = 1;
     private com.mtsharpgrain.RenderManager renderManagermg;
     private BlockSelector blockSelector;
     private WorldAccess worldAccess;
     private com.mtsharpgrain.node.Check check;
     public static final float ZONE_SIZE = 100f;
-    
+    private Sun sunObject;
+    private Inventory inventory;
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -57,7 +59,7 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) throws IOException {
         System.out.println(java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
-        AppSettings settings = new AppSettings(false);
+        AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
         settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
@@ -69,7 +71,7 @@ public class Main extends SimpleApplication {
         app.setSettings(settings);
         System.out.println("show settings false");
         
-        app.setShowSettings(false);
+        app.setShowSettings(false);// for other people compiling a jmonkeyengine game for mac, remember to set this orelse its a bunch of buggs later.
         System.out.println("Calling start()...");
         
         app.start();
@@ -104,8 +106,8 @@ public class Main extends SimpleApplication {
 
         
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
-        flyCam.setEnabled(false);
         
+        flyCam.setEnabled(false);
         com.jme3.light.DirectionalLight sun = null;
         for (com.jme3.light.Light l : rootNode.getLocalLightList()) {
             if (l instanceof com.jme3.light.DirectionalLight) {
@@ -113,11 +115,13 @@ public class Main extends SimpleApplication {
                 break;
             }
         }
+
+        this.sunObject = new Sun(assetManager, rootNode);
         
         
         // Testing shadows
         com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
-            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 512, 1);
+            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024, 1);
         dlsr.setLight(sun);
         
         viewPort.addProcessor(dlsr);
@@ -164,6 +168,8 @@ public class Main extends SimpleApplication {
         // WorldAccess now needs the generator + seed so ensureChunk() can run
         // chunkBuild() instead of falling back to the flat-fill BufferedChunk(pos) constructor.
         worldAccess = new WorldAccess("worlds/my_world", chunkGen, WORLD_SEED);
+        inventory = new Inventory("worlds/my_world");
+        worldAccess.setInventory(inventory);
         var player = new Player();
         player.setWorldPosition(new Vector3f(1, 1, 1));
         // Same chunkGen + seed handed to RenderManager so streamed chunks use
@@ -174,10 +180,10 @@ public class Main extends SimpleApplication {
 
         OnPrintScript printScript = new OnPrintScript();
         printScript.attach();
-        CommandListener commandListener = new CommandListener(worldAccess);
+        CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
 
-        check = new Check(worldAccess, blockSelector);
+        check = new Check(worldAccess, renderManagermg, blockSelector);
         inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
@@ -194,7 +200,7 @@ public class Main extends SimpleApplication {
         modPackManager = new com.mtsharpgrain.js.mainthread.ModPackManager();
         try {
             modPackManager.loadAll(Paths.get("worlds/my_world/mod"), assetManager, rootNode,
-                    worldAccess, cam);
+                    worldAccess, renderManagermg, cam, inventory);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to load mod packs", ex);
         }
@@ -222,12 +228,14 @@ public class Main extends SimpleApplication {
             cam.setLocation(camPos.subtract(shift));
         }
         
-        com.mtsharpgrain.gui.Master.tic(gui, modPackManager);// just noticed tic is misspelled! wont fix
+        com.mtsharpgrain.gui.Master.tic(gui, modPackManager, inventory);// just noticed tic is misspelled! wont fix
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
         modPackManager.tick(tpf, "Update");
         modPackManager.draw(gui);
         modPackManager.processGuiClicks(tpf);
+
+        sunObject.update(tpf, trueWorldPos);
     }
 
     @Override
@@ -263,8 +271,15 @@ public class Main extends SimpleApplication {
         // Shuts down the js-chunk-gen thread and closes the GraalVM Context.
         // Must happen after saveAll() in case anything triggers a last-second
         // generation (it won't currently, but keeps shutdown order sane).
-        if (chunkGen != null) chunkGen.close();
+        if (chunkGen != null) {
+            try {
+                chunkGen.close();
+            } catch (IllegalStateException e) {
+                System.err.println("[Main] chunkGen.close() failed to close cleanly: " + e.getMessage());
+            }
+        }
         if (modPackManager != null) modPackManager.onClose();
+        if (inventory != null) inventory.onClose();
         
         super.destroy();
         
@@ -274,16 +289,13 @@ public class Main extends SimpleApplication {
       
         try {
             AssetConverter.extract("/chunkgen.js", "worlds/"+world+"/chunkgen.js");
-            AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/DEFAULT/blocktrailmod.js");
+            AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/BlockTrail/blocktrailmod.js");
             AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
-            AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/BridgeBuilder/bridge.js");
+            AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/InstantBridges/bridge.js");
             AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
-            AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/Utilities/teleport.js");
-            AssetConverter.extract("/mods/SurvivalFramework/01_blocknames.js", "worlds/"+world+"/mod/Open_Inventory/01_blocknames.js");
-            AssetConverter.extract("/mods/SurvivalFramework/02_inventory.js", "worlds/"+world+"/mod/Open_Inventory/02_inventory.js");
-            AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/Open_Inventory/03_death.js");
-            AssetConverter.extract("/mods/SurvivalFramework/04_ui.js", "worlds/"+world+"/mod/Open_Inventory/04_ui.js");
-            AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/Open_Inventory/05_location.js");
+            AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/TeleportMe/teleport.js");
+            AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/SurvivalFramework/death.js");
+            AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");
            
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {

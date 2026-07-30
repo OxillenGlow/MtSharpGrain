@@ -87,35 +87,36 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
     
 My todo/doing list:
 
-- More content: 0%
-    - More blocks: ice, glass, metal, plastic 30%
-    - Special blocks: ... 
-    - Person model - i think i should use the java duke model for people 
-    - **Important** Randomly spawned buildings
-        - Ground buildings 0/100
-        - Air buildings 0/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
-    - Using these pixel art stuff i did:
-<img src="src/main/resources/self/pixel art.png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (1).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (2).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (3).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (4).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (5).png" align="left" width="25" style="margin-right: 20px;" /> <img src="src/main/resources/self/pixel art (6).png" align="left" width="25" style="margin-right: 20px;" />and more...
-- Npc with behavior > afterwards, scripts to control npc 0%
-- Upgrade GUI to use newly uploaded images 30% (lemur is a bit too big for me right now, perhaps in the future.)
-- Survival as a JavaScript mod
+  - Person model - i think i should use the java duke model for people 
+  - **Important** Randomly spawned buildings
+    - Ground buildings 0/100
+    - Air buildings 0/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
+- **Important** Npc with behavior > afterwards, scripts to control npc 0%
+- Upgrade GUI...
 - Multi player support for mods (real multiplayer comes much later) 0%
 - Adding a clickable play button 0%
-- Modify the click listener for JS made objects 0%
-- **IMPORTANT** fix the 0_2 inventory mod something about onblock place not working
-- **Important** fix compilation errors in GitHub actions.
+- Physics as java 0%
+    - Fix collision stuff
+    - Add a fall(acceleration) damage mod (not that you can fall much in this game yet)
+- Add to wiki new additions to inventory API
+- Minimize mod refresh rate to speed up main thread
+    - remove mod thread from main thread.
+- Mod blocks with a ModBlockAPI 0%
+    - On [left/right] click
+    - On place
+    - listeners
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
-- Add a Sun 70%
+
+- Add some random flux to terrain
+- Survival as a JavaScript mod 80%
+- Added skybox 70% - i need to refine skybox
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
 - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
-- simple world generation 90%
-    - random generation 90%
-30%
-- GUI > afterwards customisable with scripts 80%
+- simple world generation 70%
 - Extend JS API further
     - Simple save data api with XML 90%
     - Intermod communication API 100%
@@ -124,8 +125,8 @@ Done:
         - RHT
         - BTM
         - to constantly display gui on left, right bottom of screen. 60%
-- At the end of resizing, i should either find a IGUI function that recalculates the screen OR just make a new IGUI object and hope for the best of igui's code and java's gc janitor. 90% relying on java GC, seems ok.
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)100%
+- Make inventory Java and not a JavaScript mod. 90%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)

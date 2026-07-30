@@ -1,6 +1,7 @@
 package com.mtsharpgrain.js.mainthread;
 
 import com.jme3.asset.AssetManager;
+import com.mtsharpgrain.gui.Inventory;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import com.mtsharpgrain.js.BlockApi;
@@ -36,7 +37,7 @@ public class JsApiBootstrap {
     private final SceneApi sceneApi;
     private final Context context;
     
-    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam, Node rootNode, Path packDir, String packName, ModPackManager modPackManager) {
+    public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi, Camera cam, Node rootNode, Path packDir, String packName, ModPackManager modPackManager, Inventory inventory) {
         // Init all APIs
         this.sceneApi = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
         this.dataApi = new DataApi(packDir);
@@ -59,6 +60,7 @@ public class JsApiBootstrap {
                         .build();
   
         context.getBindings("js").putMember("Scene", sceneApi);
+        context.getBindings("js").putMember("__InventoryApi", inventory);
         context.getBindings("js").putMember("__TickRegistry", tickRegistry);
         context.getBindings("js").putMember("Gui", guiApi);
         context.getBindings("js").putMember("Data", dataApi);
@@ -74,6 +76,11 @@ public class JsApiBootstrap {
             "  destroy: function(x, y, z) { __BlockApi.destroyBlock(x, y, z); },\n" +
             "  forceSet: function(x, y, z, blockId) { __BlockApi.forceSetBlock(x, y, z, blockId); },\n" +
             "  get: function(x, y, z) { return __BlockApi.getBlock(x, y, z); }\n" +
+            "};\n" +
+            "globalThis.Inventory = {\n" +
+            "  add: function(blockId, amount) { return __InventoryApi.addItem(blockId, amount); },\n" +
+            "  remove: function(blockId, amount) { return __InventoryApi.removeItem(blockId, amount); },\n" +
+            "  get: function(blockId) { return __InventoryApi.getAmount(blockId); }\n" +
             "};\n" +
             "globalThis.Engine = {\n" +
             "  onTick: function(fn, tag) { __TickRegistry.onTick(fn, tag === undefined ? \"\" : tag); },\n" +

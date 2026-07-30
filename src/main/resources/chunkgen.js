@@ -45,7 +45,7 @@ var MAX_REACH = 600; // must be >= half the largest feature dimension below
 
 // Returns a feature descriptor for this cell, or null if the cell is empty.
 function featureAt(cellX, cellZ, seed) {
-    if (hash2(cellX, cellZ, seed) > 0.08) return null; // ~8% of cells spawn something
+    if (hash2(cellX, cellZ, seed) > 0.40) return null; // ~40% of cells spawn something (~20% mountain, ~20% slash)
 
     var cx = cellX * CELL_SIZE + hash2(cellX * 7 + 1, cellZ * 13 + 2, seed) * CELL_SIZE;
     var cz = cellZ * CELL_SIZE + hash2(cellX * 17 + 3, cellZ * 23 + 5, seed) * CELL_SIZE;
@@ -155,6 +155,11 @@ function chunkBuild(x, y, z, seed) {
 
             var rockTop = 10 + baseHeight(wx, wz, seed) + terrainFeatureDelta(wx, wz, seed);
             var ice = iceThickness(wx, wz);
+
+            // Raise the ice layer by 1.5 blocks where the ice cap exists.
+            // (Do nothing when ice == 0 — i.e., outside the ice cap.)
+            if (ice > 0) ice += 1.5;
+
             var surfaceTop = rockTop + ice;
 
             minSurfaceTop = Math.min(minSurfaceTop, surfaceTop);
@@ -166,6 +171,12 @@ function chunkBuild(x, y, z, seed) {
             if (deco < 0.02)      decoBlock = 3; // 2% stray dirt nub
             else if (deco < 0.03) decoBlock = 2; // 1% stray rock nub
 
+            // 5% chance of an extra dirt block on top of the existing dirt surface.
+            // Use a deterministic roll per-column; only make sense when no ice (on dirt surface).
+            var extraDirt = false;
+            var extraDirtRoll = hash2(wx * 997 + seed * 13, wz * 991 - seed * 7, seed * 19);
+            if (ice === 0 && extraDirtRoll < 0.05) extraDirt = true;
+
             for (var ly = 0; ly < 16; ly++) {
                 var wy = worldY + ly;
                 var block;
@@ -173,12 +184,17 @@ function chunkBuild(x, y, z, seed) {
 
                 if (wy >= surfaceTop) {
                     // Only the single air cell directly above the surface can hold a decoration.
-                    block = (wy === surfaceTop) ? decoBlock : 0;
+                    // If extraDirt is true (and we are on a dirt surface), place a dirt block at the
+                    // former-air cell directly above the ground to create a slight bump.
+                    if (wy === surfaceTop) {
+                        block = extraDirt ? 3 /* dirt */ : decoBlock;
+                    } else {
+                        block = 0;
+                    }
                 } else if (wy >= rockTop) {
                     block = 6; // ice
                 } else if (depthFromSurface >= 0 && depthFromSurface < 10) {
                     var r = hash2(wx * 53 + wy * 191, wz * 97 + seed * 331, seed);
-                    var block;
                     if (r < 0.99) {
                         block = 3; // dirt — 99%
                     } else if (r < 0.995) {
@@ -217,5 +233,66 @@ function chunkBuild(x, y, z, seed) {
         }
     }
 
+    // ── Add rare spherical "ball" structures (glass shell with grass interior) ──
+    // Roughly 5% of chunks that contain both air and ground will get one.
+    // The sphere sits on the surface (center between air and ground), radius 5..10,
+    // inner dirt is replaced by grass (id 4), outer ~2-block shell is glass (id 10).
+    var addBallRoll = hash2(x * 97 + y * 13, z * 101 + seed * 11, seed * 29);
+    if (!isAllAir && !isAllUnderground && addBallRoll < 0.05) {
+        // choose center within chunk deterministically
+        var cxLocal = Math.floor(hash2(x * 3 + 7, z * 5 + 11, seed * 13) * 16); // 0..15
+        var czLocal = Math.floor(hash2(x * 11 + 19, z * 13 + 23, seed * 17) * 16); // 0..15
+        var centerWX = worldX + cxLocal;
+        var centerWZ = worldZ + czLocal;
+
+        // compute surface at center column to place the sphere center at the surface boundary
+        var rockTopC = 10 + baseHeight(centerWX, centerWZ, seed) + terrainFeatureDelta(centerWX, centerWZ, seed);
+        var iceC = iceThickness(centerWX, centerWZ);
+        // we only want to place balls on dirt surfaces (not on ice)
+        if (iceC === 0) {
+            // place center so it sits at the interface (between air and ground)
+            var centerWY = Math.floor(rockTopC);
+
+            // radius 5..10
+            var radius = 5 + Math.floor(hash2(centerWX * 5 + seed * 3, centerWZ * 7 + seed * 5, seed * 19) * 6);
+
+            // iterate within bounding cube and modify only positions inside this chunk
+            var rOuter = radius + 1.5; // include band safe margin
+            var rMinX = Math.floor(centerWX - rOuter);
+            var rMaxX = Math.ceil(centerWX + rOuter);
+            var rMinY = Math.floor(centerWY - rOuter);
+            var rMaxY = Math.ceil(centerWY + rOuter);
+            var rMinZ = Math.floor(centerWZ - rOuter);
+            var rMaxZ = Math.ceil(centerWZ + rOuter);
+
+            for (var wx = rMinX; wx <= rMaxX; wx++) {
+                for (var wz = rMinZ; wz <= rMaxZ; wz++) {
+                    for (var wy = rMinY; wy <= rMaxY; wy++) {
+                        var dx = wx - centerWX;
+                        var dy = wy - centerWY;
+                        var dz = wz - centerWZ;
+                        var dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                        // local coordinates within this chunk?
+                        var lx = wx - worldX;
+                        var ly = wy - worldY;
+                        var lz = wz - worldZ;
+                        if (lx < 0 || lx >= 16 || ly < 0 || ly >= 16 || lz < 0 || lz >= 16) continue;
+
+                        var idx = lx * 256 + ly * 16 + lz;
+
+                        // inner region -> replace dirt with grass (id 4)
+                        if (dist <= (radius - 1)) {
+                            if (flat[idx] === 3) flat[idx] = 4; // swap dirt -> grass
+                        } else if (dist > (radius - 1) && dist < (radius + 1)) {
+                            // glass shell band (approx 2 block thickness)
+                            flat[idx] = 10; // glass
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Chunk.setArray(flat);
-}
+                                                         }
