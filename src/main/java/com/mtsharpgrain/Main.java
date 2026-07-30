@@ -178,12 +178,14 @@ public class Main extends SimpleApplication {
             worldAccess, rootNode, assetManager, player, this, chunkGen, WORLD_SEED
         );
 
+        worldAccess.setRenderManager(this.renderManagermg);
+
         OnPrintScript printScript = new OnPrintScript();
         printScript.attach();
         CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
         printScript.addListener(commandListener);
 
-        check = new Check(worldAccess, renderManagermg, blockSelector);
+        check = new Check(worldAccess, blockSelector);
         inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
