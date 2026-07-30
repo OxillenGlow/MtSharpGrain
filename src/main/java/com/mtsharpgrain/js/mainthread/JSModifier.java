@@ -15,6 +15,7 @@ import org.graalvm.polyglot.Value;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -35,8 +36,12 @@ public final class JSModifier {
     private volatile boolean failed;
     private ModPackManager ownerManager;
     private String packName;
+    private final ConcurrentLinkedQueue<PendingMessage> pendingMessages =
+            new ConcurrentLinkedQueue<>();
 
-    /** Installs the mailbox before init so scripts can safely message other packs during load. */
+    private record PendingMessage(String data, String fromPack) {}
+
+    /** Installs the mailbox before init so messages can be buffered during startup. */
     public void attachBridge(ModBridge bridge) {
         this.bridge = bridge;
     }
@@ -80,6 +85,14 @@ public final class JSModifier {
         this.bridge = bridge;
         this.runtimeThread = Thread.currentThread();
         try {
+            // Messages received before init() or while scripts were loading must
+            // be delivered only after all scripts have had a chance to define
+            // onReceive(). This also keeps those callbacks on the owner thread.
+            PendingMessage pending;
+            while ((pending = pendingMessages.poll()) != null) {
+                deliverMessageOnOwnerThread(pending.data(), pending.fromPack());
+            }
+
             while (!bridge.shouldStop()) {
                 Runnable task;
                 try {
@@ -162,10 +175,24 @@ public final class JSModifier {
     }
 
     public CompletableFuture<Void> deliverMessage(String data, String fromPack) {
+        if (!initialized) {
+            if (failed || bridge == null) {
+                CompletableFuture<Void> rejected = new CompletableFuture<>();
+                rejected.completeExceptionally(new IllegalStateException("Mod runtime is not ready"));
+                return rejected;
+            }
+            pendingMessages.offer(new PendingMessage(data, fromPack));
+            return CompletableFuture.completedFuture(null);
+        }
         return submit(() -> {
-            Value fn = bootstrap.getContext().getBindings("js").getMember("onReceive");
-            if (fn != null && fn.canExecute()) fn.execute(data, fromPack);
+            deliverMessageOnOwnerThread(data, fromPack);
         });
+    }
+
+    private void deliverMessageOnOwnerThread(String data, String fromPack) {
+        requireRuntimeThread();
+        Value fn = bootstrap.getContext().getBindings("js").getMember("onReceive");
+        if (fn != null && fn.canExecute()) fn.execute(data, fromPack);
     }
 
     public CompletableFuture<Void> notifySpatialLeftClick(String name) {
