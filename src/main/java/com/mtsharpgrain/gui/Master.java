@@ -46,6 +46,7 @@ public class Master {
             // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
             modPackManager.disableAllDrawing();
             inventory.drawMini(gui);
+            drawBreakPercentage(gui);
         } else if ("home".equals(path)) {
             modPackManager.disableAllDrawing();
             drawBGandButtons(gui);
@@ -349,5 +350,13 @@ public class Master {
         }
     
         gui.textSize(0.02f); // restore the size tic() set before this call
+    }
+
+    private static void drawBreakPercentage(IGui gui) {
+        gui.textHAlign("center");
+        gui.textVAlign("center");
+        gui.textSize(0.02f);
+        gui.textColor(ColorRGBA.Gray);
+            gui.text(com.mtsharpgrain.WorldAccess.t+"%", 0.6f, 0.5f, null);
     }
 }

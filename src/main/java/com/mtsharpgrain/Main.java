@@ -179,6 +179,8 @@ public class Main extends SimpleApplication {
         this.renderManagermg = new com.mtsharpgrain.RenderManager(
             worldAccess, rootNode, assetManager, player, this, chunkGen, WORLD_SEED
         );
+        
+        worldAccess.setRenderManager(this.renderManagermg);
 
         OnPrintScript printScript = new OnPrintScript();
         printScript.attach();

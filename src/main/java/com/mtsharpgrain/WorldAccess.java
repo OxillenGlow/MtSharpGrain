@@ -19,20 +19,30 @@ public final class WorldAccess {
     private Inventory inventory;
     private final ConcurrentLinkedQueue<PendingBlockChange> pendingChanges = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<int[]> committedChanges = new ConcurrentLinkedQueue<>();
+    public static long t;
+    private RenderManager renderManager;
 
+    void setRenderManager(com.mtsharpgrain.RenderManager renderManager) {
+        this.renderManager = renderManager;
+    }
+
+    
     private static final class PendingBlockChange {
         final int x, y, z, blockId;
         final CompletableFuture<Boolean> validation;
         final CompletableFuture<Boolean> result = new CompletableFuture<>();
-
+        final long createdAt;  // Add this
+    
         PendingBlockChange(int x, int y, int z, int blockId, CompletableFuture<Boolean> validation) {
             this.x = x;
             this.y = y;
             this.z = z;
             this.blockId = blockId;
             this.validation = validation;
+            this.createdAt = System.currentTimeMillis();  // Record time
         }
     }
+
     
     public WorldAccess(String worldFolder, JsChunkGenerator generator, long seed){
         fileHelper = new ChunkFileHelper(worldFolder);
@@ -48,6 +58,8 @@ public final class WorldAccess {
     public void setInventory(Inventory inventory){
         this.inventory = inventory;
     }
+    
+    
 
     public BufferedChunk ensureChunk(ChunkPos pos){
         BufferedChunk c = Useful.get(pos);
@@ -125,15 +137,27 @@ public final class WorldAccess {
      * result is never applied from a mod virtual thread.
      */
     public void processPendingBlockChanges() {
+        long now = System.currentTimeMillis();
         int count = pendingChanges.size();
         for (int i = 0; i < count; i++) {
             PendingBlockChange change = pendingChanges.poll();
             if (change == null) break;
-            if (!change.validation.isDone()) {
+
+            long elapsed = now - change.createdAt;
+            this.t = elapsed/40;
+            if (elapsed > 4000) {  // 4 seconds
+                if (!change.validation.isDone()) {
+                    // Timed out, abandon it
+                    change.result.complete(false);
+                    continue;
+                }
+            } else if (!change.validation.isDone()) {
+                // Still waiting, requeue and skip
                 pendingChanges.offer(change);
                 continue;
             }
 
+            // Rest of your existing logic (validation check, inventory, set block, etc.)
             boolean allowed;
             try {
                 allowed = change.validation.join();
@@ -150,16 +174,21 @@ public final class WorldAccess {
             int localX = worldToLocal(change.x);
             int localY = worldToLocal(change.y);
             int localZ = worldToLocal(change.z);
+            System.out.println("gona check inventory");
             if (inventory != null && !inventory.handleBlockChange(
                     chunk.get(localX, localY, localZ), change.blockId)) {
                 change.result.complete(false);
                 continue;
             }
+            
             chunk.set(localX, localY, localZ, change.blockId);
+            System.out.println("gona notify RM");
+            this.renderManager.onBlockChanged(change.x, change.y, change.z);
             committedChanges.offer(new int[]{change.x, change.y, change.z});
             change.result.complete(true);
         }
     }
+
 
     /** Returns successful edits since the last render-frame drain. */
     public List<int[]> drainCommittedChanges() {
