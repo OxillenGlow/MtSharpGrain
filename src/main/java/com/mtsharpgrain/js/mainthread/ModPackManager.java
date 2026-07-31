@@ -182,8 +182,29 @@ public final class ModPackManager {
 
     public void setEnabled(String packName, boolean enabled) {
         if (!packs.containsKey(packName)) return;
-        if (enabled) disabledPacks.remove(packName);
-        else disabledPacks.add(packName);
+
+        if (enabled) {
+            // If the pack was disabled, try to start a fresh runtime for it.
+            // Reloading will create a replacement JSModifier and mailbox.
+            if (disabledPacks.remove(packName)) {
+                try {
+                    reloadPack(packName);
+                } catch (IOException e) {
+                    LOG.log(Level.SEVERE, "Failed to reload mod pack '" + packName + "' when enabling", e);
+                    // keep it disabled if reload failed
+                    disabledPacks.add(packName);
+                }
+            }
+        } else {
+            // Mark disabled and request shutdown of the running runtime so it
+            // stops receiving/processing work. The pack can be reloaded when
+            // re-enabled via reloadPack above.
+            if (!disabledPacks.contains(packName)) {
+                disabledPacks.add(packName);
+                JSModifier mod = packs.get(packName);
+                if (mod != null) mod.shutdown();
+            }
+        }
     }
 
     /** Queues the per-frame callback; it never waits for a mod. */
@@ -205,10 +226,12 @@ public final class ModPackManager {
                 modifier.submitTaggedTick(tpf, "Tick");
                 schedule.nextTickNs = now + TICK_INTERVAL_NS;
             }
-            if (now >= schedule.nextUpdateNs) {
-                modifier.submitTickAll(tpf);
-                schedule.nextUpdateNs = now + UPDATE_INTERVAL_NS;
-            }
+            // NOTE: Removed periodic submitTickAll() to avoid re-running all
+            // registered tick callbacks every UPDATE_INTERVAL_NS. TickRegistry
+            // already supports explicit tagged ticks via submitTaggedTick and
+            // per-frame submitTick; the broad tick-all invocation was causing
+            // tag-specific handlers (eg. confetti) to fire unexpectedly on a
+            // 2s cadence and also triggered the location restore logic.
         }
     }
 
