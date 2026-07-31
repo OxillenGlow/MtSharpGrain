@@ -55,6 +55,10 @@ Just interesting to see how it is loading.
 This is a picture the last version.
 
 ![](Pictures/Poster.png)
+Dumb poster I made.
+
+![](Pictures/Inventory.png)
+Currently the inventory bar looks like this
 
 </details>
 
