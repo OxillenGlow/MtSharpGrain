@@ -111,19 +111,19 @@ My todo/doing list:
     - On place
     - listeners
 - Fix buggs caused by refactoring to multi thread
-    - **IMPORTANT** Mods went crazy and is triggering for no reason
-    - **IMPORTANT** Closing these mods did not work
-    - Fix 2 second lag spike - probably mod update
+    - **IMPORTANT** Block placement.
+    - Other potential problems that i haven't found imidiately.
 - After multithreading and decreasing amount o blocks drawn, Now i can increase renderdistance :D!!!
-Even my horible computer can run 5+ render distance easily
+Even my horible computer can run 5+ view distance easily!
 - Placement problems - placing seemed remarkably slow sometimes, same for destroying. Most likely cause is waiting for scripts to validate while some scripts refuse.
 - Fix strange bug - chunks zipping around (can only be seen with window bug)
-- Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this)
+- Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this but i have to wait and see)
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
 
+- Fix 2 second lag spike - probably mod update 100% (off-loaded to mod thread)
 - Minimize mod refresh rate to speed up main thread 90%
 - remove mod thread from main thread. 90% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754))
 - Add some random flux to terrain
