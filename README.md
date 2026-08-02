@@ -37,7 +37,10 @@ Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/rele
 
 ---
 
-### Download [here](https://github.com/OxillenGlow/MtSharpGrain/releases)
+### [⬇️Download Now!](https://github.com/OxillenGlow/MtSharpGrain/releases)
+
+available for MacOS, Windows, and Liniux(Debian derived)
+
 ---
 
 ## Screen shots
