@@ -60,6 +60,9 @@ Dumb poster I made.
 ![](Pictures/Inventory.png)
 Currently the inventory bar looks like this
 
+![](Pictures/Hubs.png)
+Small greenhouses with grass(edible? idk yet) inside.
+
 </details>
 
 ---
