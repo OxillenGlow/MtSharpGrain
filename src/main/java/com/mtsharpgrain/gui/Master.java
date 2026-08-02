@@ -353,10 +353,12 @@ public class Master {
     }
 
     private static void drawBreakPercentage(IGui gui) {
-        gui.textHAlign("center");
-        gui.textVAlign("center");
-        gui.textSize(0.02f);
-        gui.textColor(ColorRGBA.Gray);
-            gui.text(com.mtsharpgrain.WorldAccess.t+"%", 0.6f, 0.5f, null);
+        if (!(com.mtsharpgrain.WorldAccess.t > 100) || !(com.mtsharpgrain.WorldAccess.t <2)){
+            gui.textHAlign("center");
+            gui.textVAlign("top");
+            gui.textSize(0.04f);
+            gui.textColor(ColorRGBA.Black);
+            gui.text("Destroying... "+com.mtsharpgrain.WorldAccess.t+"%", 0.5f, 0.4f, null);
+        }
     }
 }
