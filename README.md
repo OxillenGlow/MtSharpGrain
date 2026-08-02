@@ -17,18 +17,15 @@ A sand box, non voxel, highly modifiable game with slightly smooth interconnecte
 #### Semi-smooth node meshes
 blocks are connect with rounded transitions rather than hard cube edges
 #### [JavaScript modifier system](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) 
-much more powerful than JVisualScripting, mostly complete API with:
-    - end-node place/destroy
-    - gui management
-    - procedural world generation
-    - end-node placement listener
-    - player location getter/setter
+Full powerful modding system to allow for JavaScript modding via GraalJS
+
+You can control everything from player location to making new things floating around.
  
 Why mods:
 - I am a single person and do not have the resources to make a gull game
 - I will **not** be able to make my game fit everyone's tast.
 
-Modding solves both as **anyone including you!** can make their own mini game without messing with boring parts. This is more true with AI.
+Modding solves both as **anyone including you!** can make *their own mini game* on top without messing with boring parts. This is more true with AI.
 
 Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/releases)**
 
