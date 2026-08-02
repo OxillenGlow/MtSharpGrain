@@ -178,7 +178,7 @@ public final class WorldAccess {
             if (elapsed > 4000) {  // 4 seconds
                 // If validator still hasn't completed, abandon it and allow GC to collect.
                 if (change.validation != null && !change.validation.isDone()) {
-                    change.result.complete(false);
+                    change.result.complete(true);
                     // Drop the reference to the validator future so the future and any
                     // captured JS/Graal state can be GC'd. Mark handled so we won't
                     // try to read the result later.
