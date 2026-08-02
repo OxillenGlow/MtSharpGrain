@@ -29,9 +29,13 @@ public final class WorldAccess {
     
     private static final class PendingBlockChange {
         final int x, y, z, blockId;
-        final CompletableFuture<Boolean> validation;
+        CompletableFuture<Boolean> validation;
+        // result of the validator when it completes; written by the validator callback.
+        volatile Boolean validationResult = null;
+        // true once the validator completion handler has run or we've abandoned the validator.
+        volatile boolean validationHandled = false;
         final CompletableFuture<Boolean> result = new CompletableFuture<>();
-        final long createdAt;  // Add this
+        final long createdAt;
     
         PendingBlockChange(int x, int y, int z, int blockId, CompletableFuture<Boolean> validation) {
             this.x = x;
@@ -121,13 +125,39 @@ public final class WorldAccess {
      * {@link #processPendingBlockChanges()} on the render thread.
      */
     public CompletableFuture<Boolean> requestBlockChange(int worldX, int worldY, int worldZ, int blockId) {
-        CompletableFuture<Boolean> validation;
+        CompletableFuture<Boolean> placeholder = new CompletableFuture<>();
+
         if (modPackManager == null) {
-            validation = CompletableFuture.completedFuture(true);
+            placeholder.complete(true);
         } else {
-            validation = modPackManager.validateBlockChangeAsync(worldX, worldY, worldZ, blockId);
+            // dispatch the validation request off the render thread into a tiny virtual
+            // thread so that any unexpected slow work inside validateBlockChangeAsync
+            // cannot stall this call site.
+            Thread.startVirtualThread(() -> {
+                try {
+                    CompletableFuture<Boolean> real = modPackManager.validateBlockChangeAsync(
+                            worldX, worldY, worldZ, blockId);
+                    real.whenComplete((v, ex) -> {
+                        if (ex != null) placeholder.completeExceptionally(ex);
+                        else placeholder.complete(v);
+                    });
+                } catch (Throwable t) {
+                    placeholder.completeExceptionally(t);
+                }
+            });
         }
-        PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId, validation);
+
+        PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId, placeholder);
+
+        // Install a completion handler so we can observe the validator's outcome
+        // without ever blocking the render thread. The handler records the result
+        // into the PendingBlockChange and marks validationHandled; the render thread
+        // reads those fields later and never calls join()/get() itself.
+        placeholder.whenComplete((v, ex) -> {
+            change.validationResult = (ex == null && Boolean.TRUE.equals(v));
+            change.validationHandled = true;
+        });
+
         pendingChanges.offer(change);
         return change.result;
     }
@@ -146,24 +176,39 @@ public final class WorldAccess {
             long elapsed = now - change.createdAt;
             this.t = elapsed/40;
             if (elapsed > 4000) {  // 4 seconds
-                if (!change.validation.isDone()) {
-                    // Timed out, abandon it
+                // If validator still hasn't completed, abandon it and allow GC to collect.
+                if (change.validation != null && !change.validation.isDone()) {
                     change.result.complete(false);
+                    // Drop the reference to the validator future so the future and any
+                    // captured JS/Graal state can be GC'd. Mark handled so we won't
+                    // try to read the result later.
+                    change.validation = null;
+                    change.validationHandled = true;
                     continue;
                 }
-            } else if (!change.validation.isDone()) {
-                // Still waiting, requeue and skip
-                pendingChanges.offer(change);
-                continue;
+            } else {
+                // If validator hasn't completed yet, requeue and skip applying.
+                if (change.validation != null && !change.validation.isDone()) {
+                    pendingChanges.offer(change);
+                    continue;
+                }
             }
-
-            // Rest of your existing logic (validation check, inventory, set block, etc.)
+            // Determine the validation outcome without blocking the render thread.
             boolean allowed;
-            try {
-                allowed = change.validation.join();
-            } catch (Exception e) {
+            if (change.validationHandled) {
+                allowed = Boolean.TRUE.equals(change.validationResult);
+            } else if (change.validation != null && change.validation.isDone()) {
+                // Safety: getNow never blocks.
+                try {
+                    allowed = change.validation.getNow(false);
+                } catch (Throwable t) {
+                    allowed = false;
+                }
+            } else {
+                // No validator present (cleared on timeout) -> treat as rejected.
                 allowed = false;
             }
+            
             if (!allowed) {
                 change.result.complete(false);
                 continue;
