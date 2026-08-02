@@ -21,19 +21,19 @@ Full powerful modding system to allow for JavaScript modding via GraalJS
 
 You can control everything from player location to making new things floating around.
  
-Why mods:
-- I am a single person and do not have the resources to make a gull game
+Why mods?
+- I am a single person and do not have the resources to make a full game.
 - I will **not** be able to make my game fit everyone's tast.
 
 Modding solves both as **anyone including you!** can make *their own mini game* on top without messing with boring parts. This is more true with AI.
 
-Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/releases)**
+Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/releases)** And go [here](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) to learn more on the modding system.
 
-And go [here](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) to learn more on the modding system.
-##### [jVisualScripting](https://github.com/openconcerto/jVisualScripting) engine & editor (depricating) 
-block based visual coding system, mostly wired into the game now with console comand system.
-##### Console command system
-`!place` / `!destroy` commands with role-based authorization (editor / manager / admin)
+
+###### Console command system
+
+<sup>`!place` / `!destroy` commands. In progress...
+
 
 ---
 
