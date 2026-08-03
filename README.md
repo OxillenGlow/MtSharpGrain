@@ -93,9 +93,15 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 ### Important? stuff
 #### What am i working on now?
-    
+
+> [!IMPORTANT]
+> I am a bit tired already so i am going to make a publishable beta release before I finish the rest here.
+>
+> The biggest problem is to make the NPC stuff work with mods which will likely be 10x harder than the completed refactoring of mods. Im just going to make a tiny java class for a independent NPC mini system.
+
 My todo/doing list:
- 
+
+ - Java NPC mini system.
  - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
