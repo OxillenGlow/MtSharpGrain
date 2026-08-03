@@ -47,9 +47,48 @@ public final class EngineAccess {
         }
     }
 
+    // Not much use in run now that there is post but i will still keep this 
+    // just in case an api in the future needs some return value in a different form
     public void run(Runnable runnable) {
         call(() -> {
             runnable.run();
+            return null;
+        });
+    }
+
+    /**
+     * Fire-and-forget enqueue of a Runnable to the render thread.
+     *
+     * If called from the render thread this runs immediately. If called
+     * from a mod virtual thread it enqueues work via SimpleApplication.enqueue
+     * but does NOT wait for completion.
+     */
+    public void post(Runnable runnable) {
+        if (isMainThread()) {
+            runnable.run();
+            return;
+        }
+        // enqueue a callable that runs the runnable; we intentionally do not
+        // call Future.get() so this is fire-and-forget from the caller's view.
+        app.enqueue(() -> {
+            runnable.run();
+            return null;
+        });
+    }
+
+    /**
+     * Fire-and-forget enqueue of multiple Runnables as a single batch.
+     *
+     * This allows callers to reduce enqueue overhead by grouping multiple
+     * render-thread actions into a single enqueue call.
+     */
+    public void post(Runnable... runnables) {
+        if (isMainThread()) {
+            for (Runnable r : runnables) r.run();
+            return;
+        }
+        app.enqueue(() -> {
+            for (Runnable r : runnables) r.run();
             return null;
         });
     }
