@@ -25,22 +25,22 @@ public final class EngineSceneApi {
         return engine.call(() -> delegate.createRectangle(name, x, y, z));
     }
     @HostAccess.Export public void attachChild(long parent, long child) {
-        engine.run(() -> delegate.attachChild(parent, child));
+        engine.post(() -> delegate.attachChild(parent, child));
     }
     @HostAccess.Export public void setPosition(long handle, float x, float y, float z) {
-        engine.run(() -> delegate.setPosition(handle, x, y, z));
+        engine.post(() -> delegate.setPosition(handle, x, y, z));
     }
     @HostAccess.Export public float[] getPosition(long handle) {
         return engine.call(() -> delegate.getPosition(handle));
     }
     @HostAccess.Export public void setRotation(long handle, float x, float y, float z) {
-        engine.run(() -> delegate.setRotation(handle, x, y, z));
+        engine.post(() -> delegate.setRotation(handle, x, y, z));
     }
     @HostAccess.Export public float[] getRotation(long handle) {
         return engine.call(() -> delegate.getRotation(handle));
     }
     @HostAccess.Export public void setColor(long handle, float r, float g, float b, float a) {
-        engine.run(() -> delegate.setColor(handle, r, g, b, a));
+        engine.post(() -> delegate.setColor(handle, r, g, b, a));
     }
     @HostAccess.Export public int getBlockId(int x, int y, int z) {
         return engine.call(() -> delegate.getBlockId(x, y, z));
@@ -49,15 +49,15 @@ public final class EngineSceneApi {
         return engine.call(() -> delegate.createLight(name, r, g, b, radius));
     }
     @HostAccess.Export public void setLightColor(long handle, float r, float g, float b) {
-        engine.run(() -> delegate.setLightColor(handle, r, g, b));
+        engine.post(() -> delegate.setLightColor(handle, r, g, b));
     }
     @HostAccess.Export public void setLightRadius(long handle, float radius) {
-        engine.run(() -> delegate.setLightRadius(handle, radius));
+        engine.post(() -> delegate.setLightRadius(handle, radius));
     }
     @HostAccess.Export public void destroy(long handle) {
-        engine.run(() -> delegate.destroy(handle));
+        engine.post(() -> delegate.destroy(handle));
     }
     @HostAccess.Export public void setRelativePosition(long handle, float x, float y, float z) {
-        engine.run(() -> delegate.setRelativePosition(handle, x, y, z));
+        engine.post(() -> delegate.setRelativePosition(handle, x, y, z));
     }
 }
