@@ -22,23 +22,23 @@ public final class EngineGuiApi {
     }
     @HostAccess.Export
     public void setColor(long handle, float r, float g, float b, float a) {
-        engine.run(() -> delegate.setColor(handle, r, g, b, a));
+        engine.post(() -> delegate.setColor(handle, r, g, b, a));
     }
     @HostAccess.Export
     public void removeWord(long handle) {
-        engine.run(() -> delegate.removeWord(handle));
+        engine.post(() -> delegate.removeWord(handle));
     }
     @HostAccess.Export
     public void toTop(long handle) {
-        engine.run(() -> delegate.toTop(handle));
+        engine.post(() -> delegate.toTop(handle));
     }
     @HostAccess.Export
     public void toBottom(long handle) {
-        engine.run(() -> delegate.toBottom(handle));
+        engine.post(() -> delegate.toBottom(handle));
     }
     @HostAccess.Export
     public boolean getDraw() {
-        return engine.call(delegate::getDraw);
+        return engine.call(() -> delegate::getDraw);
     }
     @HostAccess.Export
     public String getGuiState() {
