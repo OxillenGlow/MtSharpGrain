@@ -95,27 +95,25 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 #### What am i working on now?
     
 My todo/doing list:
-
-  - Person model - i think i should use the java duke model for people 
-  - **Important** Randomly spawned buildings
+ 
+ - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
-- **Important** Npc with behavior > afterwards, scripts to control npc 0%
-- Upgrade GUI...
-- Multi player support for mods (real multiplayer comes much later) 0%
-- Physics as java 0%
-    - Fix collision stuff
-    - Add a fall(acceleration) damage _mod_ (not that you can fall much in this game yet)
-- Mod blocks with a ModBlockAPI 0%
-    - On [left/right] click
-    - On place
-    - listeners
-- Fix buggs caused by refactoring to multi thread
-    - **IMPORTANT** Block placement.
-    - Other potential problems that i haven't found imidiately.
+ - **IMPORTANT** Npc with behavior > afterwards, scripts to control npc 5%
+ - Upgrade GUI... (constant)
+ - Multi player support for mods (real multiplayer comes much later) 0%
+ - Physics as java 0%
+     - Fix collision stuff
+     - Add a fall(acceleration) damage _mod_ (not that you can fall much in this game yet)
+ - Mod blocks with a ModBlockAPI 0%
+     - On [left/right] click
+     - On place
+     - listeners
+ - Fix buggs caused by refactoring to multi thread
+     - Block placement. 80%
+     - Other potential problems that i haven't found imidiately. 
 - After multithreading and decreasing amount o blocks drawn, Now i can increase renderdistance :D!!!
 Even my horible computer can run 5+ view distance easily!
-- Placement problems - placing seemed remarkably slow sometimes, same for destroying. Most likely cause is waiting for scripts to validate while some scripts refuse.
 - Fix strange bug - chunks zipping around (can only be seen with window bug)
 - Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this but i have to wait and see)
 
@@ -132,7 +130,6 @@ Done:
 - Full screen ect 100%
 - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
 - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
-- simple world generation 70%
 - Extend JS API further
     - Simple save data api with XML 90%
     - Intermod communication API 100%
@@ -142,7 +139,6 @@ Done:
         - BTM
         - to constantly display gui on left, right bottom of screen. 60%
 - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)100%
-- Make inventory Java and not a JavaScript mod. 90%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
