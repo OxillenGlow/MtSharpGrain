@@ -29,7 +29,7 @@ public class PlayerApi {
 
     @HostAccess.Export
     public void setPosition(float x, float y, float z) {
-        engine.run(() -> {
+        engine.post(() -> {
             Vector3f trueWorldPos = new Vector3f(x, y, z);
             cam.setLocation(trueWorldPos.add(rootNode.getLocalTranslation()));
         });
