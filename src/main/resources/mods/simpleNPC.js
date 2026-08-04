@@ -167,12 +167,17 @@
     updateStatsGui();
   }
 
+  let first = true;
   Engine.onTick(function(tpf){
     accMove += tpf; accSpawn += tpf;
     const now = Date.now();
     if(guiMsg && now > guiExpire){ Gui.removeWord(guiMsg); guiMsg = null; }
     if(accMove >= 3.0){ try{ tickMovement(); }catch(e){} accMove = 0; }
     if(accSpawn >= 5.0){ try{ trySpawnNearPlayer(); }catch(e){} accSpawn = 0; }
+    if(first){
+      updateStatsGui(); 
+      first = false;
+    }
   }, "Update");
 
   // stats GUI: click shows stats instead of resetting (minimum fix)
@@ -190,9 +195,4 @@
     showGui("Stats — Kills: " + kills + " | NPCs: " + Object.keys(npcs).length);
   }, "npc_stats");
 
-  // expose message receiver (no-op)
-  function onReceive(msg,from){}
-
-  // ensure initial GUI update
-  Engine.onTick(function(tpf){ updateStatsGui(); }, "InitStats");
 })();
