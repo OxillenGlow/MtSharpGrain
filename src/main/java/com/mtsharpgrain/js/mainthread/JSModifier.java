@@ -218,6 +218,7 @@ public final class JSModifier {
     }
 
     private CompletableFuture<Void> submit(Runnable task) {
+        
         ModBridge currentBridge = bridge;
         if (currentBridge == null || !initialized || failed) {
             CompletableFuture<Void> rejected = new CompletableFuture<>();

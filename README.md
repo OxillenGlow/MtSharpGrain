@@ -102,6 +102,8 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 My todo/doing list:
 
  - Java NPC mini system.
+ - Draw the percentages correctly.
+ - Grass picture is missing.
  - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
@@ -116,7 +118,7 @@ My todo/doing list:
      - On place
      - listeners
  - Fix buggs caused by refactoring to multi thread
-     - Block placement. 80%
+     - Block placement. 90%
      - Other potential problems that i haven't found imidiately. 
 - After multithreading and decreasing amount o blocks drawn, Now i can increase renderdistance :D!!!
 Even my horible computer can run 5+ view distance easily!

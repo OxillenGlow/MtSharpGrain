@@ -311,10 +311,11 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/TeleportMe/teleport.js");
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/SurvivalFramework/death.js");
             AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");
+            AssetConverter.extract("/mods/simpleNPC.js", "worlds/"+world+"/mod/SurvivalFramework/simpleNPC.js");
            
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {
-            System.out.println("failed"+ex);   
+            System.out.println("failed"+ex);
         }
         
     }

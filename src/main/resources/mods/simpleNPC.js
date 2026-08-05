@@ -91,6 +91,7 @@
 
   // spawn logic (5s)
   function trySpawnNearPlayer(){
+    console.log("spawning");
     const ppos = Player.getPosition(); const px=int(ppos[0]), py=int(ppos[1]), pz=int(ppos[2]);
     const base = chunkOf(px,py,pz); let spawned = 0;
     let droneBias = Math.min(0.25 + kills*0.01, 0.6);
@@ -112,6 +113,8 @@
       else if(r < 0.85) t = "blob";
       else if(r < 0.93) t = "attack_drone";
       else t = "bomber";
+      console.log("Made entity at "+centerX + centerY + centerZ); 
+
       createNPCOfType(t, centerX, centerY, centerZ);
       spawned++;
     }
@@ -168,7 +171,7 @@
   }
 
   let first = true;
-  Engine.onTick(function(tpf){
+  Engine.onTick(function(tpf,tag){
     accMove += tpf; accSpawn += tpf;
     const now = Date.now();
     if(guiMsg && now > guiExpire){ Gui.removeWord(guiMsg); guiMsg = null; }
@@ -190,7 +193,7 @@
   }
   updateStatsGui();
 
-  Engine.onTick(function(tpf){
+  Engine.onTick(function(tpf, tag){
     // when stats GUI clicked, this fires (tag "npc_stats"); show a transient message instead of destructive reset
     showGui("Stats — Kills: " + kills + " | NPCs: " + Object.keys(npcs).length);
   }, "npc_stats");
