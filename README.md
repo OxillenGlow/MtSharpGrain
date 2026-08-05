@@ -101,26 +101,23 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 My todo/doing list:
 
- - Java NPC mini system.
  - Draw the percentages correctly.
  - Grass picture is missing.
  - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
- - **IMPORTANT** Npc with behavior > afterwards, scripts to control npc 5%
+ - Npc with behavior > afterwards, scripts to control npc. 20%
+ - **IMPORTANT** Fix NPC mod, its not working for some reason (haiku is just not for coding).
  - Upgrade GUI... (constant)
  - Multi player support for mods (real multiplayer comes much later) 0%
  - Physics as java 0%
      - Fix collision stuff
      - Add a fall(acceleration) damage _mod_ (not that you can fall much in this game yet)
- - Mod blocks with a ModBlockAPI 0%
-     - On [left/right] click
-     - On place
-     - listeners
+ - Mod blocks with a ModBlockAPI 0% <-- will do when i get time to connect Scene api with Block api.
  - Fix buggs caused by refactoring to multi thread
      - Block placement. 90%
      - Other potential problems that i haven't found imidiately. 
-- After multithreading and decreasing amount o blocks drawn, Now i can increase renderdistance :D!!!
+- After multithreading and decreasing amount of blocks drawn, Now i can increase renderdistance :D!!! kinda, chrome is CPU hungry and laggs my game.
 Even my horible computer can run 5+ view distance easily!
 - Fix strange bug - chunks zipping around (can only be seen with window bug)
 - Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this but i have to wait and see)
