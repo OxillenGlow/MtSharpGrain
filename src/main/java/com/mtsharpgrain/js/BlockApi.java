@@ -33,7 +33,7 @@ public class BlockApi {
     @HostAccess.Export
     public void destroyBlock(int x, int y, int z) {
         try {
-            worldAccess.requestRemoveBlock(x, y, z, blockId);
+            worldAccess.requestRemoveBlock(x, y, z);
         } catch (Throwable t) {
             System.err.println("[BlockApi] placeBlock scheduling failed: " + t.getMessage());
         }

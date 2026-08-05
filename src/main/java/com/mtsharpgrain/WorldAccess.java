@@ -26,12 +26,12 @@ public final class WorldAccess {
         this.renderManager = renderManager;
     }
 
-    
+    // IMPORTANT SUBCLASS
     private static final class PendingBlockChange {
         final int x, y, z, blockId;
         CompletableFuture<Boolean> validation;
         // result of the validator when it completes; written by the validator callback.
-        volatile Boolean validationResult = null;
+        volatile Boolean validationResult = true;
         // true once the validator completion handler has run or we've abandoned the validator.
         volatile boolean validationHandled = false;
         final CompletableFuture<Boolean> result = new CompletableFuture<>();
@@ -126,14 +126,17 @@ public final class WorldAccess {
      */
     public CompletableFuture<Boolean> requestBlockChange(int worldX, int worldY, int worldZ, int blockId) {
         CompletableFuture<Boolean> placeholder = new CompletableFuture<>();
-
+        System.out.println("REQUESTEDp2");
         if (modPackManager == null) {
+            System.out.println("mpmnull");
             placeholder.complete(true);
         } else {
+            System.out.println("REQUESTEDp3");
             // dispatch the validation request off the render thread into a tiny virtual
             // thread so that any unexpected slow work inside validateBlockChangeAsync
             // cannot stall this call site.
             Thread.startVirtualThread(() -> {
+                System.out.println("virtral confirm");
                 try {
                     CompletableFuture<Boolean> real = modPackManager.validateBlockChangeAsync(
                             worldX, worldY, worldZ, blockId);
@@ -146,7 +149,9 @@ public final class WorldAccess {
                 }
             });
         }
-
+        
+        System.out.println("REQUESTEDp4");
+        
         PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId, placeholder);
 
         // Install a completion handler so we can observe the validator's outcome
@@ -171,19 +176,36 @@ public final class WorldAccess {
         int count = pendingChanges.size();
         for (int i = 0; i < count; i++) {
             PendingBlockChange change = pendingChanges.poll();
-            if (change == null) break;
+            if (change == null) {
+                System.out.println("REQUESTED change fail change: "+change);
+                break;
+            }
 
             long elapsed = now - change.createdAt;
             this.t = elapsed/40;
             if (elapsed > 4000) {  // 4 seconds
                 // If validator still hasn't completed, abandon it and allow GC to collect.
                 if (change.validation != null && !change.validation.isDone()) {
+                    System.out.println("REQUESTED overtime, done");
                     change.result.complete(true);
                     // Drop the reference to the validator future so the future and any
                     // captured JS/Graal state can be GC'd. Mark handled so we won't
                     // try to read the result later.
                     change.validation = null;
                     change.validationHandled = true;
+                    
+                    // DUMB PATCH, STILL NEEDS FIXING
+                    
+                    var pre = forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
+                    
+                    this.inventory.handleBlockChange(pre , change.blockId);
+                    
+                    System.out.println("gona notify RM");
+                    this.renderManager.onBlockChanged(change.x, change.y, change.z);
+                    committedChanges.offer(new int[]{change.x, change.y, change.z});
+                    change.result.complete(true);
+                    
+                    
                     continue;
                 }
             } else {
@@ -250,6 +272,7 @@ public final class WorldAccess {
     /** Legacy game-side entry point. It intentionally does not wait. */
     public void setBlockAt(int worldX, int worldY, int worldZ, int blockId) {
         requestBlockChange(worldX, worldY, worldZ, blockId);
+        System.out.println("REQUESTED");
     }
 
     /** Legacy game-side entry point. It intentionally does not wait. */
@@ -284,12 +307,14 @@ public final class WorldAccess {
      * those validators exist to enforce (griefing prevention, etc. if you ever
      * add that). Only wire this to trusted/internal call paths.
      */
-    public void forceSetBlockAt(int worldX, int worldY, int worldZ, int blockId) {
+    public int forceSetBlockAt(int worldX, int worldY, int worldZ, int blockId) {
         ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
         BufferedChunk chunk = ensureChunk(chunkPos); // generates/loads if not already resident
         int localX = worldToLocal(worldX);
         int localY = worldToLocal(worldY);
         int localZ = worldToLocal(worldZ);
+        var pre = chunk.get(localX, localY, localZ);
         chunk.set(localX, localY, localZ, blockId);
+        return pre;
     }
 }

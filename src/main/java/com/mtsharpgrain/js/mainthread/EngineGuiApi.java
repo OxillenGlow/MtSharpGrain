@@ -38,7 +38,9 @@ public final class EngineGuiApi {
     }
     @HostAccess.Export
     public boolean getDraw() {
-        return engine.call(() -> delegate::getDraw);
+        return engine.call(() -> {
+            return delegate.getDraw();
+        });
     }
     @HostAccess.Export
     public String getGuiState() {

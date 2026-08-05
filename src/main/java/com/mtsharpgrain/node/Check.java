@@ -48,10 +48,10 @@ public class Check implements ActionListener {
             BlockSelection selection = blockSelector.selectionFrom(hit, leftPressed);
             if (leftPressed) {
                 worldAccess.setBlockAt(selection.x, selection.y, selection.z, blockType);
-                System.out.println("Placed block at " + selection + " of type:" + blockType);
+                System.out.println("Placing block at " + selection + " of type:" + blockType);
             } else {
                 worldAccess.removeBlockAt(selection.x, selection.y, selection.z);
-                System.out.println("Removed block at " + selection);
+                System.out.println("Removing block at " + selection);
             }
         } else {
             // ── Hit a non-chunk spatial — fire spatial-click events to mods ──
