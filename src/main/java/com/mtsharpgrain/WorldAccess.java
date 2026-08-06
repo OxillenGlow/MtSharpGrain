@@ -204,7 +204,7 @@ public final class WorldAccess {
                     this.renderManager.onBlockChanged(change.x, change.y, change.z);
                     committedChanges.offer(new int[]{change.x, change.y, change.z});
                     change.result.complete(true);
-                    
+                    elapsed = 0;
                     
                     continue;
                 }

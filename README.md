@@ -102,7 +102,8 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 My todo/doing list:
 
  - Draw the percentages correctly.
- - Grass picture is missing.
+ - It does not count to 4 seconds for block set
+ - Inventory item thumbnails are not deleted after they are drawn
  - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
@@ -167,6 +168,9 @@ GitHub source: https://github.com/oracle/graaljs
 
 - **Minkmin's HYPER Asset Pack** for some assets.
 Available at: https://minkmin.itch.io/hyper-starter-pack
+
+- **Kenney Assets** for great free CC0 assets
+Available at: https://kenney.nl/assets
 
 #### AI?
 

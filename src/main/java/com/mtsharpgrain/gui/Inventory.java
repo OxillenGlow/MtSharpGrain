@@ -68,7 +68,6 @@ public class Inventory {
 
     private final LinkedHashMap<Integer, Integer> counts = new LinkedHashMap<>();
     private final Path saveFile;
-    private int selectedItem = -1; // -1 = nothing selected
 
     public Inventory(String worldFolder) {
         this.saveFile = Paths.get(worldFolder, "inventory.xml");
@@ -185,15 +184,15 @@ public class Inventory {
     // ── Selection ────────────────────────────────────────────────────────
 
     public void select(int blockId) {
-        this.selectedItem = blockId;
+        Master.blockType = blockId;
     }
 
     /** -1 if nothing is selected. */
     public int getSelectedItem() {
-        return selectedItem;
+        return Master.blockType;
     }
 
-    // ── GUI ────────────────────────────────────────────────────────────��[...]
+    // ── GUI ────────────────────────────────────────────────────────────[...]
 
     private List<Map.Entry<Integer, Integer>> sortedEntries() {
         List<Map.Entry<Integer, Integer>> list = new ArrayList<>(counts.entrySet());
@@ -230,7 +229,7 @@ public class Inventory {
             for (Map.Entry<Integer, Integer> entry : entries) {
                 final int blockId = entry.getKey();
                 final int amount = entry.getValue();
-                boolean isSelected = blockId == selectedItem;
+                boolean isSelected = blockId == Master.blockType;
 
                 ColorRGBA nameColor;
                 if (isSelected) {
@@ -257,6 +256,7 @@ public class Inventory {
                 gui.text(blockName(blockId), 0.05f, y, (event, arg) -> {
                     if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                         select(blockId);
+                        System.out.println("Selected "+blockId);
                     }
                     return true;
                 });
@@ -281,8 +281,8 @@ public class Inventory {
         gui.textColor(ColorRGBA.White);
         gui.textSize(0.016f);
 
-        int selected = getSelectedItem();
-        if (selected >= 0) {
+        int selected = Master.blockType;
+        if (Master.blockType >= 0) {
             gui.text(blockName(selected) + " x" + getAmount(selected), 0.05f, 0.08f, null);
         } else {
             gui.text("No block selected", 0.05f, 0.08f, null);
