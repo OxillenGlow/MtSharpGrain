@@ -45,7 +45,10 @@ public final class RenderManager {
     private void requestChunk(ChunkPos pos) {
         // If we are already tracking/rendering this chunk, do nothing.
         if (renderMap.containsKey(pos)) return;
-
+        // If the mesh is already attached to the scene (safety), skip creating render data.
+        String meshName = "Ck" + pos.getX() + "y" + pos.getY() + "z" + pos.getZ();
+        if (nd.getChild(meshName) != null) return;
+        
         BufferedChunk loaded = worldAccess.getChunk(pos);
         if (loaded != null) {
             // Only create render data and mark dirty if we don't already have it.
