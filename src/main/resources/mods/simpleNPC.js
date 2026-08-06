@@ -14,45 +14,71 @@
   function int(v){ return Math.floor(v); }
   function showGui(msg){ if(guiMsg) Gui.removeWord(guiMsg); guiMsg = Gui.guiWord(msg,0.5,0.9,0,20,"npc_hit_msg"); Gui.setColor(guiMsg,1,1,1,1); Gui.toTop(guiMsg); guiExpire = Date.now()+1500; }
 
-  // create rectangle helper: API is createRectangle(name,x,y,z) — size params ignored by API so we don't pass them
-  function mkRectAttached(mainName, suffix, mx,my,mz, ox,oy,oz, color, parts){
+  // create rectangle helper:
+  // Create the rectangle (with a reasonable small size), attach it under the given parent handle,
+  // then set the child's local (relative) position offset. Store the returned handle in the parts
+  // array and map the handle -> mainName so click handlers resolve correctly.
+  function mkRectAttached(parentHandle, mainName, suffix, ox, oy, oz, size, color, parts){
     const pname = mainName + ":" + suffix;
-    const p = Scene.createRectangle(pname, mx+ox, my+oy, mz+oz);
+    // size is an array [sx,sy,sz]
+    const p = Scene.createRectangle(pname, size[0], size[1], size[2]);
     Scene.setColor(p, color[0], color[1], color[2], 1);
-    Scene.attachChild(mainNameHandle(mainName), p);
-    parts.push(p); partToMain[pname] = mainName;
+    Scene.attachChild(parentHandle, p);
+    // set local offset relative to parent
+    Scene.setRelativePosition(p, ox, oy, oz);
+    parts.push(p);
+    // map both the handle and the name string (in case the engine reports either) to the NPC mainName
+    partToMain[p] = mainName;
+    partToMain[pname] = mainName;
   }
-  function mainNameHandle(mainName){ // helper to get main handle from stored npcs or fallback
+  function mainNameHandle(mainName){
     if(npcs[mainName] && npcs[mainName].main) return npcs[mainName].main;
-    // fallback: search by name? API doesn't provide lookup; assume present
-    return npcs[mainName] ? npcs[mainName].main : Scene.createNode(mainName);
+    // fallback: create a node handle we can attach to (rare)
+    return Scene.createNode(mainName);
   }
 
   function createNPCOfType(type,x,y,z){
     const id = nextId++;
     const mainName = MOD + "_npc#" + id;
     const main = Scene.createNode(mainName);
-    Scene.setPosition(main,x,y,z);
+    Scene.setPosition(main, x, y, z);
     let parts = [];
-    partToMain[mainName] = mainName; // main maps to itself
-    // assemble visuals (using fixed createRectangle signature)
-    if(type === "drone" || type==="attack_drone" || type==="bomber"){
+    // map the main node handle -> mainName so clicks on the root also resolve
+    partToMain[main] = mainName;
+    partToMain[mainName] = mainName;
+    // assemble visuals (createRectangle takes SIZE not position; use setRelativePosition for offsets)
+    if(type === "drone" || type === "attack_drone" || type === "bomber"){
       // body + 4 rotors
-      const cols = type==="attack_drone"?[0.8,0.3,0.3]: (type==="bomber"?[0.6,0.1,0.6]:[0.4,0.4,0.9]);
-      const mainH = main;
-      const mk = (s,ox,oy,oz,col)=>{ const pname=mainName+":"+s; const p=Scene.createRectangle(pname,x+ox,y+oy,z+oz); Scene.setColor(p,col[0],col[1],col[2],1); Scene.attachChild(main,p); parts.push(p); partToMain[pname]=mainName; };
-      mk("body",0,0,0,cols);
-      mk("r1",0.6,0.2,0,[0.2,0.2,0.2]); mk("r2",-0.6,0.2,0,[0.2,0.2,0.2]);
-      mk("r3",0,0.2,0.6,[0.2,0.2,0.2]); mk("r4",0,0.2,-0.6,[0.2,0.2,0.2]);
+      const cols = type==="attack_drone"?[0.8,0.3,0.3] : (type==="bomber"?[0.6,0.1,0.6] : [0.4,0.4,0.9]);
+      const bodySize = [0.8, 0.2, 0.6];
+      const rotorSize = [0.3, 0.05, 0.3];
+      mkRectAttached(main, mainName, "body", 0, 0, 0, bodySize, cols, parts);
+      mkRectAttached(main, mainName, "r1", 0.6, 0.2, 0, rotorSize, [0.2,0.2,0.2], parts);
+      mkRectAttached(main, mainName, "r2", -0.6, 0.2, 0, rotorSize, [0.2,0.2,0.2], parts);
+      mkRectAttached(main, mainName, "r3", 0, 0.2, 0.6, rotorSize, [0.2,0.2,0.2], parts);
+      mkRectAttached(main, mainName, "r4", 0, 0.2, -0.6, rotorSize, [0.2,0.2,0.2], parts);
     } else if(type === "rover"){
-      const mk = (s,ox,oy,oz,col)=>{ const pname=mainName+":"+s; const p=Scene.createRectangle(pname,x+ox,y+oy,z+oz); Scene.setColor(p,col[0],col[1],col[2],1); Scene.attachChild(main,p); parts.push(p); partToMain[pname]=mainName; };
-      mk("chassis",0,0,0,[0.3,0.8,0.3]); mk("wheel1",0.5,-0.25,0.5,[0.1,0.1,0.1]); mk("wheel2",-0.5,-0.25,0.5,[0.1,0.1,0.1]); mk("head",0,0.4,0,[0.9,0.9,0.2]);
+      const chassisSize = [0.9, 0.3, 0.6];
+      const wheelSize = [0.4, 0.2, 0.4];
+      const headSize = [0.4, 0.3, 0.4];
+      mkRectAttached(main, mainName, "chassis", 0, 0, 0, chassisSize, [0.3,0.8,0.3], parts);
+      mkRectAttached(main, mainName, "wheel1", 0.5, -0.25, 0.5, wheelSize, [0.1,0.1,0.1], parts);
+      mkRectAttached(main, mainName, "wheel2", -0.5, -0.25, 0.5, wheelSize, [0.1,0.1,0.1], parts);
+      mkRectAttached(main, mainName, "head", 0, 0.4, 0, headSize, [0.9,0.9,0.2], parts);
     } else if(type==="blob"){
-      const mk = (s,ox,oy,oz,col)=>{ const pname=mainName+":"+s; const p=Scene.createRectangle(pname,x+ox,y+oy,z+oz); Scene.setColor(p,col[0],col[1],col[2],1); Scene.attachChild(main,p); parts.push(p); partToMain[pname]=mainName; };
-      mk("mass",0,0,0,[0.2,0.9,0.5]); mk("eye",0,0.35,0.2,[0,0,0]);
+      const massSize = [0.7, 0.5, 0.7];
+      const eyeSize = [0.15, 0.15, 0.15];
+      mkRectAttached(main, mainName, "mass", 0, 0, 0, massSize, [0.2,0.9,0.5], parts);
+      mkRectAttached(main, mainName, "eye", 0, 0.35, 0.2, eyeSize, [0,0,0], parts);
     } else {
-      const p = Scene.createRectangle(mainName+":body", x, y, z);
-      Scene.setColor(p,1,1,1,1); Scene.attachChild(main,p); parts.push(p); partToMain[mainName+":body"]=mainName;
+      const bodySize = [0.6, 0.4, 0.6];
+      const p = Scene.createRectangle(mainName + ":body", bodySize[0], bodySize[1], bodySize[2]);
+      Scene.setColor(p,1,1,1,1);
+      Scene.attachChild(main, p);
+      Scene.setRelativePosition(p, 0, 0, 0);
+      parts.push(p);
+      partToMain[p] = mainName;
+      partToMain[mainName + ":body"] = mainName;
     }
     const ck = chunkOf(x,y,z).key;
     npcs[mainName] = {id, mainName, main, parts, type, px:int(x), py:int(y), pz:int(z), chunk:ck};
@@ -75,8 +101,14 @@
     info.parts = [];
     info.type = "drone";
     const pos = Scene.getPosition(info.main); const x = pos[0], y = pos[1], z = pos[2];
-    const mk = (s,ox,oy,oz,col)=>{ const pname=info.mainName+":"+s; const p=Scene.createRectangle(pname,x+ox,y+oy,z+oz); Scene.setColor(p,col[0],col[1],col[2],1); Scene.attachChild(info.main,p); info.parts.push(p); partToMain[pname]=info.mainName; };
-    mk("body",0,0,0,[0.4,0.4,0.9]); mk("r1",0.6,0.2,0,[0.2,0.2,0.2]); mk("r2",-0.6,0.2,0,[0.2,0.2,0.2]); mk("r3",0,0.2,0.6,[0.2,0.2,0.2]); mk("r4",0,0.2,-0.6,[0.2,0.2,0.2]);
+    // rebuild as a basic drone (body + 4 rotors) using same sizes as createNPCOfType
+    const bodySize = [0.8, 0.2, 0.6];
+    const rotorSize = [0.3, 0.05, 0.3];
+    mkRectAttached(info.main, info.mainName, "body", 0, 0, 0, bodySize, [0.4,0.4,0.9], info.parts);
+    mkRectAttached(info.main, info.mainName, "r1", 0.6, 0.2, 0, rotorSize, [0.2,0.2,0.2], info.parts);
+    mkRectAttached(info.main, info.mainName, "r2", -0.6, 0.2, 0, rotorSize, [0.2,0.2,0.2], info.parts);
+    mkRectAttached(info.main, info.mainName, "r3", 0, 0.2, 0.6, rotorSize, [0.2,0.2,0.2], info.parts);
+    mkRectAttached(info.main, info.mainName, "r4", 0, 0.2, -0.6, rotorSize, [0.2,0.2,0.2], info.parts);
     updateStatsGui();
   }
 
