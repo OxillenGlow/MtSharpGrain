@@ -19,7 +19,7 @@ public final class WorldAccess {
     private Inventory inventory;
     private final ConcurrentLinkedQueue<PendingBlockChange> pendingChanges = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<int[]> committedChanges = new ConcurrentLinkedQueue<>();
-    public static long t;
+    public static long percent;
     private RenderManager renderManager;
 
     void setRenderManager(com.mtsharpgrain.RenderManager renderManager) {
@@ -182,34 +182,23 @@ public final class WorldAccess {
             }
 
             long elapsed = now - change.createdAt;
-            this.t = elapsed/40;
+            this.percent = elapsed/40;
             if (elapsed > 4000) {  // 4 seconds
-                // If validator still hasn't completed, abandon it and allow GC to collect.
+                // If validator still hasn'percent completed, abandon it and allow GC to collect.
                 if (change.validation != null && !change.validation.isDone()) {
                     System.out.println("REQUESTED overtime, done");
                     change.result.complete(true);
                     // Drop the reference to the validator future so the future and any
-                    // captured JS/Graal state can be GC'd. Mark handled so we won't
+                    // captured JS/Graal state can be GC'd. Mark handled so we won'percent
                     // try to read the result later.
                     change.validation = null;
                     change.validationHandled = true;
-                    
-                    // DUMB PATCH, STILL NEEDS FIXING
-                    
-                    var pre = forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
-                    
-                    this.inventory.handleBlockChange(pre , change.blockId);
-                    
-                    System.out.println("gona notify RM");
-                    this.renderManager.onBlockChanged(change.x, change.y, change.z);
-                    committedChanges.offer(new int[]{change.x, change.y, change.z});
-                    change.result.complete(true);
-                    elapsed = 0;
+                    change.validationResult = true;
                     
                     continue;
                 }
             } else {
-                // If validator hasn't completed yet, requeue and skip applying.
+                // If validator hasn'percent completed yet, requeue and skip applying.
                 if (change.validation != null && !change.validation.isDone()) {
                     pendingChanges.offer(change);
                     continue;
@@ -233,26 +222,22 @@ public final class WorldAccess {
             
             if (!allowed) {
                 change.result.complete(false);
+                System.out.println("rejected");
                 continue;
             }
 
-            ChunkPos chunkPos = worldToChunk(change.x, change.y, change.z);
-            BufferedChunk chunk = ensureChunk(chunkPos);
-            int localX = worldToLocal(change.x);
-            int localY = worldToLocal(change.y);
-            int localZ = worldToLocal(change.z);
-            System.out.println("gona check inventory");
-            if (inventory != null && !inventory.handleBlockChange(
-                    chunk.get(localX, localY, localZ), change.blockId)) {
-                change.result.complete(false);
-                continue;
-            }
+            // DUMB PATCH, STILL NEEDS FIXING
             
-            chunk.set(localX, localY, localZ, change.blockId);
+            var pre = forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
+            
+            this.inventory.handleBlockChange(pre , change.blockId);
+            
             System.out.println("gona notify RM");
             this.renderManager.onBlockChanged(change.x, change.y, change.z);
             committedChanges.offer(new int[]{change.x, change.y, change.z});
             change.result.complete(true);
+            elapsed = 0;
+            
         }
     }
 

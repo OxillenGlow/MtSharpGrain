@@ -43,7 +43,7 @@ available for MacOS, Windows, and Linux(Debian derived)
 
 ---
 
-## Screen shots
+## Screen shots/Showcase
 <details>
 <summary> Click here to see screen shots</summary>
 
@@ -104,6 +104,7 @@ My todo/doing list:
  - Draw the percentages correctly.
  - It does not count to 4 seconds for block set
  - Inventory item thumbnails are not deleted after they are drawn
+ - NPC mod not spawning
  - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)

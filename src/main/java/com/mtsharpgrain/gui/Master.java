@@ -353,12 +353,12 @@ public class Master {
     }
 
     private static void drawBreakPercentage(IGui gui) {
-        if (!(com.mtsharpgrain.WorldAccess.t > 100) || !(com.mtsharpgrain.WorldAccess.t <2)){
+        if (!(com.mtsharpgrain.WorldAccess.percent > 100) && !(com.mtsharpgrain.WorldAccess.percent <2)){
             gui.textHAlign("center");
             gui.textVAlign("top");
             gui.textSize(0.04f);
             gui.textColor(ColorRGBA.Black);
-            gui.text("Destroying... "+com.mtsharpgrain.WorldAccess.t+"%", 0.5f, 0.4f, null);
+            gui.text("[breaking/placing]"+com.mtsharpgrain.WorldAccess.percent+"%", 0.5f, 0.4f, null);
         }
     }
 }
