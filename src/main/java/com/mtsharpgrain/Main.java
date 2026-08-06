@@ -48,6 +48,7 @@ public class Main extends SimpleApplication {
     private Sun sunObject;
     private Inventory inventory;
     private EngineAccess engineAccess;
+    private int modLastTick; // time since mods last tick in milliseconds 
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -246,7 +247,11 @@ public class Main extends SimpleApplication {
         }
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
-        modPackManager.tick(tpf, "Update");
+        if (modLastTick > 200){
+            modPackManager.tick(modLastTick, "Update");
+            modLastTick = 0;
+        }
+        modLastTick += tpf;
         modPackManager.draw(gui);
         modPackManager.processGuiClicks(tpf);
 
