@@ -207,8 +207,8 @@
     accMove += tpf; accSpawn += tpf;
     const now = Date.now();
     if(guiMsg && now > guiExpire){ Gui.removeWord(guiMsg); guiMsg = null; }
-    if(accMove >= 3.0){ try{ tickMovement(); }catch(e){} accMove = 0; }
-    if(accSpawn >= 5.0){ try{ trySpawnNearPlayer(); }catch(e){} accSpawn = 0; }
+    if(accMove >= 3.0){ try{ tickMovement(); }catch(e){console.error("Move error:", e); } accMove = 0; }
+    if(accSpawn >= 5.0){ try{ trySpawnNearPlayer(); }catch(e){console.error("Spawn error:", e); } accSpawn = 0; }
     if(first){
       updateStatsGui(); 
       first = false;
