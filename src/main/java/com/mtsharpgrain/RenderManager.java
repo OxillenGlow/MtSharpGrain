@@ -43,7 +43,12 @@ public final class RenderManager {
     }
 
     private void requestChunk(ChunkPos pos) {
-        if (worldAccess.getChunk(pos) != null) {
+        // If we are already tracking/rendering this chunk, do nothing.
+        if (renderMap.containsKey(pos)) return;
+
+        BufferedChunk loaded = worldAccess.getChunk(pos);
+        if (loaded != null) {
+            // Only create render data and mark dirty if we don't already have it.
             renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
             return;
         }
@@ -54,9 +59,10 @@ public final class RenderManager {
             worldAccess.putLoadedChunk(pos, fromDisk);
             pendingGeneration.remove(pos);
             renderMap.computeIfAbsent(pos, p -> { markDirty(p); return new ChunkRenderData(p); });
+
             return;
         }
-
+    
         // Async path: runs chunkBuild() in chunkgen.js on the dedicated js-chunk-gen thread.
         // Non-blocking — the main/render thread is free to keep ticking while this resolves.
         chunkGen.generateAsync(pos, worldSeed).whenComplete((chunk, err) -> {
