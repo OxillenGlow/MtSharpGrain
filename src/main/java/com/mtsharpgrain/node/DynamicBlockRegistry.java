@@ -35,7 +35,7 @@ public final class DynamicBlockRegistry {
     private final Map<String, Integer> index = new ConcurrentHashMap<>();
     private int nextId;
 
-    private static final int BASE_DYNAMIC_ID = BlockRegistry.ID_GLASS + 1; // 11 by default
+    private static final int BASE_DYNAMIC_ID = -1;// Goes from -1 to -n for n in mod blocks
 
     private DynamicBlockRegistry(Path worldFolder) {
         this.file = worldFolder.resolve("registered-blocks.xml");
@@ -79,8 +79,8 @@ public final class DynamicBlockRegistry {
                 Registration reg = new Registration(id, name, modPack, builder, props);
                 byId.put(id, reg);
                 index.put(makeKey(modPack, name), id);
-                if (id >= nextId) nextId = id + 1;
-            }
+                if (id <= nextId) nextId = id - 1;
+             }
         } catch (Exception e) {
             throw new IOException("Failed to parse registered-blocks.xml", e);
         }
@@ -133,7 +133,7 @@ public final class DynamicBlockRegistry {
         String key = makeKey(modPack, name);
         Integer existing = index.get(key);
         if (existing != null) return existing;
-        int id = nextId++;
+        int id = nextId--;
         Registration reg = new Registration(id, name, modPack, builderType, propertiesJson);
         byId.put(id, reg);
         index.put(key, id);
