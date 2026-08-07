@@ -8,6 +8,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import com.mtsharpgrain.node.DynamicBlockRegistry;
+import com.mtsharpgrain.storage.BlockValuesStore;
+ 
 
 public final class WorldAccess {
 
@@ -21,7 +26,8 @@ public final class WorldAccess {
     private final ConcurrentLinkedQueue<int[]> committedChanges = new ConcurrentLinkedQueue<>();
     public static long percent;
     private RenderManager renderManager;
-
+    private final Path worldFolderPath;
+    
     void setRenderManager(com.mtsharpgrain.RenderManager renderManager) {
         this.renderManager = renderManager;
     }
@@ -52,6 +58,13 @@ public final class WorldAccess {
         fileHelper = new ChunkFileHelper(worldFolder);
         this.generator = generator;
         this.seed = seed;
+        this.worldFolderPath = Paths.get(worldFolder);
+        try {
+            DynamicBlockRegistry.init(worldFolderPath);
+            BlockValuesStore.init(worldFolderPath);
+        } catch (Exception e) {
+            System.err.println("[WorldAccess] failed to initialize registries: " + e.getMessage());
+        }
     }
 
     public void addModifier(ModPackManager modPackManager){
@@ -279,6 +292,14 @@ public final class WorldAccess {
 
     public void putLoadedChunk(ChunkPos pos, BufferedChunk chunk) {
         Useful.put(pos, chunk);
+        // Notify mod manager that a chunk was just loaded so mods can reconnect
+        if (modPackManager != null) {
+            try {
+                modPackManager.notifyChunkLoaded(pos, chunk);
+            } catch (Throwable t) {
+                System.err.println("[WorldAccess] notifyChunkLoaded failed: " + t.getMessage());
+            }
+        }
     }
 
     /**
