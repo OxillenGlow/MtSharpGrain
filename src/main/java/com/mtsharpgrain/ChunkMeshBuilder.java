@@ -53,8 +53,18 @@ public class ChunkMeshBuilder {
                     }
                     
                     BlockDef def = BlockRegistry.get(block);
-                    String meshBuilder = (def != null) ? def.meshBuilder() : "Py";
-
+                    String meshBuilder;
+                    if (def != null) {
+                        meshBuilder = def.meshBuilder();
+                    } else {
+                        // Check dynamic registry for mod blocks
+                        try {
+                            var registry = com.mtsharpgrain.node.DynamicBlockRegistry.getInstance();
+                            meshBuilder = (registry != null) ? registry.getBuilderFor(block).orElse("Py") : "Py";
+                        } catch (Throwable t) {
+                            meshBuilder = "Py";
+                        }
+                    }
                     Geometry geo = buildGeometry(meshBuilder, x, y, z, px, py, pz, nx, ny, nz);
 
                     Material mat = buildMaterial(assetManager, block);
