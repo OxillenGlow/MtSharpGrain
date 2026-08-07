@@ -22,6 +22,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Collectors;
+import com.mtsharpgrain.BufferedChunk;
+import com.mtsharpgrain.ChunkPos;
+import com.mtsharpgrain.node.DynamicBlockRegistry;
+
 
 /**
  * Owns the asynchronous runtime for every mod pack.
@@ -389,5 +394,75 @@ public final class ModPackManager {
             if (packName.startsWith(prefix)) return true;
         }
         return false;
+    }
+
+    public void notifyChunkLoaded(ChunkPos pos, BufferedChunk chunk) {
+        if (chunk == null) return;
+        // world-scoped registry available via cachedWorldAccess
+        if (cachedWorldAccess == null) return;
+        var registry = com.mtsharpgrain.node.DynamicBlockRegistry.getInstance();
+        if (registry == null) return;
+
+        // For each pack, submit an owner-thread task that scans the chunk and fires LOADED
+        for (Map.Entry<String, JSModifier> en : packs.entrySet()) {
+            final String packName = en.getKey();
+            final JSModifier modifier = en.getValue();
+            final ModBridge bridge = bridges.get(packName);
+            if (bridge == null || modifier == null) continue;
+            // Submit a small scanning task on the mod's owner thread
+            bridge.submitTask(() -> {
+                try {
+                    // iterate local coords 0..15
+                    for (int lx = 0; lx < BufferedChunk.SIZE; lx++) {
+                        for (int ly = 0; ly < BufferedChunk.SIZE; ly++) {
+                            for (int lz = 0; lz < BufferedChunk.SIZE; lz++) {
+                                int block = chunk.get(lx, ly, lz);
+                                var regOpt = registry.getById(block);
+                                if (regOpt.isPresent()) {
+                                    var reg = regOpt.get();
+                                    if (packName.equals(reg.modPack())) {
+                                        int worldX = pos.getX() * BufferedChunk.SIZE + lx;
+                                        int worldY = pos.getY() * BufferedChunk.SIZE + ly;
+                                        int worldZ = pos.getZ() * BufferedChunk.SIZE + lz;
+                                        // call into the JS runtime on owner thread
+                                        try {
+                                            modifier.notifyBlockEventFromManager(worldX, worldY, worldZ, block, "LOADED");
+                                        } catch (Throwable t) {
+                                            System.err.println("[ModPackManager] notifyBlockEvent task failed: " + t.getMessage());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Throwable t) {
+                    System.err.println("[ModPackManager] chunk scan failed: " + t.getMessage());
+                }
+            });
+        }
+    }
+
+    /**
+     * Called when a single block is placed/destroyed in the world. We resolve the
+     * owning mod by registration and schedule a single owner-thread notify.
+     */
+    public void notifyBlockEvent(int worldX, int worldY, int worldZ, int blockId, String event) {
+        if (cachedWorldAccess == null) return;
+        var registry = com.mtsharpgrain.node.DynamicBlockRegistry.getInstance();
+        if (registry == null) return;
+        var regOpt = registry.getById(blockId);
+        if (regOpt.isEmpty()) return;
+        var reg = regOpt.get();
+        String packName = reg.modPack();
+        JSModifier modifier = packs.get(packName);
+        ModBridge bridge = bridges.get(packName);
+        if (modifier == null || bridge == null) return;
+        bridge.submitTask(() -> {
+            try {
+                modifier.notifyBlockEventFromManager(worldX, worldY, worldZ, blockId, event);
+            } catch (Throwable t) {
+                System.err.println("[ModPackManager] notifyBlockEvent failed on owner thread: " + t.getMessage());
+            }
+        });
     }
 }
