@@ -51,7 +51,7 @@ public class ChunkMeshBuilder {
                     if (!px && !nx && !py && !ny && !pz && !nz && !(x == 15) && !(y == 15) && !(z == 15) && !(x == 0) && !(y == 0) && !(z == 0) ) {
                         continue;
                     }
-                    
+
                     BlockDef def = BlockRegistry.get(block);
                     String meshBuilder;
                     if (def != null || block > -1) {
@@ -84,7 +84,7 @@ public class ChunkMeshBuilder {
         return batched;
     }
 
-    // ── Geometry helper ─────────────────────────────────────────────────────
+    // —— Geometry helper ————————————————————————————————————————
 
     /**
      * Builds the {@link Geometry} for one block according to its
@@ -134,7 +134,7 @@ public class ChunkMeshBuilder {
         }
     }
 
-    // ── Material helper ────────────────────────────────────────────────────
+    // —— Material helper ————————————————————————————————————————
 
     /**
      * Builds a {@code Lighting.j3md} material for the given block ID.
@@ -168,7 +168,7 @@ public class ChunkMeshBuilder {
         return mat;
     }
 
-    // ── Face-visibility helper ─────────────────────────────────────────────
+    // —— Face-visibility helper ————————————————————————————————————
 
     /**
      * Returns true when the neighbouring position is transparent,
@@ -181,7 +181,7 @@ public class ChunkMeshBuilder {
         }
         return BlockRegistry.isAir(chunk.get(x, y, z));
     }
-    
+
     /** @return True if this block's diffuse alpha is less than fully opaque (e.g. Glass). */
     private static boolean isTransparent(int blockId) {
         BlockDef def = BlockRegistry.get(blockId);

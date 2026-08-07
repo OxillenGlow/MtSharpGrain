@@ -165,16 +165,17 @@ Seven objects are injected into every script automatically, fresh per pack
 (each pack gets its own instances, not shared references).
 You cannot access arbitrary Java classes — only what is listed here.
 
-| Global   | Purpose                                              |
-|----------|-------------------------------------------------------|
-| `Scene`  | Create/move/rotate/destroy 3D objects in the world      |
-| `Block`  | Read and edit voxel blocks                             |
+| Global   | Purpose                                                   |
+|----------|-----------------------------------------------------------|
+| `Scene`  | Create/move/rotate/destroy 3D objects in the world        |
+| `Block`  | Read and edit voxel blocks                                |
 | `Inventory` | Access player inventory, great for crafting and special use blocks | 
-| `Engine` | Register per-tick callbacks and block-change rules      |
-| `Gui`    | Create screen-space text elements                       |
-| `Player` | Read/set the player camera's position                   |
-| `Data`   | Save/load simple per-pack XML save data                 |
-| `Mod`    | Send messages to other loaded packs                     |
+| `Engine` | Register per-tick callbacks and block-change rules        |
+| `Gui`    | Create screen-space text elements                         |
+| `Player` | Read/set the player camera's position                     |
+| `Data`   | Save/load simple per-pack XML save data                   |
+| `Mod`    | Send messages to other loaded packs                       |
+| `Matrix` | Register custom blocks and store per-block key/value data |
 
 Note: `Scene` node handles, `Gui` element handles, and tick tags are only
 valid **within the pack that created them**. A handle created in `gameplay`
@@ -571,6 +572,67 @@ a pack never receives its own `Mod.send()` calls back.
 
 </details>
 
+<details>
+<summary><strong>Matrix — custom block registration & per-block storage</strong></summary>
+
+`Matrix` provides two capabilities: registering new block types at runtime
+and storing arbitrary key/value data on individual block instances in the
+world. Both are scoped to the calling pack — a block registered by pack
+`gameplay/` can only be modified or queried by that same pack.
+
+#### Registering custom blocks
+
+Create new block types that appear in the game world and can be placed/broken
+like any built-in block. Each registration returns a unique negative ID
+(the built-in blocks occupy positive IDs 0-10).
+
+```js
+// Matrix.addNew(name, builderType, propertiesJson) -> int blockId
+//   name          - a string identifier for this block type
+//   builderType   - mesh builder: "Py" (default), "Cube", "CubeTiny", "CubeTall", "CubeFlat"
+//   propertiesJson - optional JSON string for custom block metadata
+
+const myBlockId = Matrix.addNew("MyCustomBlock", "Cube", '{"color":"red","hardness":5}');
+// Returns a negative integer like -1, -2, etc.
+```
+
+Once registered, the block can be placed with Block.place(x, y, z, myBlockId)
+and will render using the specified mesh builder. The registration persists
+across game sessions (saved to worlds/<world>/registered-blocks.xml).
+
+#### Per-block key/value storage
+
+Store arbitrary string data on individual block positions. Useful for
+attaching metadata to placed blocks (e.g., health, owner, custom state).
+
+```
+// Matrix.setValue(x, y, z, key, value)
+Matrix.setValue(10, 20, 30, "owner", "player1");
+Matrix.setValue(10, 20, 30, "health", "100");
+
+// Matrix.getValue(x, y, z, key) -> string | null
+const owner = Matrix.getValue(10, 20, 30, "owner"); // "player1"
+const health = Matrix.getValue(10, 20, 30, "health"); // "100"
+```
+Data is persisted per-chunk to worlds/<world>/chunk-values/chunk-CX-CZ.xml.
+
+Querying block registrations
+
+```
+// Matrix.getBlockNameMod(blockId) -> [name, modPack] | null
+//   Returns the name and owning pack for a registered block, or null if not found
+const info = Matrix.getBlockNameMod(myBlockId);
+if (info) {
+    console.log("Block '" + info[0] + "' from pack '" + info[1] + "'");
+}
+
+// Matrix.getProperties(name, modPack) -> string
+//   Returns the properties JSON string for a registered block
+const props = Matrix.getProperties("MyCustomBlock", "gameplay");
+```
+
+</details>
+
 ---
 
 <details>
@@ -812,6 +874,13 @@ Mod (cross-pack broadcast messaging; only between enabled packs):
   Mod.send(dataString)   // broadcasts to every other enabled pack
   // define a top-level function to receive:
   function onReceive(dataString, fromModName) { ... }
+
+Matrix (custom block registration & per-block storage, scoped per pack):
+  Matrix.addNew(name, builderType, propertiesJson) -> int blockId
+  Matrix.setValue(x, y, z, key, value)
+  Matrix.getValue(x, y, z, key) -> string   null
+  Matrix.getBlockNameMod(blockId) -> [name, modPack] | null
+  Matrix.getProperties(name, modPack) -> string
  
 Rules: pack folder required (no loose .js in mod/ root); files load
 alphabetically within a pack, packs load alphabetically by folder name;

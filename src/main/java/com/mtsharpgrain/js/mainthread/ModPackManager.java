@@ -27,8 +27,7 @@ import com.mtsharpgrain.BufferedChunk;
 import com.mtsharpgrain.ChunkPos;
 import com.mtsharpgrain.node.DynamicBlockRegistry;
 
-
-/**
+ /**
  * Owns the asynchronous runtime for every mod pack.
  *
  * <p>There is one {@link JSModifier}, {@link ModBridge}, Graal context, and
@@ -267,9 +266,9 @@ public final class ModPackManager {
     /**
      * Returns a future for all enabled validators. The render thread only
      * checks this future later in WorldAccess.processPendingBlockChanges().
+     * Uses non-blocking callbacks to avoid freezing virtual threads.
      */
-    public CompletableFuture<Boolean> validateBlockChangeAsync(
-            int worldX, int worldY, int worldZ, int blockId) {
+    public CompletableFuture<Boolean> validateBlockChangeAsync(int worldX, int worldY, int worldZ, int blockId) {
         List<CompletableFuture<Boolean>> validations = new ArrayList<>();
         for (Map.Entry<String, JSModifier> entry : packs.entrySet()) {
             if (!disabledPacks.contains(entry.getKey())) {
@@ -285,15 +284,30 @@ public final class ModPackManager {
         }
         if (validations.isEmpty()) return CompletableFuture.completedFuture(true);
 
-        CompletableFuture<?> all = CompletableFuture.allOf(
-                validations.toArray(CompletableFuture[]::new));
-        return all.thenApply(ignored -> validations.stream().allMatch(future -> {
-            try {
-                return future.join();
-            } catch (RuntimeException error) {
-                return false;
-            }
-        }));
+        // Use non-blocking approach: collect results as they complete
+        CompletableFuture<Boolean> resultFuture = new CompletableFuture<>();
+        int[] completedCount = {0};
+        boolean[] allAllowed = {true};
+
+        for (CompletableFuture<Boolean> validation : validations) {
+            validation.whenComplete((allowed, ex) -> {
+                synchronized (completedCount) {
+                    completedCount[0]++;
+                    if (ex != null) {
+                        allAllowed[0] = false;
+                    } else if (!allowed) {
+                        allAllowed[0] = false;
+                    }
+
+                    // Check if all validations are complete
+                    if (completedCount[0] == validations.size()) {
+                        resultFuture.complete(allAllowed[0]);
+                    }
+                }
+            });
+        }
+
+        return resultFuture;
     }
 
     /** Compatibility entry point; new callers should use validateBlockChangeAsync. */
