@@ -125,6 +125,7 @@ My todo/doing list:
 Even my horible computer can run 5+ view distance easily!
 - Fix strange bug - chunks zipping around (can only be seen with window bug)
 - Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this but i have to wait and see)
+- **IMPORTANT** fix gui, its buggy now. thumbnails refuse to disapear.
 
 <sup>80% here means it is basically done but could be improved</sup>
 

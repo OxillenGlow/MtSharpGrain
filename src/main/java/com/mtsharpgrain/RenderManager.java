@@ -24,8 +24,6 @@ public final class RenderManager {
     private final Set<ChunkPos> dirtySet = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private final Set<ChunkPos> pendingGeneration = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private int chunksRequestedThisFrame = 0;
-    private static final int MAX_CHUNK_REQUESTS_PER_FRAME = 8; // Throttle chunk requests
 
     // These are now wired in via the constructor instead of being left unset.
     // chunkGen is the SAME JsChunkGenerator instance passed into WorldAccess,
@@ -50,7 +48,7 @@ public final class RenderManager {
         // If the mesh is already attached to the scene (safety), skip creating render data.
         String meshName = "Ck" + pos.getX() + "y" + pos.getY() + "z" + pos.getZ();
         if (nd.getChild(meshName) != null) return;
-
+        
         BufferedChunk loaded = worldAccess.getChunk(pos);
         if (loaded != null) {
             // Only create render data and mark dirty if we don't already have it.
@@ -58,7 +56,7 @@ public final class RenderManager {
             return;
         }
         if (!pendingGeneration.add(pos)) return; // already in flight
-        
+
         BufferedChunk fromDisk = worldAccess.tryLoadFromDisk(pos);
         if (fromDisk != null) {
             worldAccess.putLoadedChunk(pos, fromDisk);
@@ -67,9 +65,9 @@ public final class RenderManager {
 
             return;
         }
-        
+    
         // Async path: runs chunkBuild() in chunkgen.js on the dedicated js-chunk-gen thread.
-        // Non-blocking - the main/render thread is free to keep ticking while this resolves.
+        // Non-blocking — the main/render thread is free to keep ticking while this resolves.
         chunkGen.generateAsync(pos, worldSeed).whenComplete((chunk, err) -> {
             pendingGeneration.remove(pos);
             if (err != null) { err.printStackTrace(); return; }
@@ -85,43 +83,16 @@ public final class RenderManager {
         int px = worldToChunk((int)playerX);
         int py = worldToChunk((int)playerY);
         int pz = worldToChunk((int)playerZ);
-
-        // Reset request counter at the start of each frame
-        chunksRequestedThisFrame = 0;
-
+        
         stillInRange.clear();
+        
+        for (int dx = -Main.VIEW_DISTANCE; dx <= Main.VIEW_DISTANCE; dx++) {
+            for (int dy = -viewBottom; dy <= viewTop; dy++) {
+                for (int dz = -Main.VIEW_DISTANCE; dz <= Main.VIEW_DISTANCE; dz++) {
+                    ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
+                    stillInRange.add(pos);
 
-        // Check if player has moved to a new chunk
-        boolean playerMoved = (px != lastPx || py != lastPy || pz != lastPz);
-        lastPx = px;
-        lastPy = py;
-        lastPz = pz;
-
-        // Prioritize chunks near the player when moving
-        int startDx = (playerMoved) ? -1 : -Main.VIEW_DISTANCE;
-        int endDx = (playerMoved) ? 1 : Main.VIEW_DISTANCE;
-        int startDz = (playerMoved) ? -1 : -Main.VIEW_DISTANCE;
-        int endDz = (playerMoved) ? 1 : Main.VIEW_DISTANCE;
-
-        // First pass: request chunks in priority order (closer to player first)
-        for (int priority = 0; priority <= 1; priority++) {
-            int dxStart = (priority == 0) ? startDx : -Main.VIEW_DISTANCE;
-            int dxEnd = (priority == 0) ? endDx : Main.VIEW_DISTANCE;
-            int dzStart = (priority == 0) ? startDz : -Main.VIEW_DISTANCE;
-            int dzEnd = (priority == 0) ? endDz : Main.VIEW_DISTANCE;
-
-            for (int dx = dxStart; dx <= dxEnd; dx++) {
-                for (int dy = -viewBottom; dy <= viewTop; dy++) {
-                    for (int dz = dzStart; dz <= dzEnd; dz++) {
-                        ChunkPos pos = new ChunkPos(px + dx, py + dy, pz + dz);
-                        stillInRange.add(pos);
-
-                        // Throttle: only request if we haven't hit the limit
-                        if (chunksRequestedThisFrame < MAX_CHUNK_REQUESTS_PER_FRAME) {
-                            requestChunk(pos);
-                            chunksRequestedThisFrame++;
-                        }
-                    }
+                    requestChunk(pos);
                 }
             }
         }
@@ -135,13 +106,14 @@ public final class RenderManager {
 
         this.processDirtyQueue();
     }
+    
 
     private static int worldToChunk(int coord) {
         return coord >> 4; // match WorldAccess exactly
     }
 
     public void markDirty(ChunkPos pos) {
-        if (dirtySet.add(pos)) {  // add() returns false if already present - O(1)
+        if (dirtySet.add(pos)) {  // add() returns false if already present — O(1)
             dirtyQueue.add(pos);
         }
     }
@@ -161,40 +133,28 @@ public final class RenderManager {
         for (int i = 0; i < maxPerTick; i++) {
             ChunkPos pos = dirtyQueue.poll();
             if (pos == null) return;
-            if (!renderMap.containsKey(pos)) continue;
+            if (!renderMap.containsKey(pos)) continue; // NEW: stale entry, chunk was unloaded before we got to it
             if (pendingChunks.contains(pos)) {
                 dirtyQueue.add(pos);
                 continue;
             }
             BufferedChunk chunk = worldAccess.getChunk(pos);
             if (chunk == null) continue;
-
-            // Skip rebuild if chunk data hasn't changed (hash comparison)
-            ChunkRenderData crd = renderMap.get(pos);
-            int currentHash = chunk.hashCode();
-            if (crd.lastChunkHash != null && crd.lastChunkHash.equals(currentHash)) {
-                dirtySet.remove(pos);
-                continue; // Chunk unchanged, skip rebuild
-            }
-
             CompletableFuture.runAsync(() -> {
                 try {
                     dirtySet.remove(pos);
                     pendingChunks.add(pos);
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
                     app.enqueue(() -> {
-                        if (!renderMap.containsKey(pos)) {
+                        if (!renderMap.containsKey(pos)) {  // NEW: unloaded while we were building — don't reattach
                             pendingChunks.remove(pos);
                             return null;
                         }
                         Spatial oldCk = nd.getChild(newMesh.getName());
                         if (oldCk != null) oldCk.removeFromParent();
                         nd.attachChild(newMesh);
-                        ChunkRenderData currentData = renderMap.get(pos);
-                        if (currentData != null) {
-                            currentData.lastBuiltTime = System.currentTimeMillis();
-                            currentData.lastChunkHash = currentHash;
-                        }
+                        ChunkRenderData crd = renderMap.get(pos);
+                        if (crd != null) crd.lastBuiltTime = System.currentTimeMillis();
                         pendingChunks.remove(pos);
                         return null;
                     });
@@ -218,9 +178,11 @@ public final class RenderManager {
         });
     }
 
+    // New method to handle block changes and trigger rebuilds
     public void onBlockChanged(int worldX, int worldY, int worldZ) {
         ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
         markDirty(chunkPos);
+        // Mark neighbors if on boundary (simplified: always mark neighbors for now)
         markNeighborsDirty(chunkPos);
     }
 
@@ -228,7 +190,6 @@ public final class RenderManager {
         public Object geometry;
         public long lastBuiltTime;
         public ChunkPos pos;
-        public Integer lastChunkHash;
         public ChunkRenderData(ChunkPos pos) { this.pos = pos; }
     }
 
