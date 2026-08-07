@@ -54,7 +54,7 @@ public class ChunkMeshBuilder {
                     
                     BlockDef def = BlockRegistry.get(block);
                     String meshBuilder;
-                    if (def != null) {
+                    if (def != null || block > -1) {
                         meshBuilder = def.meshBuilder();
                     } else {
                         // Check dynamic registry for mod blocks
