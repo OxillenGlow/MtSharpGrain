@@ -286,4 +286,19 @@ public final class JSModifier {
         }
         if (!initialized) throw new IllegalStateException("Mod runtime is not initialized");
     }
+
+    /**
+     * Called by ModPackManager on the owning mod's virtual thread (via ModBridge.submitTask)
+     * to notify the pack of a block event that originated on the render/world thread.
+     */
+    public void notifyBlockEventFromManager(int worldX, int worldY, int worldZ, int blockId, String event) {
+        // Must be running on the owner thread (ModBridge ensures that in the caller).
+        if (bootstrap == null) return;
+        try {
+            // delegate to the per-pack block loader registry
+            bootstrap.getBlockLoaderRegistry().notifyEvent(blockId, packName, event, worldX, worldY, worldZ);
+        } catch (Throwable t) {
+            System.err.println("[JSModifier] notifyBlockEventFromManager failed: " + t.getMessage());
+        }
+    }
 }
