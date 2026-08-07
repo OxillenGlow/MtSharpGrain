@@ -100,11 +100,13 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 > The biggest problem is to make the NPC stuff work with mods which will likely be 10x harder than the completed refactoring of mods. Im just going to make a tiny java class for a independent NPC mini system.
 
 My todo/doing list:
-
+ 
+ - Important! add color params to constructor of mod blocks.
  - Draw the percentages correctly.
  - It does not count to 4 seconds for block set
  - Inventory item thumbnails are not deleted after they are drawn
  - NPC mod not spawning
+ - Stop the mini lag spikes (makes the game seem to be running on 5 fps) ofload the whole update thing to a subthread
  - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)

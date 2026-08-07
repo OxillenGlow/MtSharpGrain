@@ -142,4 +142,9 @@ public class JsApiBootstrap {
     public MessagingApi getMessagingApi() {
         return messagingApi;
     }
+    
+    // allow other classes (e.g. JSModifier) to access the per-pack registry
+    public BlockLoaderRegistry getBlockLoaderRegistry() {
+        return blockLoaderRegistry;
+    }
 }
