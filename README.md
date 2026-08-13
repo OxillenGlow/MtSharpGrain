@@ -102,6 +102,8 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 My todo/doing list:
  
  - Important! add color params to constructor of mod blocks.
+ - Add an api for java controlled timed updating like JavaScript's setInterval. This will hopefully be able to replace engine "Update" flaggs and give modders more power whith better performance as it is done on mod thread.
+    - Why not just setInterval? b/c setInterval is blocking on js side and java cant access afterwards making it really annoying.
  - Draw the percentages correctly.
  - It does not count to 4 seconds for block set
  - Inventory item thumbnails are not deleted after they are drawn
