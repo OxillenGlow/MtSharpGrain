@@ -178,6 +178,8 @@ Available at: https://minkmin.itch.io/hyper-starter-pack
 - **Kenney Assets** for great free CC0 assets
 Available at: https://kenney.nl/assets
 
+- **And much more who has made coding this easier for me and free**
+
 #### AI?
 
 Yes, I use claude a lot, perhaps too much? idk just speeds things up and removes need for constantly checking the API of whatever thing is implemented. Also, to be honest, Claude write code with less bugs and faster than me.
