@@ -42,6 +42,7 @@
     const mainName = MOD + "_npc#" + id;
     const main = Scene.createNode(mainName);
     Scene.setPosition(main, x, y, z);
+    Scene.attachChild(0, main); 
     let parts = [];
     // map the main node handle -> mainName so clicks on the root also resolve
     partToMain[main] = mainName;
