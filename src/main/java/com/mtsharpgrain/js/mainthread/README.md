@@ -166,6 +166,7 @@ You cannot access arbitrary Java classes — only what is listed here.
 | `Player` | Read/set the player camera's position                   |
 | `Data`   | Save/load simple per-pack XML save data                 |
 | `Mod`    | Send messages to other loaded packs                     |
+| `Matrix` | Stores relevant info on coordinates between mods, Define new blocks |
 
 Note: `Scene` node handles, `Gui` element handles, and tick tags are only
 valid **within the pack that created them**. A handle created in `gameplay`
