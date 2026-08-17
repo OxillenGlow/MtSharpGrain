@@ -26,7 +26,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class DynamicBlockRegistry {
 
-    public record Registration(int id, String name, String modPack, String builderType, String propertiesJson) {}
+    /**
+     * Registration expanded to include per-block color/shininess parameters so
+     * mod blocks can provide their own material colours.
+     *
+     * Fields:
+     *  - id, name, modPack, builderType, propertiesJson : existing values
+     *  - dr,dg,db,da : diffuse RGBA (0..1)
+     *  - sr,sg,sb,sa : specular RGBA (0..1)
+     *  - shininess    : Phong shininess
+     */
+    public record Registration(int id, String name, String modPack, String builderType, String propertiesJson,
+                               float dr, float dg, float db, float da,
+                               float sr, float sg, float sb, float sa,
+                               float shininess) {}
 
     private static volatile DynamicBlockRegistry INSTANCE;
 
@@ -76,7 +89,19 @@ public final class DynamicBlockRegistry {
                 String props = "";
                 var propsNodes = el.getElementsByTagName("Properties");
                 if (propsNodes.getLength() > 0) props = propsNodes.item(0).getTextContent();
-                Registration reg = new Registration(id, name, modPack, builder, props);
+                // Read optional color/shininess attributes with safe defaults
+                float dr = el.hasAttribute("dr") ? Float.parseFloat(el.getAttribute("dr")) : 1.0f;
+                float dg = el.hasAttribute("dg") ? Float.parseFloat(el.getAttribute("dg")) : 1.0f;
+                float db = el.hasAttribute("db") ? Float.parseFloat(el.getAttribute("db")) : 1.0f;
+                float da = el.hasAttribute("da") ? Float.parseFloat(el.getAttribute("da")) : 1.0f;
+                float sr = el.hasAttribute("sr") ? Float.parseFloat(el.getAttribute("sr")) : 0.0f;
+                float sg = el.hasAttribute("sg") ? Float.parseFloat(el.getAttribute("sg")) : 0.0f;
+                float sb = el.hasAttribute("sb") ? Float.parseFloat(el.getAttribute("sb")) : 0.0f;
+                float sa = el.hasAttribute("sa") ? Float.parseFloat(el.getAttribute("sa")) : 1.0f;
+                float shininess = el.hasAttribute("shininess") ? Float.parseFloat(el.getAttribute("shininess")) : 0.0f;
+
+                Registration reg = new Registration(id, name, modPack, builder, props,
+                        dr, dg, db, da, sr, sg, sb, sa, shininess);
                 byId.put(id, reg);
                 index.put(makeKey(modPack, name), id);
                 if (id <= nextId) nextId = id - 1;
@@ -105,6 +130,17 @@ public final class DynamicBlockRegistry {
                 Element props = doc.createElement("Properties");
                 props.setTextContent(reg.propertiesJson() == null ? "" : reg.propertiesJson());
                 block.appendChild(props);
+                // Persist colour and shininess attributes for dynamic blocks
+                block.setAttribute("dr", Float.toString(reg.dr()));
+                block.setAttribute("dg", Float.toString(reg.dg()));
+                block.setAttribute("db", Float.toString(reg.db()));
+                block.setAttribute("da", Float.toString(reg.da()));
+                block.setAttribute("sr", Float.toString(reg.sr()));
+                block.setAttribute("sg", Float.toString(reg.sg()));
+                block.setAttribute("sb", Float.toString(reg.sb()));
+                block.setAttribute("sa", Float.toString(reg.sa()));
+                block.setAttribute("shininess", Float.toString(reg.shininess()));
+                
                 root.appendChild(block);
             }
             TransformerFactory tf = TransformerFactory.newInstance();
