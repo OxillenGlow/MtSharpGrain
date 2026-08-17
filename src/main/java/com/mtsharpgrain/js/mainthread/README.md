@@ -562,6 +562,67 @@ a pack never receives its own `Mod.send()` calls back.
 
 </details>
 
+<details>
+<summary><strong>Matrix — register custom blocks & per-block key/value storage</strong></summary>
+
+`Matrix` is the pack-scoped registry and simple key/value store exposed to
+mods for two purposes:
+
+1. Registering new block types at runtime (mod-provided blocks). These get
+   negative block IDs and are persisted in `worlds/<world>/registered-blocks.xml`.
+2. Storing arbitrary per-block coordinate data (see `Matrix.setValue` / `getValue`).
+
+JS-visible signatures (available as the `Matrix` global):
+
+
+- `Matrix.addNew(name, builderType, propertiesJson,
+                 dr, dg, db, da,
+                 sr, sg, sb, sa,
+                 shininess) -> int`
+  - New overload that accepts:
+    - diffuse RGBA: dr, dg, db, da (0..1)
+    - specular RGBA: sr, sg, sb, sa (0..1)
+    - shininess: non-negative float (Phong exponent)
+  - Example:
+    ```js
+    const id = Matrix.addNew(
+      "RedBlock", "Cube", "{}",
+      0.8, 0.1, 0.1, 1.0,   // diffuse r,g,b,a
+      0.3, 0.3, 0.3, 1.0,   // specular r,g,b,a
+      12.0                  // shininess
+    );
+    ```
+
+- `Matrix.getId(name, modPackName) -> Integer|null`
+  - Returns the numeric block ID for a named dynamic block in the specified
+    mod pack. If `modPackName` is null/empty the Matrix instance's own pack
+    name is used. Returns `null` when not found or when the dynamic registry
+    isn't initialized.
+  - Example:
+    ```js
+    const id = Matrix.getId("RedBlock", "MyPack");
+    if (id !== null) {
+      // id is a negative dynamic block id
+    }
+    ```
+
+- `Matrix.getBlockNameMod(blockId) -> [name, modPack] | null`
+  - Returns registered name and owning pack for a dynamic block ID (unchanged).
+
+- `Matrix.getProperties(name, modPackName) -> string`
+  - Returns the properties JSON string stored during registration.
+
+- `Matrix.setValue(x, y, z, key, value)` / `Matrix.getValue(x, y, z, key)`
+  - Per-block-string storage persisted per-chunk (unchanged).
+
+Notes & compatibility
+- Existing mods using the three-argument `addNew` continue to work unchanged.
+- Colour + shininess values are persisted with the registration so they survive restarts.
+- Chunk rendering reads the dynamic registry for mod blocks, so colours you supply will be used by the material at render time (mod-blocks override the fallback material).
+- If you prefer passing colours inside the propertiesJson (one JSON object) instead of many numeric args, we can add parsing support and document that alternative.
+
+</details>
+
 ---
 
 <details>
@@ -803,6 +864,8 @@ Mod (cross-pack broadcast messaging; only between enabled packs):
   Mod.send(dataString)   // broadcasts to every other enabled pack
   // define a top-level function to receive:
   function onReceive(dataString, fromModName) { ... }
+
+Matrix: Matrix.addNew(name, builderType, propertiesJson) -> int Matrix.addNew(name, builderType, propertiesJson, dr,dg,db,da, sr,sg,sb,sa, shininess) -> int Matrix.getId(name, modPackName) -> Integer|null Matrix.getBlockNameMod(blockId) -> [name, modPack] | null Matrix.getProperties(name, modPackName) -> string Matrix.setValue(x,y,z,key,value) Matrix.getValue(x,y,z,key) -> string|null
  
 Rules: pack folder required (no loose .js in mod/ root); files load
 alphabetically within a pack, packs load alphabetically by folder name;
