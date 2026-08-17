@@ -55,16 +55,16 @@ If you are new to JavaScript: https://developer.mozilla.org/en-US/docs/Web/JavaS
 ```
 worlds/
   my_world/
-    chunkgen.js           ← Special file for generating the world, 
+    chunkgen.js           
     mod/
-      loose.js            ← NOT loaded (no pack folder = skipped)
-      ui/                 ← mod pack folder "ui" — has its own Context
-        hud.js            ← loaded into ui's context
-        inventory.js      ← loaded into ui's context
+      loose.js            
+      ui/                 
+        hud.js            
+        inventory.js      
         widgets/
-          button.js       ← still ui's context (subfolders included)
-      gameplay/           ← mod pack "gameplay" — separate Context
-        movement.js       ← isolated from ui entirely
+          button.js       
+      gameplay/           
+        movement.js       
         blocks.js
 ```
 
@@ -252,7 +252,7 @@ Scene.setLightRadius(long handle, float radius); // same as strength of the ligh
 
 **Spatial Click Events**
 
-Mods can react when a player clicks something that *isn't* voxel terrain — e.g. a cube spawned with `Scene.createCube`. Register a handler with `Engine.onSpatialLeftClick(fn)` or `Engine.onSpatialRightClick(fn)`; `fn` receives the clicked spatial's name (the string you passed when creating it). Every enabled pack's handler fires for every non-terrain click, so check the name yourself to filter for objects your pack cares about. Terrain clicks (placing/breaking blocks) are unaffected and still handled automatically — this only fires for everything else.
+Mods can react when a player clicks something that *isn't* voxel terrain — e.g. a cube spawned with `Scene.createCube`. Register a handler with `Engine.onSpatialLeftClick(fn)` or `Engine.onSpatialRightClick(fn)`.
 
 A simple spin-in-place using `setRotation` in a tick callback:
 
@@ -354,7 +354,7 @@ moves the view instantly with no collision checks.
 <details>
 <summary><strong>Inventory — manage the player's held block items</strong></summary>
 
-Track how many of each block type the player is carrying (limited by distinct TYPE count, not total items). The Inventory enforces pickups/spends when the world changes and provides a small JS API to inspect or mutate the in-memory counts.
+Track how many of each block type the player is carrying (limited by distinct TYPE count, not total items). The Inventory enforces pickups/spends when the world changes and provides a small JS API.
 
 - MAX_TYPES: 20 distinct block types can be held at once.
 - Persistence: in-memory map is written to worlds/<world>/inventory.xml
@@ -375,7 +375,7 @@ const n = Inventory.get(2); // number held (0 if none)
 Notes:
 
 - add/remove return false for invalid amounts (<= 0) or when the operation would violate limits (e.g., exceeding MAX_TYPES or removing more than held).
-- Block.place/Block.destroy may throw or be rejected when inventory rules prevent the change — this could happen even when validators across all loaded packs accept so you have to be careful messing around with validating blocks.
+- Block.place/Block.destroy may throw or be rejected when inventory rules prevent the change — this could happen even when validators across all loaded packs accept so you have to be careful.
 </details>
 
 <details>
@@ -498,397 +498,72 @@ Engine.onTick(function(tpf, tag) {
 Click dispatch and regular per-frame ticking share the same callback type —
 a callback tagged `"Update"` runs every frame *and* would run again if a GUI
 element in the same pack also happened to be tagged `"Update"` and got
-clicked. Design callbacks to be idempotent where possible.
+clicked.
 
 </details>
 
-<details>
-<summary><strong>Data — simple per-pack save data (XML)</strong></summary>
-
-Save and load small pieces of data that persist across game sessions.
-Storage is **per-pack** — your pack can't read or overwrite another pack's
-saved data, and vice versa.
-
-```js
-// save(data, location)
-// data     — a string. For structured data, JSON.stringify() it first.
-// location — a name for this save slot (letters/numbers/_/- only; other
-//            characters are stripped for safety)
-Data.save(JSON.stringify({ score: 42, level: 3 }), "playerStats");
-
-// get(location) → string | null
-// Returns null if nothing has been saved under that location yet.
-const raw = Data.get("playerStats");
-const stats = raw ? JSON.parse(raw) : { score: 0, level: 1 };
-```
-
-Data is written to disk under your pack's own mod folder, so **uninstalling
-or reinstalling the pack also deletes its saved data** — this isn't a
-world-level save, it travels with the mod.
-
-Saves are written atomically (temp file + rename), so a crash mid-save can't
-leave you with a corrupted file — worst case you lose the most recent save,
-not all of them.
-
-</details>
+<!-- NEW: Matrix section documenting updated API -->
 
 <details>
-<summary><strong>Mod — intermod communication</strong></summary>
+<summary><strong>Matrix — register custom blocks & per-block key/value storage</strong></summary>
 
-Send a message to every *other* currently-loaded, currently-enabled pack.
-There's no addressing — it's a broadcast, not a direct message — so use a
-`type` field in your payload if you want recipients to filter.
+`Matrix` is the pack-scoped registry and simple key/value store exposed to
+mods for two purposes:
 
-```js
-// send(data) — data is a string; JSON.stringify() for structured payloads
-Mod.send(JSON.stringify({ type: "ping", from: "gameplay" }));
-```
+1. Registering new block types at runtime (mod-provided blocks). These get
+   negative block IDs and are persisted in `worlds/<world>/registered-blocks.xml`.
+2. Storing arbitrary per-block coordinate data (see `BlockValuesStore` usage in Java).
 
-To receive messages, define a top-level `onReceive` function anywhere in
-your pack (most naturally in a low-alphabetical file like `00_init.js` so
-it's registered before anything else runs):
+The API has been extended to allow mods to pass explicit material colours and
+shininess when registering a new block. The old `addNew(name, builderType, propertiesJson)`
+form still exists for backwards compatibility and delegates to the new form
+with sensible defaults.
 
-```js
-// onReceive(data, fromModName) — called for every message another pack sends
-function onReceive(data, fromModName) {
-    const msg = JSON.parse(data);
-    if (msg.type === "ping") {
-        console.log("got ping from " + fromModName);
+JS-visible signatures (available as `Matrix` global):
+
+- `Matrix.addNew(name, builderType, propertiesJson) -> int`
+  - Backwards-compatible form. Registers a block with default colours
+    (opaque white diffuse, black specular, shininess 0) and returns the
+    negative dynamic block ID.
+
+- `Matrix.addNew(name, builderType, propertiesJson,
+                 dr, dg, db, da,
+                 sr, sg, sb, sa,
+                 shininess) -> int`
+  - New overload that accepts diffuse RGBA (dr..da), specular RGBA (sr..sa)
+    and a shininess float. All numeric arguments are 0..1 for colours and a
+    non-negative float for shininess. Example values are floats (JS Number).
+  - Example:
+    ```js
+    const id = Matrix.addNew("RedBlock", "Cube", "{}",
+                             0.8, 0.1, 0.1, 1.0,   // diffuse r,g,b,a
+                             0.3, 0.3, 0.3, 1.0,   // specular r,g,b,a
+                             12.0);                // shininess
+    ```
+
+- `Matrix.getId(name, modPackName) -> Integer|null`
+  - Returns the numeric block ID for a named dynamic block in the specified
+    mod pack. If `modPackName` is null or empty the Matrix instance's own
+    pack name is used. Returns `null` when not found or when the dynamic
+    registry isn't initialized.
+  - Example:
+    ```js
+    const id = Matrix.getId("RedBlock", "MyPack");
+    if (id !== null) {
+      // use id
     }
-}
-```
+    ```
 
-Defining `onReceive` is entirely optional — most packs won't need it, and
-not defining it just means your pack silently ignores everything sent to it.
+- `Matrix.getProperties(name, modPackName) -> string`
+  - Returns the raw properties JSON string that was stored during registration
+    (same behaviour as before).
 
-**Delivery only happens between packs that are both enabled.** If your pack
-is disabled from the mods menu, you can't send (your scripts don't tick) and
-you won't receive (disabled packs are skipped as recipients) — messaging
-follows the same enabled/disabled rule as everything else.
-
-There's no ordering or delivery guarantee beyond "packs are notified in the
-same alphabetical pack-load order used everywhere else in this system," and
-a pack never receives its own `Mod.send()` calls back.
-
-</details>
-
-<details>
-<summary><strong>Matrix — custom block registration & per-block storage</strong></summary>
-
-`Matrix` provides two capabilities: registering new block types at runtime
-and storing arbitrary key/value data on individual block instances in the
-world. Both are scoped to the calling pack — a block registered by pack
-`gameplay/` can only be modified or queried by that same pack.
-
-#### Registering custom blocks
-
-Create new block types that appear in the game world and can be placed/broken
-like any built-in block. Each registration returns a unique negative ID
-(the built-in blocks occupy positive IDs 0-10).
-
-```js
-// Matrix.addNew(name, builderType, propertiesJson) -> int blockId
-//   name          - a string identifier for this block type
-//   builderType   - mesh builder: "Py" (default), "Cube", "CubeTiny", "CubeTall", "CubeFlat"
-//   propertiesJson - optional JSON string for custom block metadata
-
-const myBlockId = Matrix.addNew("MyCustomBlock", "Cube", '{"color":"red","hardness":5}');
-// Returns a negative integer like -1, -2, etc.
-```
-
-Once registered, the block can be placed with Block.place(x, y, z, myBlockId)
-and will render using the specified mesh builder. The registration persists
-across game sessions (saved to worlds/<world>/registered-blocks.xml).
-
-#### Per-block key/value storage
-
-Store arbitrary string data on individual block positions. Useful for
-attaching metadata to placed blocks (e.g., health, owner, custom state).
-
-```
-// Matrix.setValue(x, y, z, key, value)
-Matrix.setValue(10, 20, 30, "owner", "player1");
-Matrix.setValue(10, 20, 30, "health", "100");
-
-// Matrix.getValue(x, y, z, key) -> string | null
-const owner = Matrix.getValue(10, 20, 30, "owner"); // "player1"
-const health = Matrix.getValue(10, 20, 30, "health"); // "100"
-```
-Data is persisted per-chunk to worlds/<world>/chunk-values/chunk-CX-CZ.xml.
-
-Querying block registrations
-
-```
-// Matrix.getBlockNameMod(blockId) -> [name, modPack] | null
-//   Returns the name and owning pack for a registered block, or null if not found
-const info = Matrix.getBlockNameMod(myBlockId);
-if (info) {
-    console.log("Block '" + info[0] + "' from pack '" + info[1] + "'");
-}
-
-// Matrix.getProperties(name, modPack) -> string
-//   Returns the properties JSON string for a registered block
-const props = Matrix.getProperties("MyCustomBlock", "gameplay");
-```
+Notes & compatibility
+- Existing mods that call the old `addNew(name,builder,props)` will continue
+  to work unchanged; their blocks receive default colours. New mods may call
+  the extended overload to opt into custom colours.
+- Registered blocks (with colours) are persisted so colours survive restarts.
+- Chunk rendering now reads colours from the dynamic registry for mod blocks
+  so specifying colours will visibly affect materials in the world.
 
 </details>
-
----
-
-<details>
-<summary><strong>WorldGenerator (not part of the pack system)</strong></summary>
-
-This is a must-have in the game so it comes as a default, and **runs
-completely separately from mod packs** — it is not part of the pack system
-at all, has no isolation concerns, and isn't affected by anything above.
-Just edit
-https://github.com/OxillenGlow/MtSharpGrain/blob/main/worlds/my_world/chunkgen.js
-to modify how your world is built.
-
-### Specialized Chunks
-
-You could also duplicate a chunk you have built on and put it in
-`worlds/<name(default is my_world)>/storageGround` or
-`worlds/<name(default is my_world)>/storageAir` so that it shows up randomly
-inside the game as you walk around.
-
-</details>
-
----
-
-<details>
-<summary><strong>Examples</strong></summary>
-
-## Full examples
-
-### Ground indicator
-
-```js
-// worlds/my_world/mod/gameplay/ground_indicator.js
-// Colors a cube green when over solid ground, red when over air.
-
-const cube = Scene.createCube("indicator", 0.5);
-Scene.attachChild(0, cube);
-Scene.setPosition(cube, 10, 20, 0);
-
-Engine.onTick(function(tpf, tag) {
-    const p = Scene.getPosition(cube);
-    const blockBelow = Scene.getBlockId(
-        Math.floor(p[0]),
-        Math.floor(p[1]) - 1,
-        Math.floor(p[2])
-    );
-
-    if (blockBelow !== 0) {
-        Scene.setColor(cube, 0, 1, 0, 1);   // green — solid ground
-        Gui.guiWord("Ground: solid", 0.5, 0.95, 0, 0.02, "groundLabel");
-    } else {
-        Scene.setColor(cube, 1, 0, 0, 1);   // red — air below
-        Gui.guiWord("Ground: air", 0.5, 0.95, 0, 0.02, "groundLabel");
-    }
-}, "Update");
-```
- 
-### Block above player (demo)
- 
-```js
-// worlds/my_world/mod/gameplay/demo_block_above_player.js
-// Every tick, sets the block 1 meter above the player to Glass (id 10).
- 
-Engine.onTick(function(tpf, tag) {
-    const p = Player.getPosition();
-    const x = Math.floor(p[0]);
-    const y = Math.floor(p[1]) + 1;
-    const z = Math.floor(p[2]);
-    Block.place(x, y, z, 10);
-}, "Update");
-```
- 
-Note both examples now live under `mod/gameplay/` rather than directly in
-`mod/` — a loose `mod/ground_indicator.js` would silently not load under the
-new pack system.
- 
-### Intermod communication example
- 
-```js
-// worlds/my_world/mod/gameplay/00_init.js
-// Receive messages from other packs
-function onReceive(data, fromModName) {
-    const msg = JSON.parse(data);
-    console.log("Gameplay pack got: " + msg.type + " from " + fromModName);
-}
- 
-// worlds/my_world/mod/ui/hotbar.js
-// Send a message to all other packs
-Engine.onTick(function(tpf, tag) {
-    if (tag === "fireHotbarUpdate") {
-        Mod.send(JSON.stringify({ type: "itemUsed", itemId: 5 }));
-    }
-}, "fireHotbarUpdate");
-```
- 
-### Data persistence example
- 
-```js
-// worlds/my_world/mod/gameplay/progress.js
-// Save and load player progress
-const DEFAULT_LEVEL = { currentLevel: 1, bossDefeated: false };
- 
-Engine.onTick(function(tpf, tag) {
-    // Load on startup (only happens once per session)
-    if (!globalThis.ProgressData) {
-        const saved = Data.get("playerProgress");
-        globalThis.ProgressData = saved ? JSON.parse(saved) : DEFAULT_LEVEL;
-    }
-    
-    if (tag === "defeatBoss") {
-        globalThis.ProgressData.bossDefeated = true;
-        globalThis.ProgressData.currentLevel += 1;
-        // Persist to disk
-        Data.save(JSON.stringify(globalThis.ProgressData), "playerProgress");
-        Gui.guiWord("Progress saved!", 0.5, 0.5, 0, 0.02, "saveNotice");
-    }
-}, "Update");
-```
-
-</details>
-
----
-
-<details>
-<summary><strong>Limitations and caution</strong></summary>
-
-## Limitations
- 
-- Scripts run on the **render thread**. Do not spin-wait or do heavy
-  computation inside `Engine.onTick` — keep callbacks short.
-- Only the `"Update"` tag is driven every frame by the engine, per pack. Any
-  other tag only runs when a matching `Gui` element **in the same pack** is
-  clicked.
-- **Each pack is its own GraalVM context.** A global variable declared in
-  one pack is *not* visible to scripts in another pack — only to other
-  scripts within the same pack, in load order. This is a change from
-  earlier versions where all mods shared one context; if you're upgrading
-  old mods, check for cross-file globals that now need to move into the
-  same pack folder.
-- Loose `.js` files directly inside `mod/` (not in a subfolder) are not
-  loaded at all — every mod needs a pack folder.
-- `Engine.onBlockChange` validators still run synchronously on every block
-  edit and are still cheap-only, but now that includes validators from
-  every other pack too — a slow or misbehaving validator in one pack can
-  affect edits triggered by any other pack.
-- `Player` moves the camera with no collision checks — it's a teleport, not
-  physics-driven movement.
-- No filesystem, network, or Java class access from scripts (unless I have
-  a sudden urge to add them).
-- `console.log` output appears in the game's standard output (currently
-  only accessible by players via running with terminal).
-
-</details>
-
----
- 
-<details>
-<summary><strong>Essential API Reference for AI context (copy-paste block)</strong></summary>
-Paste this into an AI chat along with what you want built, so it has an
-accurate, condensed picture of the API surface without hallucinating:
- 
-```
-MtSharpGrain JS mod API — condensed reference.
- 
-Runtime: GraalVM JS, one isolated Context per mod pack folder under
-worlds/my_world/mod/<packName>/. Globals below are fresh per pack — no
-cross-pack sharing except where noted. No filesystem/network/Java access
-beyond what's listed.
- 
-Scene (handle-based 3D objects; handle 0 = world root, shared by all packs):
-  Scene.createNode(name) -> handle
-  Scene.createCube(name, size) -> handle
-  Scene.attachChild(parentHandle, childHandle)
-  Scene.setPosition(handle, x, y, z)
-  Scene.getPosition(handle) -> [x,y,z]  (world position)
-  Scene.setRotation(handle, xRad, yRad, zRad)  (Euler, pitch/yaw/roll)
-  Scene.getRotation(handle) -> [xRad,yRad,zRad]
-  Scene.setColor(handle, r, g, b, a)  (0..1)
-  createRectangle(String name, float x, float y, float z)
-   createLight(String name, float r, float g, float b, float radius)
-   setLightColor(long handle, float r, float g, float b) // normal setcolor doesn't work for light
-   setLightRadius(long handle, float radius) // same as strength of the light
-  Scene.destroy(handle)
-  Scene.getBlockId(x, y, z) -> int id of block
-
-Register a handler with `Engine.onSpatialLeftClick(fn)` or `Engine.onSpatialRightClick(fn)`; `fn` receives the clicked spatial's name (the string you passed when creating it using scene API).
- 
-Block (shared world state, cross-pack):
-  Block.get(x, y, z) -> int
-  Block.place(x, y, z, blockId)   // can throw if rejected by a validator
-  Block.destroy(x, y, z)          // sets to air; can also be rejected
-  Block.forceSet(x, y, z, blockId)
-// Forces change, can not be rejected
-  Block IDs: 0 air, 2 stone, 3 dirt, 4 grass, 5 crystal ore, 6 ice sludge,
-             7 silicon, 8 sulfur, 9 metal block, 10 glass
- 
-Player (shared camera, no collision):
-  Player.getPosition() -> [x,y,z]
-  Player.setPosition(x, y, z)   // instant teleport
-
-Inventory:
-
-// add(blockId, amount) → boolean
-Inventory.add(2, 5);    // add 5 of block id 2; returns true on success, false on failure (amount<=0 or no room for a new type)
-
-// remove(blockId, amount) → boolean
-Inventory.remove(2, 1); // remove 1 of block id 2; returns false if amount<=0 or not enough held
-
-// get(blockId) → int
-const n = Inventory.get(2); // number held (0 if none)
-
-Engine:
-  Engine.onTick(fn, tag)   // fn(tpf, tag); only tag "Update" runs every
-                           // frame automatically; other tags only fire when
-                           // a Gui element with the same tag (same pack) is
-                           // clicked. 5 consecutive throws auto-disables
-                           // the callback.
-  Engine.onBlockChange(fn) // fn(x,y,z,blockId) -> bool; false or throw
-                           // rejects the edit; runs for ALL packs' edits
- 
-Gui (normalized coords, 0,0=bottom-left, 1,1=top-right; scoped per pack):
-  Gui.guiWord(word, x, y, z, sizePixels, tag) -> handle  // upsert by tag
-  Gui.setColor(handle, r, g, b, a)
-  Gui.toTop(handle) / Gui.toBottom(handle)
-  Gui.removeWord(handle)
-  Gui.getHandleByTag(tag) -> handle
-  // Any element is clickable: click fires Engine.onTick(tpf, thatTag) in
-  // the same pack.
-  // Only draws on "home" screen and (if in modview) only that pack's own
-  // view — UNLESS the pack's folder name starts with LFT/RHT/BTM/MODE/UTIL,
-  // in which case it draws on both "home" and "play" always. LFT/RHT should
-  // stay within ~20% screen width, BTM within a modest bottom strip, and
-  // all always-on packs should keep element counts low.
- 
-Data (per-pack persistent save data, XML-backed):
-  Data.save(dataString, location)   // location: alnum/_/- only
-  Data.get(location) -> string | null
- 
-Mod (cross-pack broadcast messaging; only between enabled packs):
-  Mod.send(dataString)   // broadcasts to every other enabled pack
-  // define a top-level function to receive:
-  function onReceive(dataString, fromModName) { ... }
-
-Matrix (custom block registration & per-block storage, scoped per pack):
-  Matrix.addNew(name, builderType, propertiesJson) -> int blockId
-  Matrix.setValue(x, y, z, key, value)
-  Matrix.getValue(x, y, z, key) -> string   null
-  Matrix.getBlockNameMod(blockId) -> [name, modPack] | null
-  Matrix.getProperties(name, modPack) -> string
- 
-Rules: pack folder required (no loose .js in mod/ root); files load
-alphabetically within a pack, packs load alphabetically by folder name;
-scripts run on the render thread — keep Engine.onTick callbacks short.
-```
- 
-</details>
-
-> [!TIP]
-> The api is powerful but it still relies on some work arounds. For example, if you make an RPG(rocket propelled grenade) mod, you should just define an RPG block say item -1. But how to fire it? Well, you will have to get where it is when placed overide that placement and then remove block from inventory and then use SceneAPI to send some object gliding to block place location and then blowing up. This is a bit messy but for the player, its the same experience as directly firing the RPG.  **|**  
-> Similarly, you have to make a GUI element for crafting it by getting amount of metal blocks, silicon, and sulpher (or whatever else you need to make an RPG) and displaying a green [Craft RPG] button or a [Not enough items] button. There isn't a built in system for this so your crafting gui could be totally different from other mods.
