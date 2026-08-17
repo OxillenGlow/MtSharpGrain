@@ -26,11 +26,25 @@ public final class MatrixApi {
         this.packName = packName;
     }
 
+    /**
+     * New exported overload that accepts diffuse RGBA, specular RGBA and shininess.
+     * JS callers can now call Matrix.addNew(name, builderType, propertiesJson,
+     *   dr, dg, db, da, sr, sg, sb, sa, shininess)
+     */
     @HostAccess.Export
-    public int addNew(String name, String builderType, String propertiesJson) {
+    public int addNew(String name, String builderType, String propertiesJson,
+                      double dr, double dg, double db, double da,
+                      double sr, double sg, double sb, double sa,
+                      double shininess) {
         DynamicBlockRegistry registry = DynamicBlockRegistry.getInstance();
         if (registry == null) throw new IllegalStateException("DynamicBlockRegistry not initialized");
-        return registry.addIfAbsent(name, packName, builderType == null ? "Py" : builderType, propertiesJson == null ? "" : propertiesJson);
+        String b = builderType == null ? "Py" : builderType;
+        String props = propertiesJson == null ? "" : propertiesJson;
+        // HostAccess maps Double -> Float via JsApiBootstrap HostAccess rules; cast to float for storage.
+        return registry.addIfAbsent(name, packName, b, props,
+                (float) dr, (float) dg, (float) db, (float) da,
+                (float) sr, (float) sg, (float) sb, (float) sa,
+                (float) shininess);
     }
 
     @HostAccess.Export
@@ -82,5 +96,26 @@ public final class MatrixApi {
         if (registry == null) return "";
         String mp = modPack == null || modPack.isEmpty() ? packName : modPack;
         return registry.getProperties(name, mp).orElse("");
+    }
+
+    /**
+     * Returns the numeric block ID for a dynamically-registered block name in the given mod pack.
+     *
+     * If {@code modPackName} is null or empty, this Matrix instance's {@code packName} is used.
+     * The method returns a boxed {@code Integer} (or {@code null}) so callers can distinguish
+     * "not found" / registry-unavailable from a valid numeric ID.
+     *
+     * Exported to JS as Matrix.getId(name, modPackName).
+     *
+     * @param name the block name as registered by the mod
+     * @param modPackName optional mod pack name; when null/empty defaults to the pack associated with this Matrix
+     * @return the block ID (negative dynamic ID) or {@code null} if not found or the dynamic registry isn't initialized
+     */
+    @HostAccess.Export
+    public Integer getId(String name, String modPackName) {
+        var registry = DynamicBlockRegistry.getInstance();
+        if (registry == null) return null;
+        String mp = (modPackName == null || modPackName.isEmpty()) ? packName : modPackName;
+        return registry.getId(name, mp).orElse(null);
     }
 }
