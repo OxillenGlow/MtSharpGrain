@@ -100,57 +100,49 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 > The biggest problem is to make the NPC stuff work with mods which will likely be 10x harder than the completed refactoring of mods. Im just going to make a tiny java class for a independent NPC mini system.
 
 My todo/doing list:
- 
- - Important! add color params to constructor of mod blocks.
+
  - Add an api for java controlled timed updating like JavaScript's setInterval. This will hopefully be able to replace engine "Update" flaggs and give modders more power whith better performance as it is done on mod thread.
     - Why not just setInterval? b/c setInterval is blocking on js side and java cant access afterwards making it really annoying.
- - Draw the percentages correctly.
- - It does not count to 4 seconds for block set
- - Inventory item thumbnails are not deleted after they are drawn
- - NPC mod not spawning
- - Stop the mini lag spikes (makes the game seem to be running on 5 fps) ofload the whole update thing to a subthread
+ - NPC mod not spawning 40%
  - **Important** Randomly spawned buildings
     - Ground buildings 0/100
     - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
  - Npc with behavior > afterwards, scripts to control npc. 20%
- - **IMPORTANT** Fix NPC mod, its not working for some reason (haiku is just not for coding).
  - Upgrade GUI... (constant)
  - Multi player support for mods (real multiplayer comes much later) 0%
  - Physics as java 0%
      - Fix collision stuff
      - Add a fall(acceleration) damage _mod_ (not that you can fall much in this game yet)
- - Mod blocks with a ModBlockAPI 0% <-- will do when i get time to connect Scene api with Block api.
  - Fix buggs caused by refactoring to multi thread
      - Block placement. 90%
      - Other potential problems that i haven't found imidiately. 
-- After multithreading and decreasing amount of blocks drawn, Now i can increase renderdistance :D!!! kinda, chrome is CPU hungry and laggs my game.
+ - After multithreading and decreasing amount of blocks drawn, Now i can increase renderdistance :D!!! kinda, chrome is CPU hungry and laggs my game.
 Even my horible computer can run 5+ view distance easily!
-- Fix strange bug - chunks zipping around (can only be seen with window bug)
-- Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this but i have to wait and see)
-- **IMPORTANT** fix gui, its buggy now. thumbnails refuse to disapear.
+ - Fix strange bug - chunks zipping around (can only be seen with window bug)
+ - Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this but i have to wait and see)
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
 
-- Fix 2 second lag spike - probably mod update 100% (off-loaded to mod thread)
-- Minimize mod refresh rate to speed up main thread 90%
-- remove mod thread from main thread. 90% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754))
-- Add some random flux to terrain
-- Survival as a JavaScript mod 80%
-- Added skybox 70% - i need to refine skybox
-- Full screen ect 100%
-- Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
-- Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
-- Extend JS API further
-    - Simple save data api with XML 90%
-    - Intermod communication API 100%
-    - Utility constant display support for prefixing mods with:
-        - LFT
-        - RHT
-        - BTM
-        - to constantly display gui on left, right bottom of screen. 60%
-- JavaScript, to add some real and powerfull scripting (thanks a lot to claude)100%
+ - Mod blocks with a Matrix API 70%
+ - Minimize mod refresh rate to speed up main thread 90%
+ - remove mod thread from main thread. 90% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754))
+ - Add some random flux to terrain
+ - Survival as a JavaScript mod 80%
+ - Added skybox 70% - i need to refine skybox
+ - Full screen ect 100%
+ - Default JavaSctipt mods to be placed in assets and unpacked at runtime 90%
+ - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
+ - Extend JS API further
+     - Simple save data api with XML 90%
+     - Intermod communication API 100%
+     - Utility constant display support for prefixing mods with:
+         - LFT
+         - RHT
+         - BTM
+         - to constantly display gui on left, right bottom of screen. 60%
+ - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)100%
 
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
