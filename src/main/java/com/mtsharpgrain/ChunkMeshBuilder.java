@@ -40,7 +40,7 @@ public class ChunkMeshBuilder {
                     // Skip air / reserved IDs
                     if (BlockRegistry.isAir(block)) continue;
 
-                    // Face-culling: only emit faces adjacent to transparent space
+                    // Face-culling and smoothing: only emit faces adjacent to transparent space and mesh naturally disconnects from air blocks.
                     boolean px = isAir(chunk, x + 1, y, z);
                     boolean nx = isAir(chunk, x - 1, y, z);
                     boolean py = isAir(chunk, x, y + 1, z);
@@ -154,9 +154,25 @@ public class ChunkMeshBuilder {
             specular  = def.specular();
             shininess = def.shininess();
         } else {
-            diffuse   = FALLBACK_DIFFUSE;
-            specular  = FALLBACK_SPECULAR;
-            shininess = FALLBACK_SHININESS;
+            // Try dynamic registry for mod-provided colours
+            var registry = com.mtsharpgrain.node.DynamicBlockRegistry.getInstance();
+            if (registry != null) {
+                var opt = registry.getById(blockId);
+                if (opt.isPresent()) {
+                    var reg = opt.get();
+                    diffuse = new ColorRGBA(reg.dr(), reg.dg(), reg.db(), reg.da());
+                    specular = new ColorRGBA(reg.sr(), reg.sg(), reg.sb(), reg.sa());
+                    shininess = reg.shininess();
+                } else {
+                    diffuse   = FALLBACK_DIFFUSE;
+                    specular  = FALLBACK_SPECULAR;
+                    shininess = FALLBACK_SHININESS;
+                }
+            } else {
+                diffuse   = FALLBACK_DIFFUSE;
+                specular  = FALLBACK_SPECULAR;
+                shininess = FALLBACK_SHININESS;
+            }
         }
 
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
