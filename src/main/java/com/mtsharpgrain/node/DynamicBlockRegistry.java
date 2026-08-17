@@ -35,6 +35,8 @@ public final class DynamicBlockRegistry {
      *  - dr,dg,db,da : diffuse RGBA (0..1)
      *  - sr,sg,sb,sa : specular RGBA (0..1)
      *  - shininess    : Phong shininess
+     * @param dr diffuse (real color) values
+     * @param sr specular (shiny reflection) values
      */
     public record Registration(int id, String name, String modPack, String builderType, String propertiesJson,
                                float dr, float dg, float db, float da,
@@ -162,15 +164,23 @@ public final class DynamicBlockRegistry {
     }
 
     /**
-     * Register a new block if absent. Returns existing ID if already registered.
-     * Synchronous and persists to disk on change.
+     * Register a new block if absent. New overload accepts explicit colour
+     * parameters. The old signature is retained for compatibility.
      */
     public synchronized int addIfAbsent(String name, String modPack, String builderType, String propertiesJson) {
+        // delegate to full form with default colours (opaque white diffuse, no specular, shininess 0)
+        return addIfAbsent(name, modPack, builderType, propertiesJson, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 0f);
+    }
+
+    public synchronized int addIfAbsent(String name, String modPack, String builderType, String propertiesJson,
+                                        float dr, float dg, float db, float da,
+                                       float sr, float sg, float sb, float sa,
+                                        float shininess) {
         String key = makeKey(modPack, name);
         Integer existing = index.get(key);
         if (existing != null) return existing;
         int id = nextId--;
-        Registration reg = new Registration(id, name, modPack, builderType, propertiesJson);
+        Registration reg = new Registration(id, name, modPack, builderType, propertiesJson,
         byId.put(id, reg);
         index.put(key, id);
         try {
