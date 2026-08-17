@@ -240,18 +240,19 @@ public class Inventory {
                 }
 
                 // draw icon (if we have one for this id) to the left of the name
+                // Draw the image non-persistent so it is recreated/removed each frame
                 if (blockId >= 0 && blockId < ICONS.length) {
                     String iconPath = ICONS[blockId];
                     if (iconPath != null && !iconPath.isEmpty()) {
                         try {
                             // place icon slightly left of the text (text x=0.05f)
-                            gui.image(iconPath, 0.03f, y, true);
+                            gui.image(iconPath, 0.02f, y, false);
                         } catch (Exception e) {
-                            // silently ignore missing assets; fall back to text only
+ 
+                        // silently ignore missing assets; fall back to text only
                         }
                     }
                 }
-
                 gui.textColor(nameColor);
                 gui.text(blockName(blockId), 0.05f, y, (event, arg) -> {
                     if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
@@ -261,10 +262,10 @@ public class Inventory {
                     return true;
                 });
 
-                // "subscript" amount, slightly right and below the name
+                // "subscript" amount, slightly right and below the thumbnail
                 gui.textColor(ColorRGBA.Gray);
-                gui.textSize(0.011f);
-                gui.text("x" + amount, 0.06f, y - 0.016f, null);
+                gui.textSize(0.018f);
+                gui.text("x" + amount, 0.03f, y - 0.014f, null);
                 gui.textSize(0.016f);
 
                 y -= rowSpacing;
