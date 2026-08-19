@@ -1,7 +1,7 @@
 package com.mtsharpgrain;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.light.PointLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -11,15 +11,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 
 /**
- * Orbiting day/night sun: a small shaded cube + a PointLight riding a
- * carrier node (via LightControl, same "light follows spatial" pattern
- * SceneApi.createLight() uses for JS mods), circling the player in a
- * vertical plane.
- *
- * This is a straight Java port of mods/sun.js so the game has a sun even
- * with no mod packs installed. Both attach a cube+light and both use the
- * same dawn/noon/night color model, on purpose, so behavior matches if you
- * ever compare them side by side.
+ * Orbiting day/night sun: a small unshaded cube + rotating DirectionalLight
  */
 public class Sun {
 
