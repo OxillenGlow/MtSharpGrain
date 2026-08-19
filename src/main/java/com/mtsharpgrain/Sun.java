@@ -8,7 +8,6 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.control.LightControl;
 import com.jme3.scene.shape.Box;
 
 /**
@@ -24,7 +23,6 @@ import com.jme3.scene.shape.Box;
  */
 public class Sun {
 
-    private final float lightRadius;
     private float rotationPeriodSeconds;
 
     // ── Color model — same three anchor colors as sun.js ────────────────
@@ -33,8 +31,7 @@ public class Sun {
     private static final ColorRGBA NIGHT_COLOR = new ColorRGBA(0f,    0f,    0f,   1f);
 
     private final Geometry cube;
-    private final Node lightCarrier;
-    private final PointLight light;
+    private final DirectionalLight light;
 
     private float angleDeg = 0f; // 0 = dawn, 90 = noon, 180 = dusk, 180-360 = night
 
@@ -44,31 +41,25 @@ public class Sun {
     }
 
     public Sun(AssetManager assetManager, Node rootNode, float size, float rotationPeriodSeconds) {
-        this.lightRadius = 5*32;
         this.rotationPeriodSeconds = rotationPeriodSeconds;
-
-        // ── Visible cube ────────────────────────────────────────────────
+        
+        //─── Visible cube ────────────────────────────────────────────────
         Box box = new Box(size / 2f, size / 2f, size / 2f);
         cube = new Geometry("SunCube", box);
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat.setBoolean("UseMaterialColors", true);
-        mat.setColor("Ambient", new ColorRGBA(0.2f, 0.2f, 0.2f, 1f));
-        mat.setColor("Diffuse", ColorRGBA.White);   // overwritten every update()
-        mat.setColor("Specular", ColorRGBA.White);
-        mat.setFloat("Shininess", 16f);
+        // Make the cube unshaded and visually bright so it looks like a sun
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.White); // updated every frame
         cube.setMaterial(mat);
         rootNode.attachChild(cube);
 
-        // ── Light, on an invisible carrier node (LightControl keeps the
-        // light's position synced to the carrier's world translation) ────
-        light = new PointLight();
-        light.setRadius(lightRadius);
+        // Use a directional light to act as the sun (covers the whole scene).
+        // DirectionalLight is attached to the scene (rootNode) so it affects all spatials.
+        light = new DirectionalLight();
+        // initial direction: from upper-left-ish; will be updated each frame in update()
+        light.setDirection(new Vector3f(-0.3f, -1f, -0.1f).normalizeLocal());
+        light.setColor(NOON_COLOR);
         rootNode.addLight(light);
-
-        lightCarrier = new Node("SunLightCarrier");
-        lightCarrier.addControl(new LightControl(light));
-        rootNode.attachChild(lightCarrier);
     }
 
     /**
@@ -95,10 +86,21 @@ public class Sun {
 
         Vector3f pos = new Vector3f(x, y, z);
         cube.setLocalTranslation(pos);
-        lightCarrier.setLocalTranslation(pos);
+        // For a directional sun: set the light direction based on orbit angle.
+        // The direction vector is the direction FROM which the light shines.
+        // We point it roughly from the sun toward the scene (player).
+        Vector3f dir = new Vector3f(-FastMath.cos(rad), -FastMath.sin(rad), 0f).normalizeLocal();
+        light.setDirection(dir);
 
         ColorRGBA c = colorForAngle(angleDeg);
-        cube.getMaterial().setColor("Diffuse", c);
+        // Make cube brighter and unshaded (so it's always visible): amplify color a bit.
+        ColorRGBA bright = new ColorRGBA(
+            Math.min(1f, c.r * 1.5f),
+            Math.min(1f, c.g * 1.5f),
+            Math.min(1f, c.b * 1.5f),
+            1f
+        );
+        cube.getMaterial().setColor("Color", bright);
         light.setColor(c);
     }
 
