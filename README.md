@@ -23,7 +23,7 @@ You can control everything from player location to making new things floating ar
  
 Why mods?
 - I am a single person and do not have the resources to make a full game.
-- I will **not** be able to make my game fit everyone's tast.
+- I will **not** be able to make my game fit everyone's taste.
 
 Modding solves both as **anyone including you!** can make *their own mini game* on top without messing with boring parts. This is more true with AI.
 
