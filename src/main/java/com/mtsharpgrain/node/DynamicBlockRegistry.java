@@ -79,8 +79,8 @@ public final class DynamicBlockRegistry {
         if (!Files.exists(file)) return;
         try (var is = Files.newInputStream(file)) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(is);
+            DocumentBuilder docbuilder = dbf.newDocumentBuilder();
+            Document doc = docbuilder.parse(is);
             var nodes = doc.getDocumentElement().getElementsByTagName("Block");
             for (int i = 0; i < nodes.getLength(); i++) {
                 Element el = (Element) nodes.item(i);
@@ -180,7 +180,7 @@ public final class DynamicBlockRegistry {
         Integer existing = index.get(key);
         if (existing != null) return existing;
         int id = nextId--;
-        Registration reg = new Registration(id, name, modPack, builderType, propertiesJson,
+        Registration reg = new Registration(id, name, modPack, builderType, propertiesJson, dr, dg, db, da, sr, sg, sb, sa, shininess);
         byId.put(id, reg);
         index.put(key, id);
         try {
