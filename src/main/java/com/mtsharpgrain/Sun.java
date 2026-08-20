@@ -36,7 +36,7 @@ public class Sun {
         this.rotationPeriodSeconds = rotationPeriodSeconds;
         
         //─── Visible cube ────────────────────────────────────────────────
-        Box box = new Box(size / 2f, size / 2f, size / 2f);
+        Box box = new Box(size, size, size);
         cube = new Geometry("SunCube", box);
 
         // Make the cube unshaded and visually bright so it looks like a sun
@@ -44,6 +44,7 @@ public class Sun {
         mat.setColor("Color", ColorRGBA.White); // updated every frame
         cube.setMaterial(mat);
         rootNode.attachChild(cube);
+        cube.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.Off);// so it doesent cast a strange shaddow
 
         // Use a directional light to act as the sun (covers the whole scene).
         // DirectionalLight is attached to the scene (rootNode) so it affects all spatials.
@@ -123,6 +124,7 @@ public class Sun {
 
     /**
      * Expose the underlying DirectionalLight so other systems (shadows, etc.) can use it.
+     * @return The jme directional light
      */
     public DirectionalLight getLight() {
         return light;
@@ -131,21 +133,7 @@ public class Sun {
     /**
      * Convenience: attach this sun's light to a DirectionalLightShadowRenderer so
      * the renderer uses the same light instance for shadow casting.
-     */
-    public void attachShadowRenderer(com.jme3.shadow.DirectionalLightShadowRenderer dlsr) {
-        if (dlsr != null) dlsr.setLight(light);
-    }
-
-    /**
-     * Expose the underlying DirectionalLight so other systems (shadows, etc.) can use it.
-     */
-    public DirectionalLight getLight() {
-        return light;
-    }
-    
-    /**
-     * Convenience: attach this sun's light to a DirectionalLightShadowRenderer so
-     * the renderer uses the same light instance for shadow casting.
+     * @param dlsr jmonkey engine shader
      */
     public void attachShadowRenderer(com.jme3.shadow.DirectionalLightShadowRenderer dlsr) {
         if (dlsr != null) dlsr.setLight(light);

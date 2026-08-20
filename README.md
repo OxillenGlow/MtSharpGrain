@@ -101,7 +101,7 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 My todo/doing list:
 
- - fixing somethings wrong with the sun not working.
+ - Add toggle for graphics (view distance, shaddows)(note to self, making dlsr shader more detailed is very computationally expensive)
  - Add an api for java controlled timed updating like JavaScript's setInterval. This will hopefully be able to replace engine "Update" flaggs and give modders more power whith better performance as it is done on mod thread.
     - Why not just setInterval? b/c setInterval is blocking on js side and java cant access afterwards making it really annoying.
  - NPC mod not spawning 40%

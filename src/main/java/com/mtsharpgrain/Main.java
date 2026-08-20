@@ -111,17 +111,16 @@ public class Main extends SimpleApplication {
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
         
         flyCam.setEnabled(false);
-    
+        
+        // ───── LET THERE BE (dirctional) LIGHT ────────────────────────────────────
         // Create the orbiting Sun first so we can give the shadow renderer the same DirectionalLight.
         this.sunObject = new Sun(assetManager, rootNode);
-
         // Testing shadows: use the Sun's DirectionalLight so shadows follow the orbiting sun.
-        com.jme3.shadow.DirectionalLightShadowRenderer dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024, 1);
+        com.jme3.shadow.DirectionalLightShadowRenderer dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024*2, 1);
         dlsr.setLight(this.sunObject.getLight());
-        
-        
         viewPort.addProcessor(dlsr);
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
+        
 
         // ── Background & distance fog ─────────────────────────────────────────
         ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );//rgba(247, 51, 10, 0.8)
@@ -134,7 +133,7 @@ public class Main extends SimpleApplication {
         //fog.setFogDensity(0.8f);
         //fpp.addFilter(fog);
         //viewPort.addProcessor(fpp);
-        // ───────────────────────────────────────────────────────────────[...]
+        
 
         // ── Skybox setup ─────────────────────────────────────────────────────
         try {
@@ -189,6 +188,8 @@ public class Main extends SimpleApplication {
         //CompletableFuture.runAsync(() -> {
         //    ScriptRunner.loadAndExecuteVisualScript();
         //});
+        // I really dont know if i should keep that jvs stuff
+        // They are disabled now
         
         Vector3f spawn = new Vector3f(10000f, 16f, 0f);
         cam.setLocation(spawn);

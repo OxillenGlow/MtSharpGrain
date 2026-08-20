@@ -64,7 +64,8 @@ dependencies {
     implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
     implementation "org.jmonkeyengine:jme3-testdata:$jmeVer"
     implementation "com.epagagames:particlemonkey:1.1.0"
-    implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
+    //implementation "com.github.polincdev:ShaderBlowEx:-SNAPSHOT"
+    // there is some problems at that end
     implementation "org.graalvm.polyglot:polyglot:24.1.1"
     implementation "org.graalvm.polyglot:js-community:24.1.1"
 
