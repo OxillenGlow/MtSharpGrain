@@ -111,21 +111,14 @@ public class Main extends SimpleApplication {
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
         
         flyCam.setEnabled(false);
-        com.jme3.light.DirectionalLight sun = null;
-        for (com.jme3.light.Light l : rootNode.getLocalLightList()) {
-            if (l instanceof com.jme3.light.DirectionalLight) {
-                sun = (com.jme3.light.DirectionalLight) l;
-                break;
-            }
-        }
-
+    
+        // Create the orbiting Sun first so we can give the shadow renderer the same DirectionalLight.
         this.sunObject = new Sun(assetManager, rootNode);
+
+        // Testing shadows: use the Sun's DirectionalLight so shadows follow the orbiting sun.
+        com.jme3.shadow.DirectionalLightShadowRenderer dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024, 1);
+        dlsr.setLight(this.sunObject.getLight());
         
-        
-        // Testing shadows
-        com.jme3.shadow.DirectionalLightShadowRenderer dlsr =
-            new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024, 1);
-        dlsr.setLight(sun);
         
         viewPort.addProcessor(dlsr);
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
