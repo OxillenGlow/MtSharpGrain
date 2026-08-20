@@ -135,4 +135,19 @@ public class Sun {
     public void attachShadowRenderer(com.jme3.shadow.DirectionalLightShadowRenderer dlsr) {
         if (dlsr != null) dlsr.setLight(light);
     }
+
+    /**
+     * Expose the underlying DirectionalLight so other systems (shadows, etc.) can use it.
+     */
+    public DirectionalLight getLight() {
+        return light;
+    }
+    
+    /**
+     * Convenience: attach this sun's light to a DirectionalLightShadowRenderer so
+     * the renderer uses the same light instance for shadow casting.
+     */
+    public void attachShadowRenderer(com.jme3.shadow.DirectionalLightShadowRenderer dlsr) {
+        if (dlsr != null) dlsr.setLight(light);
+    }
 }
