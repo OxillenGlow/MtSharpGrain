@@ -123,6 +123,16 @@ public class Sun {
     }
 
     /**
+     * Allow setting the current angle (for loading saved time).
+     */
+    public void setAngleDeg(float deg) {
+        // normalize to [0,360)
+        deg = deg % 360f;
+        if (deg < 0f) deg += 360f;
+        this.angleDeg = deg;
+    }
+
+    /**
      * Expose the underlying DirectionalLight so other systems (shadows, etc.) can use it.
      * @return The jme directional light
      */
