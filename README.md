@@ -106,6 +106,7 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 My todo/doing list:
 
+```mermaid
 mindmap
   root((To Do List))
     Rendering & Graphics
@@ -144,7 +145,7 @@ mindmap
         Reduce blocks drawn
         Chrome CPU usage
       GUI Upgrade - Ongoing
-
+```
 
 <sup>80% here means it is basically done but could be improved</sup>
 
