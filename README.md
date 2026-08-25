@@ -29,8 +29,13 @@ Modding solves both as **anyone including you!** can make *their own mini game* 
 
 Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/releases)** And go [here](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) to learn more on the modding system.
 
+##### Proceduraly generated world
 
-###### Console command system
+The world is generated on the fly based on a seed. (soon to be implemented: selecting a seed to make a new world)
+
+Like with mods, you can edit the way worlds are made. See [wiki on this](github.com/OxillenGlow/MtSharpGrain/wiki/WorldGeneration)
+
+##### Console command system
 
 <sup>`!place` / `!destroy` commands. In progress...
 
@@ -102,9 +107,8 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 My todo/doing list:
 
  - The shaddow renderer is acting weird around blocks, most likely jMonkeyEngines fault, i should ask around
- - Make time be remembered in an xml
  - Add toggle for graphics (view distance, shaddows)(note to self, making dlsr shader more detailed is very computationally expensive)
- - Add an api for java controlled timed updating like JavaScript's setInterval. This will hopefully be able to replace engine "Update" flaggs and give modders more power whith better performance as it is done on mod thread.
+ - Add an api for java controlled timed updating like JavaScript's setInterval. This will hopefully be able to replace engine "Update" flaggs and give modders more power whith better performance as it is done on mod thread. 60%
     - Why not just setInterval? b/c setInterval is blocking on js side and java cant access afterwards making it really annoying.
  - NPC mod not spawning 40%
  - **Important** Randomly spawned buildings
