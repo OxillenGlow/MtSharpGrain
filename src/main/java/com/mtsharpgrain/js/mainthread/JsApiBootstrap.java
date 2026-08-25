@@ -28,6 +28,7 @@ import java.nio.file.Path;
  */
 public class JsApiBootstrap {
 
+    private final TimerManager timerManager;
     private final NodeRegistry nodeRegistry = new NodeRegistry();
     private final TickRegistry tickRegistry = new TickRegistry();
     private final GuiApi guiApi;
@@ -52,8 +53,8 @@ public class JsApiBootstrap {
         this.messagingApi = new MessagingApi(packName, modPackManager);
         this.guiApi = new GuiApi();
         this.matrixApiForPack = new MatrixApi(packName);
-
-        
+        this.timerManager = new TimerManager(bridge);
+            
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT)
                 .allowArrayAccess(true)
                 .targetTypeMapping(
@@ -67,7 +68,10 @@ public class JsApiBootstrap {
                         .allowHostAccess(access)
                         .allowHostClassLookup(name -> false)
                         .build();
-  
+        
+
+        // Expose to JavaScript
+        context.getBindings("js").putMember("__TimerManager", timerManager);
         context.getBindings("js").putMember("Scene", sceneApi);
         context.getBindings("js").putMember("__InventoryApi", new InventoryApi(inventory, engine));
         context.getBindings("js").putMember("__TickRegistry", tickRegistry);
@@ -100,7 +104,11 @@ public class JsApiBootstrap {
             "  onTick: function(fn, tag) { __TickRegistry.onTick(fn, tag === undefined ? \"\" : tag); },\n" +
             "  onBlockChange: function(fn) { __BlockChangeRegistry.onBlockChange(fn); },\n" +
             "  onSpatialLeftClick:  function(fn) { __SpatialClickRegistry.onLeftClick(fn); },\n" +
-            "  onSpatialRightClick: function(fn) { __SpatialClickRegistry.onRightClick(fn); }\n" +
+            "  onSpatialRightClick: function(fn) { __SpatialClickRegistry.onRightClick(fn); },\n" +
+            "  setInterval: function(fn, ms) { return __TimerManager.setInterval(fn, ms); },\n" +
+            "  clearInterval: function(id) { __TimerManager.clearInterval(id); },\n" +
+            "  setTimeout: function(fn, ms) { return __TimerManager.setTimeout(fn, ms); },\n" +
+            "  clearTimeout: function(id) { __TimerManager.clearInterval(id); }\n" +
             "};\n"
         );
     }
