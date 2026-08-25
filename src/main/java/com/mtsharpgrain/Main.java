@@ -294,6 +294,7 @@ public class Main extends SimpleApplication {
                 System.err.println("[Main] chunkGen.close() failed to close cleanly: " + e.getMessage());
             }
         }
+        sunObject.saveTime();
         if (modPackManager != null) modPackManager.onClose();
         if (inventory != null) inventory.onClose();
         
