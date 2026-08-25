@@ -33,7 +33,7 @@ Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/rele
 
 The world is generated on the fly based on a seed. (soon to be implemented: selecting a seed to make a new world)
 
-Like with mods, you can edit the way worlds are made. See [wiki on this](github.com/OxillenGlow/MtSharpGrain/wiki/WorldGeneration)
+Like with mods, you can edit the way worlds are made. See [wiki on this](https://github.com/OxillenGlow/MtSharpGrain/wiki/WorldGeneration)
 
 ##### Console command system
 
