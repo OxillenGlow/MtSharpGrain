@@ -45,7 +45,7 @@ public class JsApiBootstrap {
     
     public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi,
                           Camera cam, Node rootNode, Path packDir, String packName,
-                          ModPackManager modPackManager, Inventory inventory, EngineAccess engine) {
+                          ModPackManager modPackManager, Inventory inventory, EngineAccess engine, TimerManager timerManager) {
         // Init all APIs
         this.sceneDelegate = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
         this.sceneApi = new EngineSceneApi(sceneDelegate, engine);
@@ -53,7 +53,7 @@ public class JsApiBootstrap {
         this.messagingApi = new MessagingApi(packName, modPackManager);
         this.guiApi = new GuiApi();
         this.matrixApiForPack = new MatrixApi(packName);
-        this.timerManager = new TimerManager(bridge);
+        this.timerManager = timerManager;
             
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT)
                 .allowArrayAccess(true)
