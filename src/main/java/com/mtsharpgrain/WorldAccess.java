@@ -239,11 +239,16 @@ public final class WorldAccess {
                 continue;
             }
 
-            // DUMB PATCH, STILL NEEDS FIXING
-            
-            var pre = forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
+            // Inventory gate: consult inventory BEFORE mutating the world so a
+            // failed pickup/spend rejects the change instead of applying it.
+            int pre = getBlockAt(change.x, change.y, change.z);
+            if (inventory != null && !inventory.handleBlockChange(pre, change.blockId)) {
+                change.result.complete(false);
+                System.out.println("rejected by inventory");
+                continue;
+            }
 
-            this.inventory.handleBlockChange(pre , change.blockId);
+            forceSetBlockAt(change.x, change.y, change.z, change.blockId);
 
             System.out.println("gona notify RM");
             this.renderManager.onBlockChanged(change.x, change.y, change.z);
