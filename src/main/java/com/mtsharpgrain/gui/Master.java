@@ -46,7 +46,7 @@ public class Master {
             // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
             modPackManager.disableAllDrawing();
             inventory.drawMini(gui);
-            drawBreakPercentage(gui);
+            //drawBreakPercentage(gui);
         } else if ("home".equals(path)) {
             modPackManager.disableAllDrawing();
             drawBGandButtons(gui);

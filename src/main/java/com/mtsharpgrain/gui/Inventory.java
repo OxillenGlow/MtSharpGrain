@@ -210,8 +210,8 @@ public class Inventory {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.025f);
-        gui.text("Inventory:", 0.05f, 0.90f, null);
+        gui.textSize(0.05f);
+        gui.text("Inventory:", 0.05f, 0.95f, null);
 
         gui.textSize(0.016f);
         float y = 0.85f;
@@ -253,8 +253,9 @@ public class Inventory {
                         }
                     }
                 }
+                var pointer = isSelected ? " << Selected":"";
                 gui.textColor(nameColor);
-                gui.text(blockName(blockId), 0.05f, y, (event, arg) -> {
+                gui.text(blockName(blockId)+pointer, 0.05f, y, (event, arg) -> {
                     if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                         select(blockId);
                         System.out.println("Selected "+blockId);
@@ -277,16 +278,16 @@ public class Inventory {
 
     /** Draws a compact inventory HUD while the player is in the world. */
     public void drawMini(IGui gui) {
-        gui.textHAlign("left");
+        gui.textHAlign("center");
         gui.textVAlign("bottom");
         gui.textColor(ColorRGBA.White);
         gui.textSize(0.016f);
 
         int selected = Master.blockType;
-        if (Master.blockType >= 0) {
-            gui.text(blockName(selected) + " x" + getAmount(selected), 0.05f, 0.08f, null);
+        if (Master.blockType != 0) {
+            gui.text(blockName(selected) + " x" + getAmount(selected), 0.5f, 0.1f, null);
         } else {
-            gui.text("No block selected", 0.05f, 0.08f, null);
+            gui.text("**No block selected**, press [F] key to select from inventory", 0.5f, 0.1f, null);
         }
 
         gui.textSize(0.02f);
