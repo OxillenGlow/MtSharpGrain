@@ -243,7 +243,7 @@ public class Main extends SimpleApplication {
         }
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
-        if (modLastTick > 200){
+        if (modLastTick > 0.5){
             modPackManager.tick(modLastTick, "Update");
             modLastTick = 0;
         }
