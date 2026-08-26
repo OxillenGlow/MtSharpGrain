@@ -240,11 +240,11 @@ public final class WorldAccess {
             }
 
             // DUMB PATCH, STILL NEEDS FIXING
+            var pre = getBlockAt(change.x, change.y, change.z);
+            if (!this.inventory.handleBlockChange(pre , change.blockId)) continue;
+
+            forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
             
-            var pre = forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
-
-            this.inventory.handleBlockChange(pre , change.blockId);
-
             System.out.println("gona notify RM");
             this.renderManager.onBlockChanged(change.x, change.y, change.z);
             committedChanges.offer(new int[]{change.x, change.y, change.z});

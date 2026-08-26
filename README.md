@@ -29,8 +29,13 @@ Modding solves both as **anyone including you!** can make *their own mini game* 
 
 Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/releases)** And go [here](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) to learn more on the modding system.
 
+##### Proceduraly generated world
 
-###### Console command system
+The world is generated on the fly based on a seed. (soon to be implemented: selecting a seed to make a new world)
+
+Like with mods, you can edit the way worlds are made. See [wiki on this](https://github.com/OxillenGlow/MtSharpGrain/wiki/WorldGeneration)
+
+##### Console command system
 
 <sup>`!place` / `!destroy` commands. In progress...
 
@@ -101,28 +106,46 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 My todo/doing list:
 
- - The shaddow renderer is acting weird around blocks, most likely jMonkeyEngines fault, i should ask around
- - Make time be remembered in an xml
- - Add toggle for graphics (view distance, shaddows)(note to self, making dlsr shader more detailed is very computationally expensive)
- - Add an api for java controlled timed updating like JavaScript's setInterval. This will hopefully be able to replace engine "Update" flaggs and give modders more power whith better performance as it is done on mod thread.
-    - Why not just setInterval? b/c setInterval is blocking on js side and java cant access afterwards making it really annoying.
- - NPC mod not spawning 40%
- - **Important** Randomly spawned buildings
-    - Ground buildings 0/100
-    - Air buildings 1/100 (want to help me add some buildings to the world? open a [discussion](https://github.com/OxillenGlow/MtSharpGrain/discussions)) on beta testing and game development.)
- - Npc with behavior > afterwards, scripts to control npc. 20%
- - Upgrade GUI... (constant)
- - Multi player support for mods (real multiplayer comes much later) 0%
- - Physics as java 0%
-     - Fix collision stuff
-     - Add a fall(acceleration) damage _mod_ (not that you can fall much in this game yet)
- - Fix buggs caused by refactoring to multi thread
-     - Block placement. 90%
-     - Other potential problems that i haven't found imidiately. 
- - After multithreading and decreasing amount of blocks drawn, Now i can increase renderdistance :D!!! kinda, chrome is CPU hungry and laggs my game.
-Even my horible computer can run 5+ view distance easily!
- - Fix strange bug - chunks zipping around (can only be seen with window bug)
- - Fix window bug - not transparent but not, *not* transparent either. (i want to blame jmonkeyengine for this but i have to wait and see)
+```mermaid
+mindmap
+  root((To Do List))
+    Rendering & Graphics
+      Shadow renderer bug (likely jMonkeyEngine issue)
+      Graphics toggle options
+        View distance
+        Shadows
+      Increase render distance
+      Fix window transparency bug
+      Fix chunks zipping around bug
+    Core Systems
+      Java Timed Update API - 60%
+        Replace engine Update flags
+        Mod thread performance
+        Alternative to blocking setInterval
+      Physics System - 0%
+        Implement as Java module
+        Fix collision system
+        Add fall damage mod
+      Multiplayer Mod Support - 0%
+        Real multiplayer (later phase)
+    Content Generation
+      Randomly Spawned Buildings
+        Ground buildings - 0/100
+        Air buildings - 1/100
+        Help wanted: Add building variations
+      NPC System - 40%
+        NPC spawning fixes
+        NPC behavior system - 20%
+        NPC control scripts
+    Bug Fixes & Refactoring
+      Multithreading Issues
+        Block placement - 90%
+        Other potential problems
+      Performance Optimization
+        Reduce blocks drawn
+        Chrome CPU usage
+      GUI Upgrade - Ongoing
+```
 
 <sup>80% here means it is basically done but could be improved</sup>
 

@@ -128,7 +128,7 @@ public class Inventory {
 
         if (isBreak) return pickup(existingBlockId);
         if (isPlace) return spend(newBlockId);
-        return true; // not a pickup/spend transaction (e.g. overwriting one solid block with another) - let it through
+        return false; // not a pickup/spend transaction (e.g. overwriting one solid block with another) - illegal, illogical, dont let it through
     }
 
     private boolean pickup(int blockId) {

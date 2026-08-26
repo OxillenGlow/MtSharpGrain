@@ -38,7 +38,7 @@ public final class JSModifier {
     private String packName;
     private final ConcurrentLinkedQueue<PendingMessage> pendingMessages =
             new ConcurrentLinkedQueue<>();
-
+    private TimerManager timerManager;
     private record PendingMessage(String data, String fromPack) {}
 
     /** Installs the mailbox before init so messages can be buffered during startup. */
@@ -54,9 +54,10 @@ public final class JSModifier {
         this.packName = packName;
         WorldAccessor worldAccessor = new RealWorldAccessor(worldAccess);
         BlockApi blockApi = new BlockApi(worldAccess, renderManager, engineAccess);
+        this.timerManager = new TimerManager(bridge);
         JsApiBootstrap created = new JsApiBootstrap(
                 assetManager, worldAccessor, blockApi, cam, rootNode, packDir,
-                packName, modPackManager, inventory, engineAccess);
+                packName, modPackManager, inventory, engineAccess, timerManager);
         created.getNodeRegistry().registerFixed(0L, rootNode);
         bootstrap = created;
         initialized = true;
@@ -263,12 +264,12 @@ public final class JSModifier {
         failed = true;
     }
 
-    /** Requests asynchronous save/context shutdown; the render loop is not blocked. */
     public void shutdown() {
         ModBridge currentBridge = bridge;
         if (currentBridge != null) currentBridge.requestShutdown();
         Thread currentThread = runtimeThread;
         if (currentThread != null) currentThread.interrupt();
+        if (timerManager != null) timerManager.shutdown(); // <-- Add this
     }
 
     /** Closes a context when startup failed before the mailbox loop began. */

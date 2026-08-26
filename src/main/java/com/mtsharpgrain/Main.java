@@ -49,6 +49,7 @@ public class Main extends SimpleApplication {
     private Inventory inventory;
     private EngineAccess engineAccess;
     private int modLastTick; // time since mods last tick in milliseconds 
+    public String worldname; // world name
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -86,8 +87,9 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
 
+        worldname = "my_world";
         // This takes some files out of resources and extracts them to world folder.
-        extractFiles("my_world");
+        extractFiles(worldname);
         
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("Interface/Fonts/Console.fnt");
@@ -152,8 +154,8 @@ public class Main extends SimpleApplication {
         // resolves relative to it. Adjust this path if templates live elsewhere.
         try {
             chunkGen = new JsChunkGenerator(
-                new File("worlds/my_world/chunkgen.js"),
-                Paths.get("worlds/my_world")
+                new File("worlds/"+ worldname +"/chunkgen.js"),
+                Paths.get("worlds/"+worldname)
             );
         } catch (IOException e) {
             throw new RuntimeException("Failed to load chunkgen.js", e);
@@ -162,8 +164,8 @@ public class Main extends SimpleApplication {
         blockSelector = new BlockSelector(cam, rootNode);
         // WorldAccess now needs the generator + seed so ensureChunk() can run
         // chunkBuild() instead of falling back to the flat-fill BufferedChunk(pos) constructor.
-        worldAccess = new WorldAccess("worlds/my_world", chunkGen, WORLD_SEED);
-        inventory = new Inventory("worlds/my_world");
+        worldAccess = new WorldAccess("worlds/" + worldname, chunkGen, WORLD_SEED);
+        inventory = new Inventory("worlds/" + worldname);
         worldAccess.setInventory(inventory);
         var player = new Player();
         player.setWorldPosition(new Vector3f(1, 1, 1));
@@ -203,7 +205,7 @@ public class Main extends SimpleApplication {
         modPackManager.setEngineAccess(engineAccess);
         worldAccess.addModifier(modPackManager);
         try {
-            modPackManager.loadAll(Paths.get("worlds/my_world/mod"), assetManager, rootNode,
+            modPackManager.loadAll(Paths.get("worlds/" + worldname + "/mod"), assetManager, rootNode,
                     worldAccess, renderManagermg, cam, inventory);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to load mod packs", ex);
@@ -241,7 +243,7 @@ public class Main extends SimpleApplication {
         }
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
-        if (modLastTick > 200){
+        if (modLastTick > 0.5){
             modPackManager.tick(modLastTick, "Update");
             modLastTick = 0;
         }
@@ -292,6 +294,7 @@ public class Main extends SimpleApplication {
                 System.err.println("[Main] chunkGen.close() failed to close cleanly: " + e.getMessage());
             }
         }
+        sunObject.saveTime();
         if (modPackManager != null) modPackManager.onClose();
         if (inventory != null) inventory.onClose();
         
@@ -311,6 +314,8 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/SurvivalFramework/death.js");
             AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");
             AssetConverter.extract("/mods/simpleNPC.js", "worlds/"+world+"/mod/SurvivalFramework/simpleNPC.js");
+            AssetConverter.extract("/mods/TimerDemo.js", "worlds/"+world+"/mod/TimerTest/TimerDemo.js");
+            AssetConverter.extract("/mods/Delay.js", "worlds/"+world+"/mod/TimerTest/Delay.js");
            
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {

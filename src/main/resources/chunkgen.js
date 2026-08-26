@@ -154,6 +154,11 @@ function chunkBuild(x, y, z, seed) {
             var wz = worldZ + lz;
 
             var rockTop = 10 + baseHeight(wx, wz, seed) + terrainFeatureDelta(wx, wz, seed);
+            
+            // --- Add noise here ---
+            var noise = (hash2(wx * 1009 + seed * 7, wz * 1021 + seed * 11, seed * 13) * 2 - 1) * 0.5;
+            rockTop += noise
+            
             var ice = iceThickness(wx, wz);
 
             // Raise the ice layer by 1.5 blocks where the ice cap exists.

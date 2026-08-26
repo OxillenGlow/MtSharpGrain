@@ -9,6 +9,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
+import java.io.*;
 
 /**
  * Orbiting day/night sun: a small unshaded cube + rotating DirectionalLight
@@ -34,6 +35,7 @@ public class Sun {
 
     public Sun(AssetManager assetManager, Node rootNode, float size, float rotationPeriodSeconds) {
         this.rotationPeriodSeconds = rotationPeriodSeconds;
+        loadTime(); // try to load saved time on startup
         
         //─── Visible cube ────────────────────────────────────────────────
         Box box = new Box(size, size, size);
@@ -123,6 +125,16 @@ public class Sun {
     }
 
     /**
+     * Allow setting the current angle (for loading saved time).
+     */
+    public void setAngleDeg(float deg) {
+        // normalize to [0,360)
+        deg = deg % 360f;
+        if (deg < 0f) deg += 360f;
+        this.angleDeg = deg;
+    }
+
+    /**
      * Expose the underlying DirectionalLight so other systems (shadows, etc.) can use it.
      * @return The jme directional light
      */
@@ -137,5 +149,21 @@ public class Sun {
      */
     public void attachShadowRenderer(com.jme3.shadow.DirectionalLightShadowRenderer dlsr) {
         if (dlsr != null) dlsr.setLight(light);
+    }
+
+    public void loadTime() {
+        try (var in = new java.io.BufferedReader(new java.io.FileReader("worlds/my_world/sun_time.txt"))) {
+            angleDeg = Float.parseFloat(in.readLine());
+        } catch (Exception e) {
+            // file doesn’t exist yet → ignore
+        }
+    }
+
+    public void saveTime() {
+        try (var out = new java.io.PrintWriter("worlds/my_world/sun_time.txt")) {
+            out.println(angleDeg);
+        } catch (Exception e) {
+            System.err.println("Sun: could not save time: " + e.getMessage());
+        }
     }
 }
