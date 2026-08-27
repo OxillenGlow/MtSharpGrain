@@ -1,7 +1,8 @@
 package com.mtsharpgrain.js.mainthread;
 
-import java.util.Map;
+import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,10 +18,9 @@ public final class TimerManager {
 
     public TimerManager(ModBridge bridge) {
         this.bridge = bridge;
-        // Single-thread scheduler to avoid contention
         this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(r, "TimerScheduler-" + nextTimerId.getAndIncrement());
-            thread.setDaemon(true); // Don't block JVM shutdown
+            thread.setDaemon(true);
             return thread;
         });
     }
@@ -29,8 +29,9 @@ public final class TimerManager {
      * Schedule a repeating callback (setInterval).
      * @param callback JS function to call
      * @param intervalMs Interval in milliseconds
-     * @return Timer ID (for clearInterval)
+     * @return timerId (for clearInterval)
      */
+    @HostAccess.Export
     public long setInterval(Value callback, long intervalMs) {
         long timerId = nextTimerId.getAndIncrement();
         ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(
@@ -53,8 +54,9 @@ public final class TimerManager {
      * Schedule a one-time callback (setTimeout).
      * @param callback JS function to call
      * @param delayMs Delay in milliseconds
-     * @return Timer ID
+     * @return timerId id of timer for closing
      */
+    @HostAccess.Export
     public long setTimeout(Value callback, long delayMs) {
         long timerId = nextTimerId.getAndIncrement();
         ScheduledFuture<?> future = scheduler.schedule(
@@ -76,6 +78,7 @@ public final class TimerManager {
      * Cancel a timer (clearInterval/clearTimeout).
      * @param timerId ID returned by setInterval/setTimeout
      */
+    @HostAccess.Export
     public void clearInterval(long timerId) {
         ScheduledFuture<?> future = activeTimers.remove(timerId);
         if (future != null) {
@@ -83,7 +86,6 @@ public final class TimerManager {
         }
     }
 
-    /** Shutdown all timers (called when mod unloads). */
     public void shutdown() {
         for (ScheduledFuture<?> future : activeTimers.values()) {
             future.cancel(false);
