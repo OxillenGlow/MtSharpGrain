@@ -133,10 +133,11 @@ mindmap
         Ground buildings - 0/100
         Air buildings - 1/100
         Help wanted: Add building variations
-      NPC System - 40%
-        NPC spawning fixes
+      NPC System - 70%
+        NPC spawning fixes 100%
         NPC behavior system - 20%
         NPC control scripts
+        NPC lagging 0%
     Bug Fixes & Refactoring
       Multithreading Issues
         Block placement - 90%

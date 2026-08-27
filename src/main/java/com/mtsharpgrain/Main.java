@@ -315,7 +315,7 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");
             AssetConverter.extract("/mods/simpleNPC.js", "worlds/"+world+"/mod/SimpleNPC/simpleNPC.js");
             AssetConverter.extract("/mods/TimerDemo.js", "worlds/"+world+"/mod/TimerTest/TimerDemo.js");
-            AssetConverter.extract("/mods/Delay.js", "worlds/"+world+"/mod/TimerTest2/Delay.js");
+            AssetConverter.extract("/mods/Delayed.js", "worlds/"+world+"/mod/TimerTest2/Delay.js");
            
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {
