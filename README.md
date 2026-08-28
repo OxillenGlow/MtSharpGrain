@@ -118,10 +118,6 @@ mindmap
       Fix window transparency bug
       Fix chunks zipping around bug
     Core Systems
-      Java Timed Update API - 60%
-        Replace engine Update flags
-        Mod thread performance
-        Alternative to blocking setInterval
       Physics System - 0%
         Implement as Java module
         Fix collision system
@@ -132,7 +128,7 @@ mindmap
       Randomly Spawned Buildings
         Ground buildings - 0/100
         Air buildings - 1/100
-        Help wanted: Add building variations
+        **Help wanted**: Add building, variations email me if you are a good world builder and want to help!
       NPC System - 70%
         NPC spawning fixes 100%
         NPC behavior system - 20%
@@ -146,12 +142,15 @@ mindmap
         Reduce blocks drawn
         Chrome CPU usage
       GUI Upgrade - Ongoing
+      Remove the "Update" flag stuff in JS for new, working, java timed update
+        Add API docs on that
 ```
 
 <sup>80% here means it is basically done but could be improved</sup>
 
 Done:
 
+ - Java Timed Update API, Alternative to blocking setInterval
  - Mod blocks with a Matrix API 70%
  - Minimize mod refresh rate to speed up main thread 90%
  - remove mod thread from main thread. 90% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754))
