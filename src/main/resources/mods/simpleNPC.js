@@ -70,9 +70,14 @@
       mkRectAttached(main, mainName, "mass", 0, 0, 0, massSize, [0.2,0.9,0.5], parts);
       mkRectAttached(main, mainName, "eye", 0, 0.35, 0.2, eyeSize, [0,0,0], parts);
     } else {
-      const bodySize=[0.6,0.4,0.6]; const p=Scene.createRectangle(mainName+":body", bodySize[0], bodySize[1], bodySize[2]);
-      Scene.setColor(p,1,1,1,1); Scene.attachChild(main,p); Scene.setRelativePosition(p,0,0,0); parts.push(p);
-      partToMain[p]=mainName; partToMain[mainName+":body"]=mainName;
+      const bodySize=[0.6,0.4,0.6]; 
+      const p=Scene.createRectangle(mainName+":body", bodySize[0], bodySize[1], bodySize[2]);
+      Scene.setColor(p,1,1,1,1); // makes it white
+      Scene.attachChild(main,p); // attaches
+      Scene.setRelativePosition(p,0,0,0); // moves it to center
+      parts.push(p);
+      partToMain[p]=mainName; 
+      partToMain[mainName+":body"]=mainName;
     }
 
     const ck = chunkOf(x,y,z).key;
