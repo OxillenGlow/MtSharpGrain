@@ -1,10 +1,15 @@
 (function(){
   const MOD = "simple_npcs";
   let npcs = {}, partToMain = {}, chunkCounts = {}, nextId = 1;
-  let kills = 0, accSpawn = 0, guiMsg = null, guiExpire = 0;
+  let kills = 0, guiMsg = null, guiExpire = 0;
   // occupancy grid per 10x10 area so we don't spawn more than one per 10x10
   const gridSize = 10;
   const gridOccupancy = {}; // key = gx+","+gz -> mainName
+
+  // Timer IDs for cleanup (optional, but good practice)
+  let spawnTimerId = null;
+  let movementTimerId = null;
+  let lastMovementTime = 0;
 
   // load saved kills
   try{ const s = Data.get("kills_v1"); if(s) kills = parseInt(JSON.parse(s).kills||0,10) || 0; }catch(e){ kills = 0; }
@@ -35,10 +40,17 @@
     return Scene.createNode(mainName);
   }
 
-  // better surface finder using explicit z param
+  // UPDATED: surfaceYAt now searches BOTH upward and downward
   function surfaceYAt(x,z, maxY){
     maxY = (typeof maxY === 'number') ? maxY : 200;
-    for(let y = maxY; y>=1; y--){ if(Block.get(x,y,z) !== 0) return y+1; }
+    // Search downward (for surface)
+    for(let y = maxY; y >= 1; y--){
+      if(Block.get(x, y, z) !== 0) return y + 1;
+    }
+    // Search upward (for underground players)
+    for(let y = maxY; y <= maxY + 50; y++){
+      if(Block.get(x, y, z) !== 0) return y + 1;
+    }
     return null;
   }
 
@@ -70,13 +82,13 @@
       mkRectAttached(main, mainName, "mass", 0, 0, 0, massSize, [0.2,0.9,0.5], parts);
       mkRectAttached(main, mainName, "eye", 0, 0.35, 0.2, eyeSize, [0,0,0], parts);
     } else {
-      const bodySize=[0.6,0.4,0.6]; 
+      const bodySize=[0.6,0.4,0.6];
       const p=Scene.createRectangle(mainName+":body", bodySize[0], bodySize[1], bodySize[2]);
-      Scene.setColor(p,1,1,1,1); // makes it white
-      Scene.attachChild(main,p); // attaches
-      Scene.setRelativePosition(p,0,0,0); // moves it to center
+      Scene.setColor(p,1,1,1,1);
+      Scene.attachChild(main,p);
+      Scene.setRelativePosition(p,0,0,0);
       parts.push(p);
-      partToMain[p]=mainName; 
+      partToMain[p]=mainName;
       partToMain[mainName+":body"]=mainName;
     }
 
@@ -230,30 +242,37 @@
     updateStatsGui();
   }
 
-  let first = true;
-  Engine.onTick(function(tpf,tag){
-    accSpawn += tpf;
-    const now = Date.now();
-    if(guiMsg && now > guiExpire){ Gui.removeWord(guiMsg); guiMsg = null; }
-    // try spawn every 5 seconds
-    if(accSpawn >= 5.0){ try{ trySpawnNearPlayer(); }catch(e){console.error("Spawn error:", e); } accSpawn = 0; }
-    // smooth movement every frame
-    try{ updateMovementSmooth(tpf); }catch(e){ console.error("move smooth error:", e); }
-    if(first){ updateStatsGui(); first = false; }
-  }, "Update");
-
   // stats GUI click handler
   let statsHandle = null;
+  let first = true;
   function updateStatsGui(){
     const txt = "Kills: " + kills + " | NPCs: " + Object.keys(npcs).length + " (click to view)";
     if(statsHandle) Gui.removeWord(statsHandle);
     statsHandle = Gui.guiWord(txt, 0.02, 0.98, 0, 14, "npc_stats");
     Gui.setColor(statsHandle, 1,1,0.6,1);
   }
-  updateStatsGui();
 
+  // === UPDATED: Replace Engine.onTick("Update") with setInterval ===
+  // Spawn NPCs every 5 seconds (no longer tied to frame rate)
+  Engine.setInterval(function() {
+    try { trySpawnNearPlayer(); } catch(e) { console.error("Spawn error:", e); }
+  }, 5000);
+
+  // Movement still uses per-frame updates (needs tpf for smoothness)
+  // But now runs on mod thread via setInterval with manual tpf calculation
+  let lastMovementTime = Date.now();
+  Engine.setInterval(function() {
+    const now = Date.now();
+    const tpf = (now - lastMovementTime) / 1000; // Convert ms → seconds
+    lastMovementTime = now;
+    try { updateMovementSmooth(tpf); } catch(e) { console.error("Movement error:", e); }
+    if(first) { updateStatsGui(); first = false; }
+  }, 16); // ~60 FPS (1000ms/60 ≈ 16.67ms)
+
+  // GUI click handler (unchanged)
   Engine.onTick(function(tpf, tag){
-    // when stats GUI clicked, show a transient message
+    const now = Date.now();
+    if(guiMsg && now > guiExpire){ Gui.removeWord(guiMsg); guiMsg = null; }
     if(tag === "npc_stats") showGui("Stats — Kills: " + kills + " | NPCs: " + Object.keys(npcs).length);
   }, "npc_stats");
 
