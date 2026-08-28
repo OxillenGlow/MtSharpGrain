@@ -55,11 +55,8 @@ available for MacOS, Windows, and Linux(Debian derived)
 ![](Pictures/jVS-ingame-demo.png)
 Using jVisualScript to break and place blocks (too bad i did not do a GIF)
 
-![](Pictures/CoolArtifacts.png) 
-Just interesting to see how it is loading.
-
-![](Pictures/v0.1.0-beta2.png)
-This is a picture the last version.
+![](Pictures/NewTerrain.png) 
+The latest looks of the world.
 
 ![](Pictures/Poster.png)
 Dumb poster I made.
@@ -69,6 +66,15 @@ Currently the inventory bar looks like this
 
 ![](Pictures/Hubs.png)
 Small greenhouses with grass(edible? idk yet) inside.
+
+![](Pictures/npc1.png)
+A drone?
+![](Pictures/npc2.png)
+A duck? (rover)
+![](Pictures/npc3.png)
+Anouther one.
+
+Three common NPCs (there are more!)
 
 </details>
 
