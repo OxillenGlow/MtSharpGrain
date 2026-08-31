@@ -15,6 +15,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
 import com.jme3.scene.Spatial;
+import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.util.SkyFactory;
 import com.tools.AssetConverter;
 import java.io.File;
@@ -68,6 +69,7 @@ public class Main extends SimpleApplication {
         settings.setResolution(1280, 720);
         settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
         settings.setResizable(true);
+        settings.setSamples(4);
         System.out.println("new Main");
         
         var app = new Main();

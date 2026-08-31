@@ -44,16 +44,19 @@ public class Check implements ActionListener {
         if (hit == null) return;
 
         if (BlockSelector.isChunkHit(hit)) {
+            System.out.println(System.currentTimeMillis()+ "block interaction");
+            
             // ── Hit a voxel chunk — place or remove a block as before ────────
             BlockSelection selection = blockSelector.selectionFrom(hit, leftPressed);
             if (leftPressed) {
+                System.out.println(System.currentTimeMillis()+"Placing block at " + selection + " of type:" + blockType);
                 worldAccess.setBlockAt(selection.x, selection.y, selection.z, blockType);
-                System.out.println("Placing block at " + selection + " of type:" + blockType);
             } else {
+                System.out.println(System.currentTimeMillis()+"Removing block at " + selection);
+            
                 worldAccess.removeBlockAt(selection.x, selection.y, selection.z);
-                System.out.println("Removing block at " + selection);
-            }
-        } else {
+                }
+            } else {
             // ── Hit a non-chunk spatial — fire spatial-click events to mods ──
             String hitName = BlockSelector.resolveHitName(hit);
             if (hitName != null && modPackManager != null) {

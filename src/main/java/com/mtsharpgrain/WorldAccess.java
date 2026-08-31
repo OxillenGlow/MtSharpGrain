@@ -43,12 +43,11 @@ public final class WorldAccess {
         final CompletableFuture<Boolean> result = new CompletableFuture<>();
         final long createdAt;
     
-        PendingBlockChange(int x, int y, int z, int blockId, CompletableFuture<Boolean> validation) {
+        PendingBlockChange(int x, int y, int z, int blockId) {
             this.x = x;
             this.y = y;
             this.z = z;
             this.blockId = blockId;
-            this.validation = validation;
             this.createdAt = System.currentTimeMillis();  // Record time
         }
     }
@@ -137,47 +136,26 @@ public final class WorldAccess {
      * threads; the actual world mutation is committed by
      * {@link #processPendingBlockChanges()} on the render thread.
      */
-    public CompletableFuture<Boolean> requestBlockChange(int worldX, int worldY, int worldZ, int blockId) {
-        CompletableFuture<Boolean> placeholder = new CompletableFuture<>();
-        System.out.println("REQUESTEDp2");
+    public void requestBlockChange(int worldX, int worldY, int worldZ, int blockId) {
+        System.out.println(System.currentTimeMillis()+"REQUESTEDp2");
         if (modPackManager == null) {
             System.out.println("mpmnull");
-            placeholder.complete(true);
         } else {
-            System.out.println("REQUESTEDp3");
+            System.out.println(System.currentTimeMillis()+"REQUESTEDp3");
             // dispatch the validation request off the render thread into a tiny virtual
             // thread so that any unexpected slow work inside validateBlockChangeAsync
             // cannot stall this call site.
             Thread.startVirtualThread(() -> {
-                System.out.println("virtral confirm");
-                try {
-                    CompletableFuture<Boolean> real = modPackManager.validateBlockChangeAsync(
-                            worldX, worldY, worldZ, blockId);
-                    real.whenComplete((v, ex) -> {
-                        if (ex != null) placeholder.completeExceptionally(ex);
-                        else placeholder.complete(v);
-                    });
-                } catch (Throwable t) {
-                    placeholder.completeExceptionally(t);
-                }
+                System.out.println(System.currentTimeMillis()+ "Virtual start");
+                modPackManager.validateBlockChangeAsync( worldX, worldY, worldZ, blockId);
             });
         }
         
-        System.out.println("REQUESTEDp4");
+        System.out.println(System.currentTimeMillis()+"REQUESTEDp4");
         
-        PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId, placeholder);
-
-        // Install a completion handler so we can observe the validator's outcome
-        // without ever blocking the render thread. The handler records the result
-        // into the PendingBlockChange and marks validationHandled; the render thread
-        // reads those fields later and never calls join()/get() itself.
-        placeholder.whenComplete((v, ex) -> {
-            change.validationResult = (ex == null && Boolean.TRUE.equals(v));
-            change.validationHandled = true;
-        });
+        PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId);
 
         pendingChanges.offer(change);
-        return change.result;
     }
 
     /**
@@ -185,39 +163,15 @@ public final class WorldAccess {
      * result is never applied from a mod virtual thread.
      */
     public void processPendingBlockChanges() {
-        long now = System.currentTimeMillis();
         int count = pendingChanges.size();
         for (int i = 0; i < count; i++) {
+            System.out.println(System.currentTimeMillis()+ "processing: ");
             PendingBlockChange change = pendingChanges.poll();
+            System.out.println(System.currentTimeMillis() + change.toString());
             if (change == null) {
-                System.out.println("REQUESTED change fail change: "+change);
+                System.out.println(System.currentTimeMillis()+"REQUESTED change fail change: "+change);
                 break;
             }
-
-            long elapsed = now - change.createdAt;
-            this.percent = elapsed/40;
-            if (elapsed > 4000) {  // 4 seconds
-                // If validator still hasn'percent completed, abandon it and allow GC to collect.
-                if (change.validation != null && !change.validation.isDone()) {
-                    System.out.println("REQUESTED overtime, done");
-                    change.result.complete(true);
-                    // Drop the reference to the validator future so the future and any
-                    // captured JS/Graal state can be GC'd. Mark handled so we won'percent
-                    // try to read the result later.
-                    change.validation = null;
-                    change.validationHandled = true;
-                    change.validationResult = true;
-                    
-                    continue;
-                }
-            } else {
-                // If validator hasn'percent completed yet, requeue and skip applying.
-                if (change.validation != null && !change.validation.isDone()) {
-                    pendingChanges.offer(change);
-                    continue;
-                }
-            }
-            // Determine the validation outcome without blocking the render thread.
             boolean allowed;
             if (change.validationHandled) {
                 allowed = Boolean.TRUE.equals(change.validationResult);
@@ -234,18 +188,18 @@ public final class WorldAccess {
             }
             
             if (!allowed) {
-                change.result.complete(false);
-                System.out.println("rejected");
-                continue;
+                //change.result.complete(false);
+                //System.out.println("rejected");
+                //continue;
             }
-
+        
             // DUMB PATCH, STILL NEEDS FIXING
             var pre = getBlockAt(change.x, change.y, change.z);
             if (!this.inventory.handleBlockChange(pre , change.blockId)) continue;
 
             forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
             
-            System.out.println("gona notify RM");
+            System.out.println(System.currentTimeMillis()+"gona notify RM");
             this.renderManager.onBlockChanged(change.x, change.y, change.z);
             committedChanges.offer(new int[]{change.x, change.y, change.z});
             // Notify mod pack manager of placement/destroy events (if present)
@@ -258,9 +212,7 @@ public final class WorldAccess {
                 }
             }
             change.result.complete(true);
-             
-            elapsed = 0;
-            
+            System.out.println(System.currentTimeMillis()+"Done");
         }
     }
 
@@ -273,12 +225,13 @@ public final class WorldAccess {
         return result;
     }
 
-    public CompletableFuture<Boolean> requestRemoveBlock(int worldX, int worldY, int worldZ) {
-        return requestBlockChange(worldX, worldY, worldZ, 0);
+    public void requestRemoveBlock(int worldX, int worldY, int worldZ) {
+        requestBlockChange(worldX, worldY, worldZ, 0);
     }
 
     /** Legacy game-side entry point. It intentionally does not wait. */
     public void setBlockAt(int worldX, int worldY, int worldZ, int blockId) {
+        
         requestBlockChange(worldX, worldY, worldZ, blockId);
         System.out.println("REQUESTED");
     }
