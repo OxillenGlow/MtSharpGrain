@@ -210,7 +210,7 @@ public class Inventory {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.05f);
+        gui.textSize(0.018f);
         gui.text("Inventory:", 0.05f, 0.95f, null);
 
         gui.textSize(0.016f);
@@ -224,7 +224,7 @@ public class Inventory {
         } else {
             // prepare small icon drawing parameters: left-aligned, center vertical
             gui.imageSize(0.02f, 0.02f).imageAlpha(true).imageColor(ColorRGBA.White)
-               .imageHAlign("left").imageVAlign("center");
+               .imageHAlign("left").imageVAlign("top");
 
             for (Map.Entry<Integer, Integer> entry : entries) {
                 final int blockId = entry.getKey();
@@ -255,7 +255,7 @@ public class Inventory {
                 }
                 var pointer = isSelected ? " << Selected":"";
                 gui.textColor(nameColor);
-                gui.text(blockName(blockId)+pointer, 0.05f, y, (event, arg) -> {
+                gui.text(blockName(blockId)+pointer, 0.055f, y, (event, arg) -> {
                     if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                         select(blockId);
                         System.out.println("Selected "+blockId);

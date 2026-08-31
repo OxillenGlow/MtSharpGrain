@@ -46,7 +46,7 @@ public class Master {
             // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
             modPackManager.disableAllDrawing();
             inventory.drawMini(gui);
-            //drawBreakPercentage(gui);
+            drawBreakPercentage(gui);
         } else if ("home".equals(path)) {
             modPackManager.disableAllDrawing();
             drawBGandButtons(gui);
@@ -182,7 +182,7 @@ public class Master {
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.06f);
+        gui.textSize(0.02f);
         // TODO: swap for gui.image(...) once nav-arrow assets are picked from the Hyper pack
         gui.text("Mods >", 0.95f, 0.95f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
@@ -325,10 +325,10 @@ public class Master {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.025f);
+        gui.textSize(0.018f);
         gui.text("Saved Mods:", 0.95f, 0.85f, null);
 
-        gui.textSize(0.018f);
+        gui.textSize(0.015f);
         float y = 0.80f;
         float rowSpacing = 0.03f;
 
@@ -353,12 +353,12 @@ public class Master {
     }
 
     private static void drawBreakPercentage(IGui gui) {
-        if (!(com.mtsharpgrain.WorldAccess.percent > 100) && !(com.mtsharpgrain.WorldAccess.percent <2)){
+        if (!(com.mtsharpgrain.WorldAccess.percent == 0)){
             gui.textHAlign("center");
             gui.textVAlign("top");
-            gui.textSize(0.04f);
+            gui.textSize(0.2f);
             gui.textColor(ColorRGBA.Black);
-            gui.text("[breaking/placing]"+com.mtsharpgrain.WorldAccess.percent+"%", 0.5f, 0.4f, null);
+            gui.text("[breaking/placing]"+ com.mtsharpgrain.WorldAccess.percent +"%", 0.5f, 0.4f, null);
         }
     }
 }

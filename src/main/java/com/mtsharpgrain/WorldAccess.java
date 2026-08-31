@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import com.mtsharpgrain.node.DynamicBlockRegistry;
 import com.mtsharpgrain.storage.BlockValuesStore;
+import static java.lang.System.out;
  
 
 public final class WorldAccess {
@@ -24,7 +25,7 @@ public final class WorldAccess {
     private Inventory inventory;
     private final ConcurrentLinkedQueue<PendingBlockChange> pendingChanges = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<int[]> committedChanges = new ConcurrentLinkedQueue<>();
-    public static long percent;
+    public static int percent;
     private RenderManager renderManager;
     private final Path worldFolderPath;
     
@@ -137,72 +138,76 @@ public final class WorldAccess {
      * {@link #processPendingBlockChanges()} on the render thread.
      */
     public void requestBlockChange(int worldX, int worldY, int worldZ, int blockId) {
-        System.out.println(System.currentTimeMillis()+"REQUESTEDp2");
         if (modPackManager == null) {
-            System.out.println("mpmnull");
-        } else {
-            System.out.println(System.currentTimeMillis()+"REQUESTEDp3");
-            // dispatch the validation request off the render thread into a tiny virtual
-            // thread so that any unexpected slow work inside validateBlockChangeAsync
-            // cannot stall this call site.
-            Thread.startVirtualThread(() -> {
-                System.out.println(System.currentTimeMillis()+ "Virtual start");
-                modPackManager.validateBlockChangeAsync( worldX, worldY, worldZ, blockId);
-            });
+            // No validation available – add change immediately
+            pendingChanges.offer(new PendingBlockChange(worldX, worldY, worldZ, blockId));
+            return;
         }
-        
-        System.out.println(System.currentTimeMillis()+"REQUESTEDp4");
-        
-        PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId);
 
-        pendingChanges.offer(change);
-    }
+        // Dispatch validation request off the render thread.
+        Thread.startVirtualThread(() -> {
+            CompletableFuture<Boolean> validationFuture =
+                modPackManager.validateBlockChangeAsync(worldX, worldY, worldZ, blockId);
+
+            PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId);
+            change.validation = validationFuture;
+
+            // Attach handler to mark handled/result when future completes
+            validationFuture.whenComplete((result, ex) -> {
+                change.validationHandled = true;
+                change.validationResult = (ex == null) && Boolean.TRUE.equals(result);
+            });
+
+            pendingChanges.offer(change);
+        });
+}
 
     /**
      * Commits validation-complete changes on the render thread. A validator
      * result is never applied from a mod virtual thread.
      */
     public void processPendingBlockChanges() {
-        int count = pendingChanges.size();
-        for (int i = 0; i < count; i++) {
-            System.out.println(System.currentTimeMillis()+ "processing: ");
-            PendingBlockChange change = pendingChanges.poll();
-            System.out.println(System.currentTimeMillis() + change.toString());
-            if (change == null) {
-                System.out.println(System.currentTimeMillis()+"REQUESTED change fail change: "+change);
-                break;
-            }
-            boolean allowed;
-            if (change.validationHandled) {
-                allowed = Boolean.TRUE.equals(change.validationResult);
-            } else if (change.validation != null && change.validation.isDone()) {
-                // Safety: getNow never blocks.
-                try {
-                    allowed = change.validation.getNow(false);
-                } catch (Throwable t) {
-                    allowed = false;
-                }
-            } else {
-                // No validator present (cleared on timeout) -> treat as rejected.
-                allowed = false;
-            }
-            
-            if (!allowed) {
-                //change.result.complete(false);
-                //System.out.println("rejected");
-                //continue;
-            }
-        
-            // DUMB PATCH, STILL NEEDS FIXING
-            var pre = getBlockAt(change.x, change.y, change.z);
-            if (!this.inventory.handleBlockChange(pre , change.blockId)) continue;
+        int total = pendingChanges.size();
+        if (total == 0) {
+            percent = 0;
+            return;
+        }
 
-            forceSetBlockAt(change.x, change.y, change.z, change.blockId);// simple dumb patch
-            
-            System.out.println(System.currentTimeMillis()+"gona notify RM");
+        // Peek at the head of the queue without removing it.
+        // If it is not ready, we break and return immediately.
+        for (var change: pendingChanges) {
+            if (change == null) continue;
+
+            percent = (int) ((System.currentTimeMillis() - change.createdAt)/20);
+            // Determine if this change is ready to be processed without blocking
+            boolean ready = percent > 100;
+            out.println(percent);
+            if (!ready) {
+                continue;
+            }
+
+            // Remove it now that it's ready
+            pendingChanges.poll();
+
+            // Figure out whether the change is allowed
+            boolean allowed = determineAllowed(change);
+
+            if (!allowed) {
+                change.result.complete(false);
+                continue;
+            }
+
+            // Inventory check (existing dumb patch)
+            var pre = getBlockAt(change.x, change.y, change.z);
+            if (!this.inventory.handleBlockChange(pre, change.blockId)) {
+                change.result.complete(false);
+                continue;
+            }
+
+            forceSetBlockAt(change.x, change.y, change.z, change.blockId);
             this.renderManager.onBlockChanged(change.x, change.y, change.z);
             committedChanges.offer(new int[]{change.x, change.y, change.z});
-            // Notify mod pack manager of placement/destroy events (if present)
+
             if (modPackManager != null) {
                 try {
                     String ev = (change.blockId == 0) ? "DESTROYED" : "PLACED";
@@ -211,8 +216,55 @@ public final class WorldAccess {
                     System.err.println("[WorldAccess] notifyBlockEvent failed: " + t.getMessage());
                 }
             }
+            percent=0;
             change.result.complete(true);
-            System.out.println(System.currentTimeMillis()+"Done");
+        }
+
+        // Reset percent after this processing pass
+        percent = 0;
+    }
+
+    /**
+     * Returns true if the change's validation has completed or the timeout
+     * of 2 seconds has elapsed, meaning we can decide without blocking.
+     */
+    private boolean isChangeReady(PendingBlockChange change) {
+        if (change.validation == null) {
+            // No validator – treat as rejected (original behavior) but ready to process
+            return true;
+        }
+        if (change.validationHandled) {
+            return true;
+        }
+        // If not handled, check if the future is done
+        if (change.validation.isDone()) {
+            return true;
+        }
+        // If future not done, check if 2 seconds have passed since creation
+        long elapsed = System.currentTimeMillis() - change.createdAt;
+        return elapsed >= 2000;
+    }
+
+    /**
+     * Determines the allowed flag without blocking. Assumes the change is ready.
+     */
+    private boolean determineAllowed(PendingBlockChange change) {
+        if (change.validation == null) {
+            return false; // original logic treated no validator as rejected
+        }
+        if (change.validationHandled) {
+            return Boolean.TRUE.equals(change.validationResult);
+        }
+        // If not handled but ready, then either future is done or timeout exceeded.
+        if (change.validation.isDone()) {
+            try {
+                return change.validation.getNow(false);
+            } catch (Throwable t) {
+                return false;
+            }
+        } else {
+            // Timeout exceeded – accept by default
+            return true;
         }
     }
 
