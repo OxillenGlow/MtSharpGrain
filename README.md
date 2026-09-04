@@ -112,8 +112,8 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 My todo/doing list:
 
-```mermaid
-mindmap
+```
+map
   root((To Do List))
     Rendering & Graphics
       Shadow renderer bug (likely jMonkeyEngine issue)
@@ -141,12 +141,10 @@ mindmap
         NPC control scripts
         NPC lagging 0%
     Bug Fixes & Refactoring
-      Multithreading Issues
-        Block placement - 90%
-        Other potential problems
       Performance Optimization
         Reduce blocks drawn
-        Chrome CPU usage
+        call processPendingBlockChanges() on separate thread and then use appenque.
+        Remove all the useless rendermanager callings, only world access functions are needed now to edit block.
       GUI Upgrade - Ongoing
       Remove the "Update" flag stuff in JS for new, working, java timed update
         Add API docs on that
