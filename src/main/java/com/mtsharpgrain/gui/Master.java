@@ -2,25 +2,26 @@ package com.mtsharpgrain.gui;
 
 import com.jme.igui.IGui;
 import com.jme.igui.IGuiMouseEvent;
+import com.jme.igui.extras.IGuiInputFields;
+import com.jme.igui.extras.IGuiInputFieldsAppState;
+import com.jme3.app.state.AppStateManager;
+import com.jme3.input.InputManager;
+import com.jme3.input.KeyInput;
+import com.jme3.input.event.KeyInputEvent;
 import com.jme3.math.ColorRGBA;
 import com.mtsharpgrain.node.BlockRegistry;
 import com.mtsharpgrain.node.BlockRegistry.BlockDef;
 import com.mtsharpgrain.Main;
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
  * @author oxillenglow
  */
 public class Master {
-
-    static boolean mouseHover = false;
-    static boolean mousePressedL = false;
-
     // amount of block types (0..x inclusive => x+1 buttons)
     public static int x = 10;
     // currently selected block type
@@ -28,18 +29,50 @@ public class Master {
 
     // lower bound of the currently displayed page (10 numbers shown: pageStart..pageStart+9)
     public static int pageStart = 1;
+    
+    public static IGuiInputFields inputPlugin;
+    
+    public static Console console = new Console(20); // show up to 20 lines
+    
+    public static void init(IGui gui, InputManager inputManager, AppStateManager stateManager){
+        
+        Master.inputPlugin = IGuiInputFieldsAppState.newPlugin(gui, inputManager, stateManager);
+        
+        
+        console.setCommandHandler((String cmd) -> {
+            // Example: handle built‑in commands, or forward to a game shell
+            switch (cmd) {
+                case "/clear":
+                    console.getLines().clear();
+                    break;
+                case "/help":
+                    console.println("Commands: /clear, /help, !break x y z, !place x y z id, (any other will be ignored)");
+                    break;
+                default:
+                    // You could also write the command to System.in if you have a separate thread reading it
+                    // For now, just echo "unknown"
+                    console.println("Unknown command: " + cmd);
+                    break;
+            }
+        });
+        
+        // Force output to be captured
+        System.out.println("=== CONSOLE CAPTURE ACTIVE ===");
+        // Also manually add a line to the console (bypassing System.out)
+        console.println("Console ready");
+        console.println("Type /help for commands");
+    }
 
     public static void tic(IGui gui, ModPackManager modPackManager, Inventory inventory) {
 
         gui.push(false);
         gui.textFont("Interface/Fonts/Console.fnt");
 
-        gui.textSize(0.02f);
-        gui.textColor(mousePressedL ? ColorRGBA.Green : ColorRGBA.Blue);
-        gui.textHAlign("left");
+        gui.textSize(0.016f);
+        gui.textHAlign("center");
         gui.textVAlign("top");
         String path = GameState.guiState;
-        
+        gui.text(path, 0.5f, 1f, false);
         
         
         if ("play".equals(path)) {
@@ -47,6 +80,7 @@ public class Master {
             modPackManager.disableAllDrawing();
             inventory.drawMini(gui);
             drawBreakPercentage(gui);
+            drawConsole(gui);
         } else if ("home".equals(path)) {
             modPackManager.disableAllDrawing();
             drawBGandButtons(gui);
@@ -54,6 +88,7 @@ public class Master {
             drawHomeNav(gui);
             drawSavedModsList(gui, modPackManager);
             inventory.draw(gui);
+            drawConsole(gui);
         } else if ("home/modview".equals(path)) {
             modPackManager.disableAllDrawing();
             gui.textFont("Interface/Fonts/Console.fnt");
@@ -306,8 +341,8 @@ public class Master {
         gui.text("-", 0.5f, 1f, null);
         gui.text("-", 0.5f, 0.0f, null);
         // ── Big Play button ──────────────────────────────────────────────────
-        gui.textColor(ColorRGBA.White);
-        gui.textSize(0.04f);
+        gui.textColor(ColorRGBA.Green);
+        gui.textSize(0.05f);
         gui.text("Press [F] to play", 0.5f, 0.5f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 GameState.guiState = "game";
@@ -360,5 +395,73 @@ public class Master {
             gui.textColor(ColorRGBA.Black);
             gui.text("[breaking/placing]"+ com.mtsharpgrain.WorldAccess.percent +"%", 0.5f, 0.4f, null);
         }
+    }
+   
+    private static void drawConsole(IGui gui) {
+        if (inputPlugin == null) {
+            System.err.println("drawConsole: inputPlugin is null – call newPlugin() first!");
+            return;
+        }
+
+        // --- 1. Background panel (optional) ---
+        gui.zIndex(10000f);
+        gui.textHAlign("right");
+        gui.textVAlign("top");
+        gui.textSize(0.018f);
+        gui.textColor(new ColorRGBA(0.1f, 0.1f, 0.1f, 0.7f));
+        gui.text("                                                            ", 0.70f, 0.02f, null);
+
+        // --- 2. History lines ---
+        gui.textHAlign("right");
+        gui.textVAlign("top");
+        gui.textSize(0.01f);
+        gui.textColor(ColorRGBA.Green);
+
+        Object[] lines = console.getLines().toArray();
+        float y = 0.4f;
+        for (int i = lines.length - 1; i >= 0 && y > 0.10f; i--) {
+            gui.text(lines[i].toString(), 1f, y, false);
+            y -= 0.1f;
+        }
+
+        // --- 3. Input field using the plugin ---
+        gui.textHAlign("right");
+        gui.textVAlign("bottom");
+        gui.textSize(0.025f);
+        gui.textColor(ColorRGBA.Cyan);
+
+        // Key handler (updates the console buffer)
+        Consumer<KeyInputEvent> keyHandler = e -> {
+            if (!e.isPressed()) return;
+            int keyCode = e.getKeyCode();
+            if (keyCode == KeyInput.KEY_RETURN || keyCode == KeyInput.KEY_NUMPADENTER) {
+                console.submit();
+                return;
+            }
+            char c = e.getKeyChar();
+            String cur = console.getCurrentInput();
+            if (c == '\b') {
+                if (cur.length() > 0)
+                    console.setCurrentInput(cur.substring(0, cur.length() - 1));
+            } else if (c >= 32 && c < 127) {
+                console.setCurrentInput(cur + c);
+            }
+        };
+
+        // The plugin's input() method is called each frame.
+        // persistent=false ensures old instances are cleaned up automatically.
+        inputPlugin.input("Hover your mouse above and enter["+console.getCurrentInput()+"]",   // displayed text
+            0.95f, 0.5f,                // position (right, bottom)
+            (mouse, bool) -> {
+                    if (mouse == IGuiMouseEvent.MOUSE_IN){
+                        return true;
+                    }
+                    return false;
+                },        // mouse event – we just need mouseOver
+            keyHandler,                  // key handler
+            false                // persistent = false
+        );
+
+        gui.zIndex(0f);
     }
 }

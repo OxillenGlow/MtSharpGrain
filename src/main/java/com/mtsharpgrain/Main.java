@@ -214,7 +214,7 @@ public class Main extends SimpleApplication {
         
         flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
         
-        Thread vThread = Thread.ofVirtual().start(() -> {
+        this.vThread = Thread.ofVirtual().start(() -> {
             while(true){
                 worldAccess.processPendingBlockChanges();
                 try {
@@ -222,6 +222,8 @@ public class Main extends SimpleApplication {
                 } catch (Exception e) {}
             }
         });
+        
+        com.mtsharpgrain.gui.Master.init(gui,inputManager,stateManager);
         
     }
 

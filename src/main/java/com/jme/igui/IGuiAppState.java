@@ -649,9 +649,4 @@ public class IGuiAppState extends BaseAppState implements IGui,ActionListener{
     public float getTextLineHeight(String text) {
         return toVirtualSize(getBitmapText(text).getLineHeight(),false);
     }
-
-
-
-
-
 }

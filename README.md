@@ -123,6 +123,9 @@ map
       Increase render distance
       Fix window transparency bug
       Fix chunks zipping around bug
+    GUI
+      GUI Upgrade - Ongoing
+      
     Core Systems
       Physics System - 0%
         Implement as Java module
@@ -144,8 +147,7 @@ map
       Performance Optimization
         Reduce blocks drawn
         call processPendingBlockChanges() on separate thread and then use appenque.
-        Remove all the useless rendermanager callings, only world access functions are needed now to edit block.
-      GUI Upgrade - Ongoing
+        Remove all the useless rendermanager callings, only world access functions are needed now to edit block.    
       Remove the "Update" flag stuff in JS for new, working, java timed update
         Add API docs on that
 ```
