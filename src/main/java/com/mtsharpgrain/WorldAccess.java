@@ -76,7 +76,6 @@ public final class WorldAccess {
         this.inventory = inventory;
     }
     
-    
 
     public BufferedChunk ensureChunk(ChunkPos pos){
         BufferedChunk c = Useful.get(pos);
@@ -143,23 +142,19 @@ public final class WorldAccess {
             pendingChanges.offer(new PendingBlockChange(worldX, worldY, worldZ, blockId));
             return;
         }
+        CompletableFuture<Boolean> validationFuture =
+            modPackManager.validateBlockChangeAsync(worldX, worldY, worldZ, blockId);
 
-        // Dispatch validation request off the render thread.
-        Thread.startVirtualThread(() -> {
-            CompletableFuture<Boolean> validationFuture =
-                modPackManager.validateBlockChangeAsync(worldX, worldY, worldZ, blockId);
+        PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId);
+        change.validation = validationFuture;
 
-            PendingBlockChange change = new PendingBlockChange(worldX, worldY, worldZ, blockId);
-            change.validation = validationFuture;
-
-            // Attach handler to mark handled/result when future completes
-            validationFuture.whenComplete((result, ex) -> {
-                change.validationHandled = true;
-                change.validationResult = (ex == null) && Boolean.TRUE.equals(result);
-            });
-
-            pendingChanges.offer(change);
+        // Attach handler to mark handled/result when future completes
+        validationFuture.whenComplete((result, ex) -> {
+            change.validationHandled = true;
+            change.validationResult = (ex == null) && Boolean.TRUE.equals(result);
         });
+
+        pendingChanges.offer(change);
 }
 
     /**
@@ -203,21 +198,23 @@ public final class WorldAccess {
                 change.result.complete(false);
                 continue;
             }
+            
+            Thread.ofVirtual().start(() -> {
+                forceSetBlockAt(change.x, change.y, change.z, change.blockId);
+                this.renderManager.onBlockChanged(change.x, change.y, change.z);
+                committedChanges.offer(new int[]{change.x, change.y, change.z});
 
-            forceSetBlockAt(change.x, change.y, change.z, change.blockId);
-            this.renderManager.onBlockChanged(change.x, change.y, change.z);
-            committedChanges.offer(new int[]{change.x, change.y, change.z});
-
-            if (modPackManager != null) {
-                try {
-                    String ev = (change.blockId == 0) ? "DESTROYED" : "PLACED";
-                    modPackManager.notifyBlockEvent(change.x, change.y, change.z, change.blockId, ev);
-                } catch (Throwable t) {
-                    System.err.println("[WorldAccess] notifyBlockEvent failed: " + t.getMessage());
+                if (modPackManager != null) {
+                    try {
+                        String ev = (change.blockId == 0) ? "DESTROYED" : "PLACED";
+                        modPackManager.notifyBlockEvent(change.x, change.y, change.z, change.blockId, ev);
+                    } catch (Throwable t) {
+                        System.err.println("[WorldAccess] notifyBlockEvent failed: " + t.getMessage());
+                    }
                 }
-            }
-            percent=0;
-            change.result.complete(true);
+                percent=0;
+                change.result.complete(true);
+            });
         }
 
         // Reset percent after this processing pass

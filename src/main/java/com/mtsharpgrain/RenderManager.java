@@ -146,7 +146,7 @@ public final class RenderManager {
                     pendingChunks.add(pos);
                     Spatial newMesh = ChunkMeshBuilder.build(pos, chunk, assetManager);
                     app.enqueue(() -> {
-                        if (!renderMap.containsKey(pos)) {  // NEW: unloaded while we were building — don't reattach
+                        if (!renderMap.containsKey(pos)) {
                             pendingChunks.remove(pos);
                             return null;
                         }
@@ -178,7 +178,6 @@ public final class RenderManager {
         });
     }
 
-    // New method to handle block changes and trigger rebuilds
     public void onBlockChanged(int worldX, int worldY, int worldZ) {
         ChunkPos chunkPos = worldToChunk(worldX, worldY, worldZ);
         markDirty(chunkPos);

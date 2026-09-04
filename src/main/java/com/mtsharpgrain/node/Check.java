@@ -7,6 +7,7 @@ import com.mtsharpgrain.BlockSelector;
 import com.mtsharpgrain.WorldAccess;
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import static com.mtsharpgrain.gui.Master.blockType;
+import static java.lang.System.out;
 
 public class Check implements ActionListener {
 
@@ -35,11 +36,12 @@ public class Check implements ActionListener {
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
+        out.println(System.currentTimeMillis() + "------> Click detected" + name + isPressed + tpf);
         if (!isPressed) return;
         if (!com.mtsharpgrain.gui.GameState.isOkPlace()) return;
 
         boolean leftPressed = MOUSE_LEFT.equals(name);
-
+        out.println(System.currentTimeMillis() +
         CollisionResult hit = blockSelector.raycast();
         if (hit == null) return;
 
@@ -51,12 +53,13 @@ public class Check implements ActionListener {
             if (leftPressed) {
                 System.out.println(System.currentTimeMillis()+"Placing block at " + selection + " of type:" + blockType);
                 worldAccess.setBlockAt(selection.x, selection.y, selection.z, blockType);
+                System.out.println(System.currentTimeMillis()+"Finished: " + selection + " of type:" + blockType);
             } else {
                 System.out.println(System.currentTimeMillis()+"Removing block at " + selection);
-            
                 worldAccess.removeBlockAt(selection.x, selection.y, selection.z);
-                }
-            } else {
+                System.out.println(System.currentTimeMillis()+"Finished: " + selection + " of type:" + blockType);
+            }
+        } else {
             // ── Hit a non-chunk spatial — fire spatial-click events to mods ──
             String hitName = BlockSelector.resolveHitName(hit);
             if (hitName != null && modPackManager != null) {

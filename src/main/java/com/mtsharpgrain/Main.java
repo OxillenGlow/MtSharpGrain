@@ -23,16 +23,12 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.js.JsChunkGenerator;
-import com.mtsharpgrain.js.mainthread.JSModifier;
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.mainthread.EngineAccess;
-import com.mtsharpgrain.jvs.ScriptRunner;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
 import com.mtsharpgrain.gui.Inventory;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,6 +47,7 @@ public class Main extends SimpleApplication {
     private EngineAccess engineAccess;
     private int modLastTick; // time since mods last tick in milliseconds 
     public String worldname; // world name
+    private Thread vThread;
 
     // Single JsChunkGenerator instance for the whole app. It owns one GraalVM
     // Context + one dedicated "js-chunk-gen" thread, and is shared by both
@@ -216,6 +213,16 @@ public class Main extends SimpleApplication {
         check.setModPackManager(modPackManager); // enable spatial-click events now that mods are loaded
         
         flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
+        
+        Thread vThread = Thread.ofVirtual().start(() -> {
+            while(true){
+                worldAccess.processPendingBlockChanges();
+                try {
+                    Thread.sleep(200);
+                } catch (Exception e) {}
+            }
+        });
+        
     }
 
     @Override
@@ -236,10 +243,6 @@ public class Main extends SimpleApplication {
         }
         
         com.mtsharpgrain.gui.Master.tic(gui, modPackManager, inventory);// just noticed tic is misspelled! wont fix
-        // Validation futures are completed by mod virtual threads. World
-        // mutation stays on this render thread and therefore remains safe for
-        // jME and the existing chunk data structures.
-        worldAccess.processPendingBlockChanges();
         for (int[] change : worldAccess.drainCommittedChanges()) {
             renderManagermg.onBlockChanged(change[0], change[1], change[2]);
         }
@@ -296,6 +299,7 @@ public class Main extends SimpleApplication {
                 System.err.println("[Main] chunkGen.close() failed to close cleanly: " + e.getMessage());
             }
         }
+        this.vThread.interrupt();
         sunObject.saveTime();
         if (modPackManager != null) modPackManager.onClose();
         if (inventory != null) inventory.onClose();
