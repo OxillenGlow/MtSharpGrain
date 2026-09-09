@@ -41,6 +41,7 @@ public class Master {
         
         
         console.setCommandHandler((String cmd) -> {
+            System.out.println(cmd);
             switch (cmd) {
                 case "/clear":
                     console.getLines().clear();
@@ -52,8 +53,7 @@ public class Master {
                     break;
                 default:
                     break;
-            }
-            System.out.println(cmd);
+            } 
         });
         
         // Force output to be captured
@@ -345,13 +345,7 @@ public class Master {
         // ── Big Play button ──────────────────────────────────────────────────
         gui.textColor(ColorRGBA.Green);
         gui.textSize(0.05f);
-        gui.text("Press [F] to play", 0.5f, 0.5f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                GameState.guiState = "game";
-                
-            }
-            return true;
-        });
+        gui.text("Press [F] to play", 0.5f, 0.5f, false);
 
         gui.pop();
     }
@@ -399,29 +393,47 @@ public class Master {
         }
     }
     
+    static boolean showTerminal = true;
+    
     private static void drawConsole(IGui gui) {
+        gui.imageColor(ColorRGBA.Black);
+        gui.textHAlign("right");
+        gui.textVAlign("top");
+        gui.textSize(0.02f);
+        gui.zIndex(9999999);
+        var terminalbtn = showTerminal? "[X]": ("play".equals(GameState.guiState))?"":"[<_]";
+        gui.text(terminalbtn, 1f, 0.4f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                showTerminal = !showTerminal;
+            }
+            return true;
+        });
+        gui.zIndex(0);
+        if (!showTerminal) return;
         if (inputPlugin == null) {
             System.err.println("drawConsole: inputPlugin is null – call newPlugin() first!");
             return;
         }
         // --- 2. History lines ---
-        gui.textHAlign("right");
+        gui.textHAlign("left");
         gui.textVAlign("bottom");
-        gui.textSize(0.015f);
+        gui.textSize(0.01f);
         gui.textColor(ColorRGBA.Green);
 
         Object[] lines = console.getLines().toArray();
-        float y = 0f;
-        for (int i = lines.length - 1; i >= 0 && y < 0.5f; i--) {
-            gui.text(lines[i].toString().substring(0, 50), 0.5f, y, false);
-            y += 0.1f;
+        float y = 0.07f;
+        for (int i = lines.length - 1; i >= 0 && y < 0.4f; i--) {
+            String line = lines[i].toString();
+            int endIndex = Math.min(50, line.length());
+            gui.text(line.substring(0, endIndex), 0.65f, y, false);
+            y += 0.025f;
         }
 
         // --- 3. Input field using the plugin ---
         gui.textHAlign("left");
         gui.textVAlign("bottom");
-        gui.textSize(0.025f);
-        gui.textColor(ColorRGBA.Cyan);
+        gui.textSize(0.04f);
+        gui.textColor(ColorRGBA.Yellow);
 
         // Key handler (updates the console buffer)
         Consumer<KeyInputEvent> keyHandler = e -> {
@@ -441,10 +453,10 @@ public class Master {
             }
         };
 
-        var flash = (Master.in && (System.currentTimeMillis() / 500) % 2 == 1) ? ">" : "";
+        var flash = (Master.in && (System.currentTimeMillis() / 200) % 2 == 1) ? ">" : "";
 
         inputPlugin.input("_____________________________________",
-            0.5f, 0.05f,
+            0.65f, 0.023f,
             (mouse, bool) -> {
                     if (mouse == IGuiMouseEvent.MOUSE_IN){
                         in = true;
@@ -456,11 +468,13 @@ public class Master {
                 keyHandler,
             false
         );
+        
+        gui.textSize(0.015f);
 
-        gui.text("YOU:"+console.getCurrentInput() + flash, 0.5,0.05, false);
-        gui.imageSize(0.5f, 0.5f).imageAlpha(true).imageColor(ColorRGBA.Gray).imageHAlign("left").imageVAlign("top");
+        gui.text("YOU:"+console.getCurrentInput() + flash, 0.65f,0.03f, false);
+        gui.imageSize(0.38f, 0.4f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("left").imageVAlign("top");
 
-        gui.image("/cc0/glass.png",0.5f,0.5f);
+        gui.image("/cc0/Console.png",0.62f,0.4f);
         gui.zIndex(0f);
     }
 }

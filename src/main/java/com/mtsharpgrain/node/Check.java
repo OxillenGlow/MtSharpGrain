@@ -36,16 +36,11 @@ public class Check implements ActionListener {
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        out.println(System.currentTimeMillis() + "------> Click detected" + name + isPressed + tpf);
         if (!isPressed) return;
-        if (!com.mtsharpgrain.gui.GameState.isOkPlace()){
-            out.println(System.currentTimeMillis() +"ignored b/c not in \"play\" state");
-            return;
-        }
+        if (!com.mtsharpgrain.gui.GameState.isOkPlace()) return;
 
         boolean leftPressed = MOUSE_LEFT.equals(name);
         CollisionResult hit = blockSelector.raycast();
-        out.println(System.currentTimeMillis() + "Collision detection finished");
         
         if (hit == null) return;
 

@@ -1,6 +1,7 @@
 package com.mtsharpgrain.gui;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
@@ -10,41 +11,57 @@ public class Console {
     private final ConcurrentLinkedQueue<String> lines = new ConcurrentLinkedQueue<>();
     private final StringBuilder currentInput = new StringBuilder();
     private Consumer<String> commandHandler = null;
+    
+    private final PrintStream originalOut;
+    private final PrintStream originalErr;
 
     public Console(int maxLines) {
         this.maxLines = maxLines;
+        this.originalOut = System.out;
+        this.originalErr = System.err;
         redirectSystemStreams();
     }
 
-    /** Redirect System.out and System.err to our own PrintStreams */
     private void redirectSystemStreams() {
-        PrintStream outStream = new PrintStream(new ConsoleOutputStream(false));
-        PrintStream errStream = new PrintStream(new ConsoleOutputStream(true));
+        PrintStream outStream = new PrintStream(new TeeOutputStream(false, originalOut));
+        PrintStream errStream = new PrintStream(new TeeOutputStream(true, originalErr));
         System.setOut(outStream);
         System.setErr(errStream);
     }
 
-    /** Inner stream that captures each line and adds it to the queue */
-    private class ConsoleOutputStream extends ByteArrayOutputStream {
+    /** OutputStream that writes to both original stream and captures lines */
+    private class TeeOutputStream extends OutputStream {
         private final boolean isError;
+        private final PrintStream originalStream;
+        private final StringBuilder lineBuffer = new StringBuilder();
 
-        ConsoleOutputStream(boolean isError) {
+        TeeOutputStream(boolean isError, PrintStream originalStream) {
             this.isError = isError;
+            this.originalStream = originalStream;
         }
 
         @Override
-        public void flush() {
-            String line = toString().trim();
-            if (!line.isEmpty()) {
-                // Optionally prepend "[ERR] " for error lines
-                if (isError) line = "[ERR] " + line;
-                addLine(line);
+        public void write(int b) throws IOException {
+            char c = (char) b;
+            
+            // Always write to original stream immediately
+            originalStream.write(b);
+            originalStream.flush();
+            
+            // Buffer for line capture
+            if (c == '\n') {
+                String line = lineBuffer.toString().trim();
+                if (!line.isEmpty()) {
+                    if (isError) line = "[ERR] " + line;
+                    addLine(line);
+                }
+                lineBuffer.setLength(0);
+            } else {
+                lineBuffer.append(c);
             }
-            reset();
         }
     }
 
-    /** Add a line to the history, trimming if needed */
     private void addLine(String line) {
         lines.add(line);
         while (lines.size() > maxLines) {
@@ -52,16 +69,13 @@ public class Console {
         }
     }
 
-    /** Manually add a line (e.g., for command echo) */
     public void println(String line) {
         addLine(line);
     }
 
-    /** Submit the current input to the command handler */
     public void submit() {
         String cmd = currentInput.toString().trim();
         if (!cmd.isEmpty()) {
-            System.out.println("> " + cmd);      // echo the command
             if (commandHandler != null) {
                 commandHandler.accept(cmd);
             }
@@ -69,7 +83,6 @@ public class Console {
         }
     }
 
-    // Getters and setters
     public ConcurrentLinkedQueue<String> getLines() { return lines; }
     public String getCurrentInput() { return currentInput.toString(); }
     public void setCurrentInput(String s) {
