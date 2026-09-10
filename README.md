@@ -44,7 +44,7 @@ Like with mods, you can edit the way worlds are made. See [wiki on this](https:/
 
 ### [⬇️Download Now!](https://github.com/OxillenGlow/MtSharpGrain/releases)
 
-available for MacOS, Windows, and Linux(Debian derived)
+available for MacOS, Windows, and Linux
 
 ---
 
@@ -116,13 +116,11 @@ My todo/doing list:
 map
   root((To Do List))
     Rendering & Graphics
-      Shadow renderer bug (likely jMonkeyEngine issue)
+      Shadow renderer bug (Can be easily fixed by increasing shaddow map sampling but that decreases performance)
       Graphics toggle options
         View distance
         Shadows
-      Increase render distance
       Fix window transparency bug
-      Fix chunks zipping around bug
     GUI
       GUI Upgrade - Ongoing
       
@@ -144,13 +142,13 @@ map
         **Help wanted**: Add building, variations email me if you are a good world builder and want to help!
       NPC System - 70%
         NPC spawning fixes 100%
-        NPC behavior system - 20%
+        NPC behavior system - 50%
         NPC control scripts
         NPC lagging 0%
     Bug Fixes & Refactoring
       Performance Optimization
         Reduce blocks drawn
-      Remove the "Update" flag stuff in JS for new, working, java timed update.
+      Remove the "Update" flag stuff in JS for new, working, java timed update. 50%
 ```
 
 <sup>80% here means it is basically done but could be improved</sup>
