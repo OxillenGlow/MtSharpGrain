@@ -1,5 +1,6 @@
 package com.mtsharpgrain.newton;
 
+import com.jme3.input.CameraInput;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.AnalogListener;
@@ -96,10 +97,8 @@ public class FlyCamPhysicsControl extends FlyByCamera {
 
     @Override
     public void update(float tpf) {
-        if (!enabled) {
-            return;
-        }
-        // FlyByCamera has no position update loop we want here; physics owns
-        // position. Mouse/keyboard analog callbacks still handle rotation.
+        // PhysicsControl owns camera position. FlyByCamera's input callbacks
+        // still handle mouse rotation/zoom, but its position callbacks were
+        // removed from the input mappings above.
     }
 }
