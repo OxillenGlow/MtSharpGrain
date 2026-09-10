@@ -3,7 +3,6 @@ package com.mtsharpgrain.newton;
 import com.jme3.input.CameraInput;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
-import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Vector3f;
@@ -16,7 +15,13 @@ import com.jme3.input.FlyByCamera;
  */
 public class FlyCamPhysicsControl extends FlyByCamera {
     private boolean flyMode = false;
-    private final Vector3f moveForce = new Vector3f();
+    private boolean forward;
+    private boolean backward;
+    private boolean left;
+    private boolean right;
+    private boolean rise;
+    private boolean fall;
+
     private float moveSpeed = 10f;
     private float riseSpeed = 5f;
     private final PhysicsControl physicsControl;
@@ -28,9 +33,9 @@ public class FlyCamPhysicsControl extends FlyByCamera {
 
     @Override
     public void registerWithInput(InputManager inputManager) {
-        // Register mouse-look/zoom from FlyByCamera, but remove its direct
-        // movement mappings. Otherwise FlyByCamera would move cam directly
-        // while PhysicsControl also moves the CameraNode.
+        // Keep FlyByCamera's mouse-look/zoom mappings, but remove its direct
+        // movement mappings. Otherwise FlyByCamera moves cam directly while
+        // PhysicsControl also moves the CameraNode.
         super.registerWithInput(inputManager);
 
         inputManager.deleteMapping(CameraInput.FLYCAM_FORWARD);
@@ -41,8 +46,6 @@ public class FlyCamPhysicsControl extends FlyByCamera {
         inputManager.deleteMapping(CameraInput.FLYCAM_LOWER);
 
         inputManager.addMapping("physics-fly", new KeyTrigger(KeyInput.KEY_F));
-        inputManager.addListener(actionListener, "physics-fly");
-
         inputManager.addMapping("physics-forward", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("physics-backward", new KeyTrigger(KeyInput.KEY_S));
         inputManager.addMapping("physics-left", new KeyTrigger(KeyInput.KEY_A));
@@ -50,55 +53,72 @@ public class FlyCamPhysicsControl extends FlyByCamera {
         inputManager.addMapping("physics-rise", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("physics-fall", new KeyTrigger(KeyInput.KEY_LSHIFT));
 
-        inputManager.addListener(analogListener,
-                "physics-forward", "physics-backward",
-                "physics-left", "physics-right",
-                "physics-rise", "physics-fall");
+        inputManager.addListener(actionListener,
+                "physics-fly", "physics-forward", "physics-backward",
+                "physics-left", "physics-right", "physics-rise", "physics-fall");
+
+        updatePhysicsForce();
     }
-
-    private final AnalogListener analogListener = new AnalogListener() {
-        @Override
-        public void onAnalog(String name, float value, float tpf) {
-            if (!enabled) {
-                return;
-            }
-
-            moveForce.set(0, 0, 0);
-
-            Vector3f camDir = cam.getDirection().normalizeLocal();
-            Vector3f camLeft = cam.getLeft().normalizeLocal();
-
-            if (name.equals("physics-forward")) {
-                moveForce.addLocal(camDir.mult(value * moveSpeed));
-            } else if (name.equals("physics-backward")) {
-                moveForce.addLocal(camDir.mult(-value * moveSpeed));
-            } else if (name.equals("physics-left")) {
-                moveForce.addLocal(camLeft.mult(-value * moveSpeed));
-            } else if (name.equals("physics-right")) {
-                moveForce.addLocal(camLeft.mult(value * moveSpeed));
-            } else if (name.equals("physics-rise") && flyMode) {
-                moveForce.addLocal(0, value * riseSpeed, 0);
-            } else if (name.equals("physics-fall") && flyMode) {
-                moveForce.addLocal(0, -value * riseSpeed, 0);
-            }
-
-            physicsControl.forceMap.put("flyCamForce", moveForce.clone());
-        }
-    };
 
     private final ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
-            if (name.equals("physics-fly") && isPressed) {
-                flyMode = !flyMode;
+            switch (name) {
+                case "physics-fly" -> {
+                    if (isPressed) {
+                        flyMode = !flyMode;
+                        if (!flyMode) {
+                            rise = false;
+                            fall = false;
+                        }
+                    }
+                }
+                case "physics-forward" -> forward = isPressed;
+                case "physics-backward" -> backward = isPressed;
+                case "physics-left" -> left = isPressed;
+                case "physics-right" -> right = isPressed;
+                case "physics-rise" -> rise = isPressed;
+                case "physics-fall" -> fall = isPressed;
+                default -> {
+                    return;
+                }
             }
+
+            updatePhysicsForce();
         }
     };
 
+    private void updatePhysicsForce() {
+        Vector3f force = new Vector3f();
+
+        Vector3f camDir = cam.getDirection().normalize();
+        Vector3f camLeft = cam.getLeft().normalize();
+
+        if (forward) {
+            force.addLocal(camDir.mult(moveSpeed));
+        }
+        if (backward) {
+            force.subtractLocal(camDir.mult(moveSpeed));
+        }
+        if (left) {
+            force.subtractLocal(camLeft.mult(moveSpeed));
+        }
+        if (right) {
+            force.addLocal(camLeft.mult(moveSpeed));
+        }
+        if (flyMode && rise) {
+            force.addLocal(0, riseSpeed, 0);
+        }
+        if (flyMode && fall) {
+            force.addLocal(0, -riseSpeed, 0);
+        }
+
+        physicsControl.forceMap.put("flyCamForce", force);
+    }
+
     @Override
     public void update(float tpf) {
-        // PhysicsControl owns camera position. FlyByCamera's input callbacks
-        // still handle mouse rotation/zoom, but its position callbacks were
-        // removed from the input mappings above.
+        // PhysicsControl owns position. FlyByCamera's mouse input still owns
+        // rotation because its movement mappings were removed above.
     }
 }
