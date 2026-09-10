@@ -29,6 +29,7 @@ import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
 import com.mtsharpgrain.gui.Inventory;
+import com.mtsharpgrain.newton.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -120,7 +121,11 @@ public class Main extends SimpleApplication {
         flyCam.setEnabled(false);
 
         PhysicsControl physicsControl = new PhysicsControl(rootNode);
-        player.addControl(physicsControl);
+        CameraNode camNode = new CameraNode("CamNode", cam);
+        rootNode.attachChild(camNode);
+        camNode.setControlDir(ControlDirection.SpatialToCamera);
+        camNode.addControl(physicsControl);
+        physicsControl.registerCamera(cam);
         
         FlyCamPhysicsControl flyCamPhysics = new FlyCamPhysicsControl(cam, physicsControl);
         flyCamPhysics.registerWithInput(inputManager);
@@ -181,9 +186,6 @@ public class Main extends SimpleApplication {
         inventory = new Inventory("worlds/" + worldname);
         worldAccess.setInventory(inventory);
         var player = new Player();
-        player.setWorldPosition(new Vector3f(1, 1, 1));
-        // Same chunkGen + seed handed to RenderManager so streamed chunks use
-        // the identical generation pipeline as on-demand block-edit chunks.
         this.renderManagermg = new com.mtsharpgrain.RenderManager(
             worldAccess, rootNode, assetManager, player, this, chunkGen, WORLD_SEED
         );
