@@ -13,11 +13,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Simple force/velocity physics controller for a Spatial.
+ * Simple force/velocity physics controller for the camera/player.
  *
- * The spatial's local translation is kept as the absolute physics position.
- * Collision tests use the spatial's WORLD translation, which is important
- * when Main uses rootNode as a floating-origin offset.
+ * The Camera is the authoritative position. This is intentional because
+ * other systems in Main can move the camera directly (teleports, world
+ * movement, scripts, etc.). The attached Spatial is only the host for this
+ * control and is never used as the source of the physics position.
+ *
+ * Collision tests use the camera's WORLD position, so this also works with
+ * Main's floating-origin rootNode translation.
  */
 public class PhysicsControl extends AbstractControl {
     public final Map<String, Vector3f> forceMap = new HashMap<>();
@@ -29,7 +33,6 @@ public class PhysicsControl extends AbstractControl {
 
     private final Node worldNode;
     private Camera camera;
-    private boolean initialized;
 
     public PhysicsControl(Node worldNode) {
         if (worldNode == null) {
@@ -39,34 +42,31 @@ public class PhysicsControl extends AbstractControl {
     }
 
     /**
-     * Registers the camera controlled by this physics object.
-     *
-     * Main currently sets the camera spawn position after registering the
-     * control, so the first physics update copies that camera position into
-     * the CameraNode rather than snapping it to (0,0,0).
+     * Registers the camera whose position is used by this physics controller.
+     * The camera remains the authoritative position even when other game
+     * systems move it between physics updates.
      */
     public void registerCamera(Camera camera) {
         this.camera = camera;
     }
 
     /**
-     * Returns the absolute game-world position, independent of rootNode's
-     * floating-origin translation.
+     * Returns the absolute game-world position of the camera, independent of
+     * rootNode's floating-origin translation.
      */
     public Vector3f getWorldPosition() {
-        if (spatial == null) {
+        if (camera == null) {
             return new Vector3f();
         }
-        return spatial.getWorldTranslation().subtract(worldNode.getWorldTranslation());
+        return camera.getLocation().subtract(worldNode.getWorldTranslation());
     }
 
     /**
-     * CameraNode installs a CameraControl before this PhysicsControl.
-     * SpatialToCamera would otherwise overwrite Main's camera spawn position
-     * before physics gets a chance to initialize the spatial. PhysicsControl
-     * therefore owns the camera position once it is attached.
-     *
-     * Camera rotation remains owned by FlyCamPhysicsControl/input handling.
+     * CameraNode installs a CameraControl for SpatialToCamera. That control
+     * would make the node overwrite the camera every frame, which conflicts
+     * with the camera being the authoritative position for this controller.
+     * Disable only that position-sync path; FlyByCamera can still own the
+     * camera rotation.
      */
     @Override
     public void setSpatial(Spatial spatial) {
@@ -82,21 +82,15 @@ public class PhysicsControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if (spatial == null || tpf <= 0f) {
+        // Physics is camera-driven. Never fall back to spatial position.
+        if (camera == null || tpf <= 0f) {
             return;
         }
 
-        // Main calls cam.setLocation(spawn) after the CameraNode/control is
-        // created. Copy that initial render-space position into the spatial
-        // before applying any physics.
-        if (!initialized) {
-            if (camera != null) {
-                Vector3f cameraWorld = camera.getLocation();
-                Vector3f origin = worldNode.getWorldTranslation();
-                spatial.setLocalTranslation(cameraWorld.subtract(origin));
-            }
-            initialized = true;
-        }
+        // Read the camera at the start of every physics update. This picks up
+        // movement performed by Main, scripts, teleports, etc. since the last
+        // physics tick.
+        Vector3f cameraPosition = camera.getLocation().clone();
 
         Vector3f totalForce = new Vector3f();
         for (Vector3f force : forceMap.values()) {
@@ -116,19 +110,12 @@ public class PhysicsControl extends AbstractControl {
         Vector3f movement = velocity.mult(tpf);
         float distance = movement.length();
         if (distance <= MIN_MOVEMENT) {
-            syncCamera();
             return;
         }
 
-        // Local translation is the absolute physics coordinate. World
-        // translation includes rootNode's floating-origin offset and is the
-        // coordinate space used by Node.collideWith().
-        Vector3f oldLocal = spatial.getLocalTranslation().clone();
-        Vector3f oldWorld = spatial.getWorldTranslation();
-        Vector3f newLocal = oldLocal.add(movement);
-        Vector3f newWorld = oldWorld.add(movement);
+        Vector3f newCameraPosition = cameraPosition.add(movement);
+        Vector3f collisionNormal = detectCollision(cameraPosition, newCameraPosition, distance);
 
-        Vector3f collisionNormal = detectCollision(oldWorld, newWorld, distance);
         if (collisionNormal != null) {
             collisionNormal.normalizeLocal();
 
@@ -136,18 +123,14 @@ public class PhysicsControl extends AbstractControl {
             if (normalVelocity < 0f) {
                 // Remove only the velocity component directed into the surface.
                 velocity.subtractLocal(collisionNormal.mult(normalVelocity));
-                newLocal.addLocal(collisionNormal.mult(PUSH_CONSTANT));
+                newCameraPosition.addLocal(collisionNormal.mult(PUSH_CONSTANT));
             }
         }
 
-        spatial.setLocalTranslation(newLocal);
-        syncCamera();
-    }
-
-    private void syncCamera() {
-        if (camera != null && spatial != null) {
-            camera.setLocation(spatial.getWorldTranslation());
-        }
+        // Physics is the only system that changes the camera here. External
+        // systems remain free to move the camera, and their new position will
+        // be picked up at the next physics update.
+        camera.setLocation(newCameraPosition);
     }
 
     private Vector3f detectCollision(Vector3f from, Vector3f to, float distance) {
