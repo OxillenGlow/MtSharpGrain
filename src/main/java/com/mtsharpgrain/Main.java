@@ -118,6 +118,14 @@ public class Main extends SimpleApplication {
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
         
         flyCam.setEnabled(false);
+
+        PhysicsControl physicsControl = new PhysicsControl(rootNode);
+        player.addControl(physicsControl);
+        
+        FlyCamPhysicsControl flyCamPhysics = new FlyCamPhysicsControl(cam, physicsControl);
+        flyCamPhysics.registerWithInput(inputManager);
+
+        flyCam = (com.jme3.input.FlyByCamera) flyCamPhysics;
         
         // ───── LET THERE BE (dirctional) LIGHT ────────────────────────────────────
         // Create the orbiting Sun first so we can give the shadow renderer the same DirectionalLight.
