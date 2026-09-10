@@ -27,7 +27,12 @@ public class PhysicsControl extends AbstractControl {
         for (Vector3f force : forceMap.values()) {
             totalForce.addLocal(force);
         }
-        forceMap.clear();
+
+        float dragCoefficient = 0.1f; // Adjust this value to tweak the drag strength
+        if (velocity.lengthSquared() > 0.5f) { // Avoid tiny values
+            Vector3f dragForce = velocity.mult(-dragCoefficient * velocity.length());
+            velocity.addLocal(dragForce.multLocal(tpf));
+        }
 
         // Update velocity
         velocity.addLocal(totalForce.multLocal(tpf));
