@@ -165,6 +165,40 @@ public class ChunkMeshBuilder {
                 // no extra local translation needed – the parts already sit correctly inside the cell
                 return stoolGeo;
             }
+            case "plant_pod": {
+                List<Geometry> parts = new ArrayList<>(2);
+                Box panMesh = new Box(0.48f, 0.06f, 0.48f);
+                Geometry pan = new Geometry("PlantPan", panMesh);
+                pan.setLocalTranslation(0.5f, 0.06f, 0.5f);   // sits on the floor
+                parts.add(pan);
+
+                float minX = 0.05f, maxX = 0.95f;
+                float minZ = 0.05f, maxZ = 0.95f;
+                if (!px) maxX = 1.00f;   // solid neighbour on +X → reach the edge
+                if (!nx) minX = 0.00f;   // solid neighbour on -X
+                if (!pz) maxZ = 1.00f;   // solid neighbour on +Z
+                if (!nz) minZ = 0.00f;   // solid neighbour on -Z
+
+                float halfX = (maxX - minX) * 0.5f;
+                float halfZ = (maxZ - minZ) * 0.5f;
+                float centerX = (minX + maxX) * 0.5f;
+                float centerZ = (minZ + maxZ) * 0.5f;
+    
+                // 0.9 tall bush sitting just above the pan
+                final float bushHalfY = 0.45f;          // total height 0.9
+                final float bushCenterY = 0.12f + bushHalfY;  // top of pan ≈ 0.12
+
+                Box bushMesh = new Box(halfX, bushHalfY, halfZ);
+                Geometry bush = new Geometry("PlantBush", bushMesh);
+                bush.setLocalTranslation(centerX, bushCenterY, centerZ);
+                parts.add(bush);
+
+                // Merge exactly like the stool / PyBallJmeMesh
+                Mesh merged = new Mesh();
+                GeometryBatchFactory.mergeGeometries(parts, merged);
+
+                return new Geometry("PlantPod", merged);
+            }
             case "Py":
             default: {
                 Mesh mesh = PyBallJmeMesh.getMesh(!px, !py, !pz, !nx, !ny, !nz);
