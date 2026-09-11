@@ -21,11 +21,11 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Runtime for exactly one mod pack.
  *
- * <p>The context is created, used, and closed by one virtual thread. Java
- * callers never invoke a Graal {@link Value} directly; they submit a task to
- * this runtime's {@link ModBridge}. Java APIs exposed to the script use
- * {@link EngineAccess} when they need jME/world state, so a blocked script
- * suspends its virtual thread instead of the render loop.
+ * <p>Background packs: context is owned by a virtual thread; work arrives via
+ * {@link ModBridge}. MAIN-suffix packs ({@code mainThreadMode=true}): context
+ * lives on the render thread, ticks use only the "Update" tag / optional
+ * {@code update(tpf)}, and {@link EngineAccess} runs without enqueue because
+ * the caller is already on the main thread.
  */
 public final class JSModifier {
 
@@ -36,10 +36,25 @@ public final class JSModifier {
     private volatile boolean failed;
     private ModPackManager ownerManager;
     private String packName;
+    /** True when pack name ends with "MAIN" — runs on render thread, Update-only. */
+    private final boolean mainThreadMode;
     private final ConcurrentLinkedQueue<PendingMessage> pendingMessages =
             new ConcurrentLinkedQueue<>();
     private TimerManager timerManager;
     private record PendingMessage(String data, String fromPack) {}
+
+    public JSModifier(boolean mainThreadMode) {
+        this.mainThreadMode = mainThreadMode;
+    }
+
+    /** Background (virtual-thread) packs use the no-arg constructor. */
+    public JSModifier() {
+        this(false);
+    }
+
+    public boolean isMainThreadMode() {
+        return mainThreadMode;
+    }
 
     /** Installs the mailbox before init so messages can be buffered during startup. */
     public void attachBridge(ModBridge bridge) {
@@ -209,6 +224,22 @@ public final class JSModifier {
     }
 
     private <T> CompletableFuture<T> submit(java.util.concurrent.Callable<T> callable) {
+        if (mainThreadMode) {
+            // MAIN packs: execute immediately on the render thread
+            CompletableFuture<T> result = new CompletableFuture<>();
+            try {
+                requireRuntimeThread();
+                ownerManager.enterPack(packName);
+                try {
+                    result.complete(callable.call());
+                } finally {
+                    ownerManager.exitPack();
+                }
+            } catch (Throwable t) {
+                result.completeExceptionally(t);
+            }
+            return result;
+        }
         ModBridge currentBridge = bridge;
         if (currentBridge == null || !initialized || failed) {
             CompletableFuture<T> rejected = new CompletableFuture<>();
@@ -219,7 +250,12 @@ public final class JSModifier {
     }
 
     private CompletableFuture<Void> submit(Runnable task) {
-        
+        if (mainThreadMode) {
+            return submit(() -> {
+                task.run();
+                return null;
+            });
+        }
         ModBridge currentBridge = bridge;
         if (currentBridge == null || !initialized || failed) {
             CompletableFuture<Void> rejected = new CompletableFuture<>();
@@ -282,10 +318,74 @@ public final class JSModifier {
     }
 
     private void requireRuntimeThread() {
-        if (runtimeThread != null && Thread.currentThread() != runtimeThread) {
-            throw new IllegalStateException("Graal context accessed outside its owning mod thread");
-        }
         if (!initialized) throw new IllegalStateException("Mod runtime is not initialized");
+        if (runtimeThread == null) return;
+        if (Thread.currentThread() == runtimeThread) return;
+        // MAIN packs may be entered from the render thread after bindMainThread()
+        if (mainThreadMode && ownerManager != null && ownerManager.isRenderThread()) return;
+        throw new IllegalStateException("Graal context accessed outside its owning mod thread");
+    }
+
+    /**
+     * MAIN packs only: bind the Graal owner to the render thread after scripts
+     * have been evaluated on that same thread.
+     */
+    public void bindMainThread() {
+        if (!mainThreadMode) {
+            throw new IllegalStateException("bindMainThread only valid for MAIN packs");
+        }
+        this.runtimeThread = Thread.currentThread();
+        // Deliver any messages that arrived during script load
+        PendingMessage pending;
+        while ((pending = pendingMessages.poll()) != null) {
+            try {
+                deliverMessageOnOwnerThread(pending.data(), pending.fromPack());
+            } catch (Throwable t) {
+                System.err.println("[JSModifier] pending message failed: " + t.getMessage());
+            }
+        }
+    }
+
+    /**
+     * MAIN packs only: invoke "Update"-tagged callbacks and optional top-level
+     * {@code update(tpf)} directly on the render thread. No bridge, no enqueue.
+     */
+    public void runUpdateDirect(float tpf) {
+        if (!mainThreadMode || !initialized || failed || bootstrap == null) return;
+        requireRuntimeThread();
+        try {
+            ownerManager.enterPack(packName);
+            bootstrap.getTickRegistry().tickTag(tpf, "Update");
+            callOptionalUpdate(tpf);
+        } catch (Throwable t) {
+            System.err.println("[JSModifier] runUpdateDirect failed: " + t.getMessage());
+        } finally {
+            ownerManager.exitPack();
+        }
+    }
+
+    /**
+     * MAIN packs: drain mailbox tasks that arrived from background packs
+     * (messages, block events). Called from the render-thread tick path.
+     */
+    public void drainBridgeOnMain() {
+        if (!mainThreadMode || bridge == null || !initialized || failed) return;
+        for (int i = 0; i < 64; i++) { // bounded drain per frame
+            Runnable task = bridge.pollTask();
+            if (task == null) break;
+            if (bridge.isPoison(task)) {
+                // ignore poison during normal play; shutdown handles close
+                continue;
+            }
+            try {
+                ownerManager.enterPack(packName);
+                task.run();
+            } catch (Throwable error) {
+                System.err.println("[JSModifier] MAIN drain task failed: " + error.getMessage());
+            } finally {
+                ownerManager.exitPack();
+            }
+        }
     }
 
     /**

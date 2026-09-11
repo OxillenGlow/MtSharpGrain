@@ -22,27 +22,37 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Collectors;
 import com.mtsharpgrain.BufferedChunk;
 import com.mtsharpgrain.ChunkPos;
 import com.mtsharpgrain.node.DynamicBlockRegistry;
 
  /**
- * Owns the asynchronous runtime for every mod pack.
+ * Owns the runtime for every mod pack.
  *
- * <p>There is one {@link JSModifier}, {@link ModBridge}, Graal context, and
- * virtual thread per pack. This manager is called by the render thread, but it
- * never enters a Graal context itself: it submits work to the appropriate
- * bridge. The only synchronous-looking operation is a mod API call such as
- * Player.getPosition(); that call runs on the mod virtual thread and waits
- * through EngineAccess, so the render thread remains free.
+ * <p>Background packs (default): one {@link JSModifier}, {@link ModBridge},
+ * Graal context, and virtual thread each. Work is submitted from the render
+ * thread; the virtual thread owns the Context.
+ *
+ * <p>MAIN packs (folder name ends with {@code MAIN}): same Context isolation,
+ * but the Context runs on the render thread. Only the {@code "Update"} tick
+ * tag (and optional top-level {@code update(tpf)}) is invoked. EngineAccess
+ * calls are direct (no enqueue) because execution is already on main.
+ * Inter-mod messaging still uses {@link ModBridge} so background and MAIN
+ * packs can talk.
+ *
+ * <p>See {@code THREADING.md} in this package for details and best practices.
  */
 public final class ModPackManager {
 
     private static final Logger LOG = Logger.getLogger(ModPackManager.class.getName());
     private static final String[] ALWAYS_ON_PREFIXES = {"LFT", "RHT", "BTM", "UTIL", "MODE"};
 
+    /** All packs (background + MAIN) for lookup / broadcast / GUI. */
     private final Map<String, JSModifier> packs = new ConcurrentHashMap<>();
+    /** Background packs only (virtual thread + mailbox). */
+    private final Map<String, JSModifier> backgroundPacks = new ConcurrentHashMap<>();
+    /** MAIN-suffix packs only (render thread, Update-only). */
+    private final Map<String, JSModifier> mainPacks = new ConcurrentHashMap<>();
     private final Map<String, ModBridge> bridges = new ConcurrentHashMap<>();
     private final Set<String> disabledPacks = new CopyOnWriteArraySet<>();
 
@@ -96,13 +106,23 @@ public final class ModPackManager {
         // Register every mailbox before starting any script. This makes
         // Mod.send() during one pack's startup safe even if another pack has
         // not yet finished loading its files.
+        List<Path> backgroundDirs = new ArrayList<>();
+        List<Path> mainDirs = new ArrayList<>();
         for (Path dir : packDirs) {
             String packName = dir.getFileName().toString();
-            JSModifier modifier = new JSModifier();
+            boolean isMain = isMainSuffix(packName);
+            JSModifier modifier = new JSModifier(isMain);
             ModBridge bridge = new ModBridge();
             modifier.attachBridge(bridge);
             packs.put(packName, modifier);
             bridges.put(packName, bridge);
+            if (isMain) {
+                mainPacks.put(packName, modifier);
+                mainDirs.add(dir);
+            } else {
+                backgroundPacks.put(packName, modifier);
+                backgroundDirs.add(dir);
+            }
             PackSchedule schedule = new PackSchedule();
             long now = System.nanoTime();
             schedule.nextTickNs = now;
@@ -110,13 +130,66 @@ public final class ModPackManager {
             schedules.put(packName, schedule);
         }
 
-        for (Path dir : packDirs) {
+        // Background packs: virtual thread owns Context + mailbox loop
+        for (Path dir : backgroundDirs) {
             String packName = dir.getFileName().toString();
             JSModifier modifier = packs.get(packName);
             ModBridge bridge = bridges.get(packName);
             Thread.ofVirtual().name("mod-" + packName).start(() -> runPack(
                     dir, packName, modifier, bridge, assetManager, rootNode,
                     worldAccess, renderManager, cam, inventory));
+        }
+
+        // MAIN packs: load on the render thread (loadAll is called from simpleInitApp).
+        // No virtual loop; ticks are driven by runUpdateDirect from tick().
+        for (Path dir : mainDirs) {
+            String packName = dir.getFileName().toString();
+            JSModifier modifier = packs.get(packName);
+            ModBridge bridge = bridges.get(packName);
+            runMainPack(dir, packName, modifier, bridge, assetManager, rootNode,
+                    worldAccess, renderManager, cam, inventory);
+        }
+    }
+
+    /** Folder name ends with MAIN (case-sensitive) → render-thread pack. */
+    private static boolean isMainSuffix(String packName) {
+        return packName != null && packName.endsWith("MAIN");
+    }
+
+    public boolean isRenderThread() {
+        return engineAccess != null && engineAccess.isMainThread();
+    }
+
+    private void runMainPack(Path dir, String packName, JSModifier modifier,
+                             ModBridge bridge, AssetManager assetManager, Node rootNode,
+                             WorldAccess worldAccess, RenderManager renderManager,
+                             Camera cam, Inventory inventory) {
+        try {
+            modifier.init(assetManager, rootNode, worldAccess, renderManager, cam,
+                    dir, packName, this, inventory, engineAccess);
+            modifier.beginOwnerThread();
+            try (var walk = Files.walk(dir)) {
+                List<Path> scripts = walk.filter(path -> path.toString().endsWith(".js"))
+                        .sorted().collect(Collectors.toList());
+                for (Path script : scripts) {
+                    try {
+                        modifier.runJs(script.toFile());
+                    } catch (Exception scriptError) {
+                        LOG.log(Level.SEVERE, "Failed to load MAIN mod script '" + script
+                                + "' in pack '" + packName + "'", scriptError);
+                    }
+                }
+            }
+            // Bind owner to this (render) thread and flush pending messages
+            modifier.bindMainThread();
+            LOG.info("MAIN pack loaded on render thread: " + packName);
+        } catch (Throwable error) {
+            modifier.markFailed();
+            LOG.log(Level.SEVERE, "Failed to start MAIN mod pack '" + packName + "'", error);
+            bridge.requestShutdown();
+            modifier.abortStartup();
+        } finally {
+            modifier.endOwnerThread();
         }
     }
 
@@ -214,7 +287,9 @@ public final class ModPackManager {
     /** Queues the per-frame callback; it never waits for a mod. */
     public void tick(float tpf, String guiTag) {
         long now = System.nanoTime();
-        for (Map.Entry<String, JSModifier> entry : packs.entrySet()) {
+
+        // Background packs: submit only (virtual threads own the Context)
+        for (Map.Entry<String, JSModifier> entry : backgroundPacks.entrySet()) {
             String name = entry.getKey();
             if (disabledPacks.contains(name)) continue;
             JSModifier modifier = entry.getValue();
@@ -230,21 +305,27 @@ public final class ModPackManager {
                 modifier.submitTaggedTick(tpf, "Tick");
                 schedule.nextTickNs = now + TICK_INTERVAL_NS;
             }
-            // NOTE: Removed periodic submitTickAll() to avoid re-running all
-            // registered tick callbacks every UPDATE_INTERVAL_NS. TickRegistry
-            // already supports explicit tagged ticks via submitTaggedTick and
-            // per-frame submitTick; the broad tick-all invocation was causing
-            // tag-specific handlers (eg. confetti) to fire unexpectedly on a
-            // 2s cadence and also triggered the location restore logic.
+        }
+
+        // MAIN packs: direct Update on render thread + drain inbound bridge work
+        for (Map.Entry<String, JSModifier> entry : mainPacks.entrySet()) {
+            String name = entry.getKey();
+            if (disabledPacks.contains(name)) continue;
+            JSModifier modifier = entry.getValue();
+            if (!modifier.isInitialized()) continue;
+            modifier.drainBridgeOnMain();
+            // Exclusive Update path (no "Tick", no other tags from this manager)
+            modifier.runUpdateDirect(tpf);
         }
     }
 
     public void tickAll(float tpf) {
-        for (Map.Entry<String, JSModifier> entry : packs.entrySet()) {
+        for (Map.Entry<String, JSModifier> entry : backgroundPacks.entrySet()) {
             if (!disabledPacks.contains(entry.getKey())) {
                 entry.getValue().submitTickAll(tpf);
             }
         }
+        // MAIN packs intentionally do not receive tick-all; they are Update-only.
     }
 
     /**
@@ -383,20 +464,43 @@ public final class ModPackManager {
         Path dir = root.resolve(packName);
         if (!Files.isDirectory(dir)) return;
         old.shutdown();
+        backgroundPacks.remove(packName);
+        mainPacks.remove(packName);
 
-        JSModifier replacement = new JSModifier();
+        boolean isMain = isMainSuffix(packName);
+        JSModifier replacement = new JSModifier(isMain);
         ModBridge bridge = new ModBridge();
         replacement.attachBridge(bridge);
         packs.put(packName, replacement);
         bridges.put(packName, bridge);
+        if (isMain) {
+            mainPacks.put(packName, replacement);
+        } else {
+            backgroundPacks.put(packName, replacement);
+        }
         PackSchedule schedule = new PackSchedule();
         long now = System.nanoTime();
         schedule.nextTickNs = now;
         schedule.nextUpdateNs = now;
         schedules.put(packName, schedule);
-        Thread.ofVirtual().name("mod-" + packName + "-reload").start(() -> runPack(
-                dir, packName, replacement, bridge, cachedAssetManager, cachedRootNode,
-                cachedWorldAccess, cachedRenderManager, cachedCam, cachedInventory));
+        if (isMain) {
+            // Reload MAIN packs on the render thread if possible; otherwise queue
+            // via EngineAccess so we stay off foreign threads.
+            Runnable work = () -> runMainPack(dir, packName, replacement, bridge,
+                    cachedAssetManager, cachedRootNode, cachedWorldAccess,
+                    cachedRenderManager, cachedCam, cachedInventory);
+            if (isRenderThread()) {
+                work.run();
+            } else if (engineAccess != null) {
+                engineAccess.post(work);
+            } else {
+                work.run();
+            }
+        } else {
+            Thread.ofVirtual().name("mod-" + packName + "-reload").start(() -> runPack(
+                    dir, packName, replacement, bridge, cachedAssetManager, cachedRootNode,
+                    cachedWorldAccess, cachedRenderManager, cachedCam, cachedInventory));
+        }
     }
 
     public void onClose() {

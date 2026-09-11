@@ -38,27 +38,6 @@ class TestInit {
         boxGeo.move(3.0f, 0, 0);
         PyBallJmeMesh.init();
         flyCam.setEnabled(true);// AHHHhHHHHH
-        //flyCam.setDragToRotate(true);
-        // Example: Get a mesh with a pyramid pointing in the +X direction and a ball at the center
-        Mesh mesh = PyBallJmeMesh.getMesh(true, true, true, true, true, true, true);  // Pyramid pointing toward +X
-
-        // Create the Geometry for the mesh
-        Geometry meshGeometry = new Geometry("PyBallMesh", mesh);
-        Material py = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
-        py.setBoolean("UseMaterialColors", true); 
-        py.setColor("Ambient", ColorRGBA.Green); 
-        py.setColor("Diffuse", ColorRGBA.White); 
-        // Adds the 'glint' effect
-        py.setColor("Specular", ColorRGBA.White); 
-
-        // 1.0 = Matte/Rough, 128.0 = Very Shiny/Polished
-        py.setFloat("Shininess", 32f); 
-        meshGeometry.setMaterial(py);
-
-        // Attach the meshGeometry to the rootNode to display it in the scene
-        rootNode.attachChild(meshGeometry);
-        //Vector3f p = new Vector3f(0,0,0);
-        //Player.setWorldPosition(p);
         var flyCamToggle = new com.mtsharpgrain.gui.FlyCamToggle(inputManager, flyCam);
         return null;
         
