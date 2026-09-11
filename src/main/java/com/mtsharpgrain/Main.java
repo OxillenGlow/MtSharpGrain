@@ -84,9 +84,8 @@ public class Main extends SimpleApplication {
         app.setSettings(settings);
         System.out.println("show settings false");
         
-        app.setShowSettings(false);// for other people compiling a jmonkeyengine game for mac, remember to set this orelse its a bunch of buggs later.
+        app.setShowSettings(false); // setting this seems to avoid a bunch of buggs later even though it might be false from the beginning idk, im not completely sure.
         System.out.println("Calling start()...");
-        
         app.start();
     }
 
@@ -269,11 +268,7 @@ public class Main extends SimpleApplication {
         }
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
-        if (modLastTick > 0.5){
-            modPackManager.tick(modLastTick, "Update");
-            modLastTick = 0;
-        }
-        modLastTick += tpf;
+        modPackManager.tick(modLastTick, "Update");
         modPackManager.draw(gui);
         modPackManager.processGuiClicks(tpf);
 
@@ -337,8 +332,8 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/BlockTrail/blocktrailmod.js");
             AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
             AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/InstantBridges/bridge.js");
-            AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
-            AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/TeleportMe/teleport.js");
+            AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/ConfettiMAIN/confetti.js");
+            AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/TeleportMeMAIN/teleport.js");
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/SurvivalFramework/death.js");
             AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");
             AssetConverter.extract("/mods/simpleNPC.js", "worlds/"+world+"/mod/SimpleNPC/simpleNPC.js");

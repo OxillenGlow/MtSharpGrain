@@ -135,6 +135,8 @@ map
         Add fall damage mod
       Multiplayer Mod Support - 0%
         Real multiplayer (later phase)
+      JS mod system fix
+        Fix confetti.js, it does not seem to work inside of MAIN thread or outside of it
     Content Generation
       Randomly Spawned Buildings
         Ground buildings - 0/100
