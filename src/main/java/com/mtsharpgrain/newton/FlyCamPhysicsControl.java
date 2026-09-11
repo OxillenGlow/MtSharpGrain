@@ -115,10 +115,4 @@ public class FlyCamPhysicsControl extends FlyByCamera {
 
         physicsControl.forceMap.put("flyCamForce", force);
     }
-
-    @Override
-    public void update(float tpf) {
-        // PhysicsControl owns position. FlyByCamera's mouse input still owns
-        // rotation because its movement mappings were removed above.
-    }
 }

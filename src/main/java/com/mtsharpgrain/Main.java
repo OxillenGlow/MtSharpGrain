@@ -14,7 +14,9 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
+import com.jme3.scene.CameraNode;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.util.SkyFactory;
 import com.tools.AssetConverter;
@@ -120,17 +122,18 @@ public class Main extends SimpleApplication {
         
         flyCam.setEnabled(false);
 
-        PhysicsControl physicsControl = new PhysicsControl(rootNode);
-        CameraNode camNode = new CameraNode("CamNode", cam);
-        rootNode.attachChild(camNode);
-        camNode.setControlDir(ControlDirection.SpatialToCamera);
-        camNode.addControl(physicsControl);
-        physicsControl.registerCamera(cam);
+        //PhysicsControl physicsControl = new PhysicsControl(rootNode);
+        //CameraNode camNode = new CameraNode("CamNode", cam);
+        //rootNode.attachChild(camNode);
+        //camNode.setControlDir(ControlDirection.SpatialToCamera);
+        //camNode.addControl(physicsControl);
+        //physicsControl.registerCamera(cam);
         
-        FlyCamPhysicsControl flyCamPhysics = new FlyCamPhysicsControl(cam, physicsControl);
-        flyCamPhysics.registerWithInput(inputManager);
+        //FlyCamPhysicsControl flyCamPhysics = new FlyCamPhysicsControl(cam, physicsControl);
+        //flyCamPhysics.registerWithInput(inputManager);
 
-        flyCam = (com.jme3.input.FlyByCamera) flyCamPhysics;
+        //flyCam = (com.jme3.input.FlyByCamera) flyCamPhysics;
+        
         
         // ───── LET THERE BE (dirctional) LIGHT ────────────────────────────────────
         // Create the orbiting Sun first so we can give the shadow renderer the same DirectionalLight.
