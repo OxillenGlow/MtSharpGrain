@@ -30,15 +30,7 @@ public class PyBallJmeMesh {
         }
     }
 
-    public static Mesh getMesh(
-            boolean px,
-            boolean py,
-            boolean pz,
-            boolean nx,
-            boolean ny,
-            boolean nz,
-            boolean exception
-    ) {
+    public static Mesh getMesh(boolean px, boolean py, boolean pz, boolean nx, boolean ny, boolean nz ) {
 
         int total =
                 (px ? 1 : 0) +
