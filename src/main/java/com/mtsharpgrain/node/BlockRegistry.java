@@ -23,7 +23,26 @@ import com.jme3.math.ColorRGBA;
  *   7  - Silicon
  *   8  - Sulfur
  *   9  - Metal Block
- *   10 - Glass 
+ *   10 - Glass
+ *   11 - Plant
+ *   12 - Alien Plant
+ *   13 - Wooden Stool
+ *   14 - Metal Stool
+ *   15 - Wooden Flat
+ *   16 - Wooden Tall
+ *   17 - Metal Flat
+ *   18 - Metal Tall
+ *   19 - Plastic Cube
+ *   20 - Plastic Tiny
+ *   21 - Plastic Tall
+ *   22 - Plastic Flat
+ *   23 - Plastic Stool
+ *   24 - Plastic Plant
+ *   25 - Plastic Py
+ *   26 - Wooden Tiny
+ *   27 - Metal Tiny
+ *   28 - Cushion Flat
+ *   29 - Crystal Tall
  *   +  – add yours here
  *
  * AMBIENT is shared across all block types and lives here so there is
@@ -46,6 +65,26 @@ public final class BlockRegistry {
     public static final int ID_SULFUR       = 8;
     public static final int ID_METAL_BLOCK  = 9;
     public static final int ID_GLASS        = 10;
+
+    public static final int ID_PLANT            = 11;
+    public static final int ID_ALIEN_PLANT      = 12;
+    public static final int ID_WOODEN_STOOL     = 13;
+    public static final int ID_METAL_STOOL      = 14;
+    public static final int ID_WOODEN_FLAT      = 15;
+    public static final int ID_WOODEN_TALL      = 16;
+    public static final int ID_METAL_FLAT       = 17;
+    public static final int ID_METAL_TALL       = 18;
+    public static final int ID_PLASTIC_CUBE     = 19;
+    public static final int ID_PLASTIC_TINY     = 20;
+    public static final int ID_PLASTIC_TALL     = 21;
+    public static final int ID_PLASTIC_FLAT     = 22;
+    public static final int ID_PLASTIC_STOOL    = 23;
+    public static final int ID_PLASTIC_PLANT    = 24;
+    public static final int ID_PLASTIC_PY       = 25;
+    public static final int ID_WOODEN_TINY      = 26;
+    public static final int ID_METAL_TINY       = 27;
+    public static final int ID_CUSHION_FLAT     = 28;
+    public static final int ID_CRYSTAL_TALL     = 29;
 
 
     // ── Block definition ───────────────────────────────────────────────────
@@ -147,12 +186,178 @@ public final class BlockRegistry {
             "Py"
         ),
 
-        // ── ADD NEW BLOCKS BELOW THIS LINE ────────────────────────────────
-        // Example:
-        //   /* 11 – Lava: deep orange, no specular (molten look) */
-        //   new BlockDef(
-        //       ColorRGBA.fromRGBA255(210, 80, 10, 255)
-        //   ),
+        // ── NEW BLOCKS ────────────────────────────────────────────────────
+
+        /* 11 – Plant: healthy green bush in a pan (connects sideways) */
+        new BlockDef(
+            ColorRGBA.fromRGBA255( 40, 140,  55, 255),   // leafy green
+            ColorRGBA.fromRGBA255( 20,  70,  25, 255),
+            18f,
+            false,
+            "plant_pod"
+        ),
+
+        /* 12 – Alien Plant: eerie purple/violet plant pod */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(140,  50, 180, 255),   // alien purple
+            ColorRGBA.fromRGBA255( 80,  20, 120, 255),
+            40f,
+            false,
+            "plant_pod"
+        ),
+
+        /* 13 – Wooden Stool: warm brown wood */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(130,  85,  45, 255),   // oak-ish brown
+            ColorRGBA.fromRGBA255( 60,  35,  15, 255),
+            12f,
+            false,
+            "stool"
+        ),
+
+        /* 14 – Metal Stool: polished steel look */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(160, 165, 170, 255),
+            ColorRGBA.fromRGBA255(230, 235, 240, 255),
+            110f,
+            false,
+            "stool"
+        ),
+
+        /* 15 – Wooden Flat: thin wooden plank / table top */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(140,  95,  50, 255),
+            ColorRGBA.fromRGBA255( 70,  40,  20, 255),
+            14f,
+            false,
+            "CubeFlat"
+        ),
+
+        /* 16 – Wooden Tall: wooden post / pillar */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(120,  75,  40, 255),
+            ColorRGBA.fromRGBA255( 55,  30,  12, 255),
+            10f,
+            false,
+            "CubeTall"
+        ),
+
+        /* 17 – Metal Flat: thin metal plate */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(150, 155, 160, 255),
+            ColorRGBA.fromRGBA255(220, 225, 230, 255),
+            100f,
+            false,
+            "CubeFlat"
+        ),
+
+        /* 18 – Metal Tall: metal post */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(140, 145, 150, 255),
+            ColorRGBA.fromRGBA255(210, 215, 220, 255),
+            105f,
+            false,
+            "CubeTall"
+        ),
+
+        /* 19 – Plastic Cube: pure white plastic (full cube) */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(245, 245, 245, 255),
+            ColorRGBA.fromRGBA255(255, 255, 255, 255),
+            48f,
+            false,
+            "Cube"
+        ),
+
+        /* 20 – Plastic Tiny: small white plastic cube */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(245, 245, 245, 255),
+            ColorRGBA.fromRGBA255(255, 255, 255, 255),
+            48f,
+            false,
+            "CubeTiny"
+        ),
+
+        /* 21 – Plastic Tall: white plastic pillar */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(245, 245, 245, 255),
+            ColorRGBA.fromRGBA255(255, 255, 255, 255),
+            48f,
+            false,
+            "CubeTall"
+        ),
+
+        /* 22 – Plastic Flat: white plastic tile / plate */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(245, 245, 245, 255),
+            ColorRGBA.fromRGBA255(255, 255, 255, 255),
+            48f,
+            false,
+            "CubeFlat"
+        ),
+
+        /* 23 – Plastic Stool: white plastic stool */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(245, 245, 245, 255),
+            ColorRGBA.fromRGBA255(255, 255, 255, 255),
+            48f,
+            false,
+            "stool"
+        ),
+
+        /* 24 – Plastic Plant: white plastic plant pod */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(245, 245, 245, 255),
+            ColorRGBA.fromRGBA255(255, 255, 255, 255),
+            48f,
+            false,
+            "plant_pod"
+        ),
+
+        /* 25 – Plastic Py: white plastic PyBall mesh */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(245, 245, 245, 255),
+            ColorRGBA.fromRGBA255(255, 255, 255, 255),
+            48f,
+            false,
+            "Py"
+        ),
+
+        /* 26 – Wooden Tiny: small wooden block */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(135,  90,  48, 255),
+            ColorRGBA.fromRGBA255( 65,  38,  18, 255),
+            12f,
+            false,
+            "CubeTiny"
+        ),
+
+        /* 27 – Metal Tiny: small metal cube */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(155, 160, 165, 255),
+            ColorRGBA.fromRGBA255(235, 240, 245, 255),
+            115f,
+            false,
+            "CubeTiny"
+        ),
+
+        /* 28 – Cushion Flat: soft padded flat surface (matte pastel) */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(220, 180, 190, 255),   // soft rose
+            ColorRGBA.fromRGBA255( 80,  50,  60, 255),
+            4f,
+            false,
+            "CubeFlat"
+        ),
+
+        /* 29 – Crystal Tall: tall crystalline growth */
+        new BlockDef(
+            ColorRGBA.fromRGBA255(160, 210, 255, 255),
+            ColorRGBA.fromRGBA255(220, 240, 255, 255),
+            120f,
+            false,
+            "CubeTall"
+        ),
     };
 
     // ── Public API ─────────────────────────────────────────────────────────
