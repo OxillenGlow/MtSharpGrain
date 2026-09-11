@@ -128,7 +128,7 @@ public class ChunkMeshBuilder {
             }
             case "Py":
             default: {
-                Mesh mesh = PyBallJmeMesh.getMesh(!px, !py, !pz, !nx, !ny, !nz, false);
+                Mesh mesh = PyBallJmeMesh.getMesh(!px, !py, !pz, !nx, !ny, !nz);
                 return new Geometry("Geo" + x + y + z, mesh);
             }
         }
