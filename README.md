@@ -61,8 +61,8 @@ The latest looks of the world.
 ![](Pictures/Poster.png)
 Dumb poster I made.
 
-![](Pictures/Inventory.png)
-Currently the inventory bar looks like this
+![](Pictures/SidewaysHouses.png)
+A bunch of sideways houses... I think i like this? I think it looks kind of cool?
 
 ![](Pictures/Hubs.png)
 Small greenhouses with grass(edible? idk yet) inside.
