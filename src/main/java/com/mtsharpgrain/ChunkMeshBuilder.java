@@ -13,6 +13,8 @@ import com.jme3.scene.shape.Box;
 import com.mtsharpgrain.node.BlockRegistry;
 import com.mtsharpgrain.node.BlockRegistry.BlockDef;
 import jme3tools.optimize.GeometryBatchFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChunkMeshBuilder {
 
@@ -125,6 +127,43 @@ public class ChunkMeshBuilder {
                 // floor-aligned: half-height above the cell's bottom face
                 boxGeo.setLocalTranslation(0.5f, 0.1f, 0.5f);
                 return boxGeo;
+            }
+            case "stool": {
+                // 4 thin legs + 1 flat seat → merged into one Mesh (same technique used in PyBallJmeMesh)
+                final float legHalf = 0.06f;
+                final float legHalfH = 0.40f;   // legs go from y=0 to y=0.80
+                final float inset   = 0.18f;   // distance from cell edge to leg centre
+
+                // temporary geometries (will be merged, then discarded)
+                List<Geometry> parts = new ArrayList<>(5);
+
+                // four corner legs
+                float[][] legXZ = {
+                    { inset,      inset },
+                    { 1f - inset, inset },
+                    { inset,      1f - inset },
+                    { 1f - inset, 1f - inset }
+                };
+                for (int i = 0; i < 4; i++) {
+                    Box legMesh = new Box(legHalf, legHalfH, legHalf);
+                    Geometry leg = new Geometry("leg" + i, legMesh);
+                    leg.setLocalTranslation(legXZ[i][0], legHalfH, legXZ[i][1]);
+                    parts.add(leg);
+                }
+     
+                // flat seat sitting on top of the legs
+                Box seatMesh = new Box(0.42f, 0.05f, 0.42f);
+                Geometry seat = new Geometry("seat", seatMesh);
+                seat.setLocalTranslation(0.5f, 0.80f + 0.05f, 0.5f);
+                parts.add(seat);
+
+                // merge exactly like PyBallJmeMesh does
+                Mesh merged = new Mesh();
+                GeometryBatchFactory.mergeGeometries(parts, merged);
+
+                Geometry stoolGeo = new Geometry("Stool", merged);
+                // no extra local translation needed – the parts already sit correctly inside the cell
+                return stoolGeo;
             }
             case "Py":
             default: {
