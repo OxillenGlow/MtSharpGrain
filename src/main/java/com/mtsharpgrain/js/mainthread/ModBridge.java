@@ -12,6 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * other packs may submit work without touching the pack's Graal Context.
  * Callable results are completed by the owning virtual thread, which means a
  * JS callback can safely perform another EngineAccess call while handling it.
+ *
+ * <p>MAIN-suffix packs drain via {@link #pollTask()} on the render thread
+ * instead of a blocking mailbox loop.
  */
 public final class ModBridge {
 
@@ -44,6 +47,11 @@ public final class ModBridge {
 
     Runnable takeTask() throws InterruptedException {
         return tasks.take();
+    }
+
+    /** Non-blocking poll for MAIN-pack drain on the render thread. */
+    Runnable pollTask() {
+        return tasks.poll();
     }
 
     boolean shouldStop() {
