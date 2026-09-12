@@ -9,7 +9,7 @@
   // Timer IDs for cleanup (optional, but good practice)
   let spawnTimerId = null;
   let movementTimerId = null;
-  let lastMovementTime = 0;
+  let lastMovementTime = Date.now();
 
   // load saved kills
   try{ const s = Data.get("kills_v1"); if(s) kills = parseInt(JSON.parse(s).kills||0,10) || 0; }catch(e){ kills = 0; }
@@ -260,14 +260,14 @@
 
   // Movement still uses per-frame updates (needs tpf for smoothness)
   // But now runs on mod thread via setInterval with manual tpf calculation
-  let lastMovementTime = Date.now();
+  // (lastMovementTime declared once at top of this IIFE)
   Engine.setInterval(function() {
     const now = Date.now();
     const tpf = (now - lastMovementTime) / 1000; // Convert ms → seconds
     lastMovementTime = now;
     try { updateMovementSmooth(tpf); } catch(e) { console.error("Movement error:", e); }
     if(first) { updateStatsGui(); first = false; }
-  }, 16); // ~60 FPS (1000ms/60 ≈ 16.67ms)
+  }, 16); // ~60 FPS (use integer ms — Double→long coercion fails on 16.67)
 
   // GUI click handler (unchanged)
   Engine.onTick(function(tpf, tag){

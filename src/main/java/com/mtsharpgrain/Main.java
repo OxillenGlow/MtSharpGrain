@@ -134,6 +134,7 @@ public class Main extends SimpleApplication {
         //flyCam = (com.jme3.input.FlyByCamera) flyCamPhysics;
         
         
+        
         // ───── LET THERE BE (dirctional) LIGHT ────────────────────────────────────
         // Create the orbiting Sun first so we can give the shadow renderer the same DirectionalLight.
         this.sunObject = new Sun(assetManager, rootNode);
@@ -155,6 +156,7 @@ public class Main extends SimpleApplication {
         //fog.setFogDensity(0.8f);
         //fpp.addFilter(fog);
         //viewPort.addProcessor(fpp);
+        // They are supposed to help the world look more realistic but i dont like fog.
         
 
         // ── Skybox setup ─────────────────────────────────────────────────────
@@ -332,7 +334,7 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/BlockTrail/blocktrailmod.js");
             AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
             AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/InstantBridges/bridge.js");
-            AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/ConfettiMAIN/confetti.js");
+            AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
             AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/TeleportMeMAIN/teleport.js");
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/SurvivalFramework/death.js");
             AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");

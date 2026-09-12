@@ -1,11 +1,4 @@
-# Mod threading model (background vs MAIN)
-
-This document explains how JavaScript mod packs are scheduled and what the
-`MAIN` suffix means. Read it before writing performance-sensitive or
-render-thread mods.
-
-## Two pack kinds
-
+# MAIN mods doc
 | Kind | Folder name rule | Thread | Tick path | EngineAccess |
 |------|------------------|--------|-----------|--------------|
 | **Background** (default) | does **not** end with `MAIN` | dedicated virtual thread + `ModBridge` mailbox | `submitTick` / tagged `"Tick"` + optional `update(tpf)` | enqueue + wait (suspends only the virtual thread) |
@@ -24,6 +17,8 @@ queue hop. MAIN packs run on the render thread for that case.
 Prefer background packs unless you have measured a real need for main-thread
 execution.
 
+> [IMPORTANT] Use "Update" flag for running every frame on main(render) thread.
+
 ## Shared machinery
 
 Both kinds share:
@@ -38,36 +33,23 @@ plus a unified `packs` map for lookups and broadcast.
 
 ## Best practices for MAIN packs
 
-1. **Only use the `"Update"` tag**  
-   ```js
-   Engine.onTick(function(tpf, tag) {
-     // tag is always "Update" for MAIN packs driven by the manager
-   }, "Update");
-   ```
-   Or define a top-level:
-   ```js
-   function update(tpf) { /* per-frame */ }
-   ```
-   Other tags are not driven by the manager for MAIN packs.
-
-2. **Do not use `Engine.setInterval` / `setTimeout`**  
+1. **Use `Engine.setInterval` / `setTimeout` for non visual stuff**  
    Timers still queue work onto the pack bridge. On MAIN packs that work is
-   drained on the next frame, but the timer scheduler is a separate thread and
-   is easy to misuse. Prefer pure Update-driven logic or a background pack.
+   drained on the next frame.
 
-3. **Keep Update work tiny**  
+2. **Keep Update work tiny**  
    A few matrix math ops or a short state machine is fine. Nested loops over
-   the whole world, network I/O, or long JSON parsing are not.
+   the whole world or long JSON parsing are not.
 
-4. **Do not block**  
+3. **Do not block**  
    No busy-waits, no synchronous file reads of large data, no infinite loops.
 
-5. **Messaging is still async across kinds**  
+4. **Messaging is still async across kinds**  
    `Mod.send` from a MAIN pack to a background pack (and the reverse) goes
    through the recipient’s bridge. Do not assume same-frame delivery to
    background packs.
 
-6. **Handles stay per-pack**  
+5. **Handles stay per-pack**  
    Scene / Gui handles created in a MAIN pack are invalid in any other pack,
    including other MAIN packs. Cross-pack data still goes through `Mod` or
    shared world state (`Block`, `Matrix` where applicable).
@@ -75,7 +57,6 @@ plus a unified `packs` map for lookups and broadcast.
 ## Best practices for background packs
 
 - Prefer them for anything non-trivial.
-- Use tagged ticks (`"Tick"` or your own tags) for periodic work.
 - `EngineAccess` already protects the render thread; a blocked virtual thread
   does not freeze the game.
 
@@ -92,6 +73,6 @@ plus a unified `packs` map for lookups and broadcast.
 
 - [ ] Need same-frame, zero-enqueue access to jME state? → suffix `MAIN`.
 - [ ] Heavy logic, timers, AI, pathfinding? → normal (background) pack.
-- [ ] MAIN pack registers only `"Update"` (or uses `update(tpf)`).
+- [ ] MAIN pack registers `"Update"` flag for smooth action.
 - [ ] MAIN pack does not call `setInterval` / long work in Update.
 - [ ] Cross-pack talk still uses `Mod.send` / `onReceive`.
