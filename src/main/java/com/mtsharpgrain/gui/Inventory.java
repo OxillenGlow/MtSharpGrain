@@ -290,12 +290,12 @@ public class Inventory {
 
         int selected = Master.blockType;
         if (Master.blockType != 0) {
-            BlockRegistry.BlockDef def = BlockRegistry.get(blockId);
-            nameColor = def != null ? def.diffuse() : ColorRGBA.White;
+            BlockRegistry.BlockDef def = BlockRegistry.get(selected);
+            var nameColor = def != null ? def.diffuse() : ColorRGBA.White;
             gui.textColor(nameColor);
             gui.text(blockName(selected) + " x" + getAmount(selected), 0.5f, 0.1f, null);
             if (selected >= 0 && selected < ICONS.length) {
-                String iconPath = ICONS[blockId];
+                String iconPath = ICONS[selected];
                 if (iconPath != null && !iconPath.isEmpty()) {
                     try {
                         gui.imageSize(0.05f, 0.05f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("center").imageVAlign("bottom");
