@@ -43,12 +43,16 @@ public class Inventory {
 
     public static final int MAX_TYPES = 20;
 
-    // Human-readable names, index == block id. Falls back to "Block <id>"
-    // past the end - mirrors 01_blocknames.js's BLOCK_NAMES_POS.
+    // Human-readable names, index == block id.
     private static final String[] NAMES = {
         "Air", "Reserved", "Stone", "Dirt", "Grass",
-        "Crystal Ore", "Ice Sludge", "Silicon", "Sulfur", "Metal Block", "Glass"
+        "Crystal Ore", "Ice Sludge", "Silicon", "Sulfur", "Metal Block", "Glass",
+        "Plant", "Alien Plant", "Wooden Stool", "Metal Stool", "Wooden Flat",
+        "Wooden Tall", "Metal Flat", "Metal Tall", "Plastic Cube", "Plastic Tiny",
+        "Plastic Tall", "Plastic Sheet", "Plastic Stool", "Plastic Plant", "Plastic Py",
+        "Wooden Tiny", "Metal Tiny", "Cushion Flat", "Crystal Tall"
     };
+
 
     // Icon paths for each block id (0..10). These point into the assets root/cc0 folder.
     // Filenames provided by the user; prefixed with /cc0/ to reference the cc0 asset pack.
