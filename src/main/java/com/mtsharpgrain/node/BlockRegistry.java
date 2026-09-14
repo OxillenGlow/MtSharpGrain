@@ -11,6 +11,7 @@ import com.jme3.math.ColorRGBA;
  *     The array index IS the block ID, so keep them in order.
  *  2. Give it a descriptive comment so the next I know what it is.
  *  3. Add the ID as a named constant at the top of this class (optional but recommended).
+ *  4. Update the NAMES array
  *
  * BLOCK IDs
  *   0  – air  (never rendered)
@@ -35,7 +36,7 @@ import com.jme3.math.ColorRGBA;
  *   19 - Plastic Cube
  *   20 - Plastic Tiny
  *   21 - Plastic Tall
- *   22 - Plastic Flat
+ *   22 - Plastic Sheet
  *   23 - Plastic Stool
  *   24 - Plastic Plant
  *   25 - Plastic Py
@@ -85,7 +86,15 @@ public final class BlockRegistry {
     public static final int ID_METAL_TINY       = 27;
     public static final int ID_CUSHION_FLAT     = 28;
     public static final int ID_CRYSTAL_TALL     = 29;
-
+    // Human-readable names, index == block id.
+    private static final String[] NAMES = {
+        "Air", "Reserved", "Stone", "Dirt", "Grass",
+        "Crystal Ore", "Ice Sludge", "Silicon", "Sulfur", "Metal Block", "Glass",
+        "Plant", "Alien Plant", "Wooden Stool", "Metal Stool", "Wooden Flat",
+        "Wooden Tall", "Metal Flat", "Metal Tall", "Plastic Cube", "Plastic Tiny",
+        "Plastic Tall", "Plastic Sheet", "Plastic Stool", "Plastic Plant", "Plastic Py",
+        "Wooden Tiny", "Metal Tiny", "Cushion Flat", "Crystal Tall"
+    };
 
     // ── Block definition ───────────────────────────────────────────────────
 
