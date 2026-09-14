@@ -216,7 +216,7 @@ public class Inventory {
         List<Map.Entry<Integer, Integer>> entries = sortedEntries();
         if (entries.isEmpty()) {
             gui.textColor(ColorRGBA.Gray);
-            gui.text("(empty)", 0.05f, y, null);
+            gui.text("[EMPTY] - go break some blocks!", 0.05f, y, null);
         } else {
             // prepare small icon drawing parameters: left-aligned, center vertical
             gui.imageSize(0.02f, 0.02f).imageAlpha(true).imageColor(ColorRGBA.White)
@@ -244,12 +244,21 @@ public class Inventory {
                             // place icon slightly left of the text (text x=0.05f)
                             gui.image(iconPath, 0.02f, y, false);
                         } catch (Exception e) {
- 
-                        // silently ignore missing assets; fall back to text only
+                            // silently ignore missing assets; fall back to text only
                         }
                     }
+                } else {
+                    try {
+                        gui.image("/cc0/clouds.png", 0.02f, y, false);
+                        gui.textColor(nameColor);
+                        gui.textHAlign("left");
+                        gui.textVAlign("top");
+                        gui.text(blockName(blockId).substring(0, 1), 0.02f, y, false);
+                    } catch (Exception e) {
+                        // silently ignore missing assets; fall back to text only
+                    }
                 }
-                var pointer = isSelected ? " << Selected":"";
+                var pointer = isSelected ? " <<":"";
                 gui.textColor(nameColor);
                 gui.text(blockName(blockId)+pointer, 0.055f, y, (event, arg) -> {
                     if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
