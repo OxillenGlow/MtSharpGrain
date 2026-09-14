@@ -207,7 +207,7 @@ public class Inventory {
 
         gui.textColor(ColorRGBA.White);
         gui.textSize(0.018f);
-        gui.text("Inventory:", 0.05f, 0.95f, null);
+        gui.text("[INVENTORY]:", 0.05f, 0.95f, null);
 
         gui.textSize(0.016f);
         float y = 0.85f;
@@ -284,15 +284,33 @@ public class Inventory {
     /** Draws a compact inventory HUD while the player is in the world. */
     public void drawMini(IGui gui) {
         gui.textHAlign("center");
-        gui.textVAlign("bottom");
-        gui.textColor(ColorRGBA.White);
+        gui.textVAlign("top");
         gui.textSize(0.016f);
+        gui.textColor(ColorRGBA.Gray);
 
         int selected = Master.blockType;
         if (Master.blockType != 0) {
+            BlockRegistry.BlockDef def = BlockRegistry.get(blockId);
+            nameColor = def != null ? def.diffuse() : ColorRGBA.White;
+            gui.textColor(nameColor);
             gui.text(blockName(selected) + " x" + getAmount(selected), 0.5f, 0.1f, null);
+            if (selected >= 0 && selected < ICONS.length) {
+                String iconPath = ICONS[blockId];
+                if (iconPath != null && !iconPath.isEmpty()) {
+                    try {
+                        gui.imageSize(0.05f, 0.05f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("center").imageVAlign("bottom");
+                        gui.image(iconPath, 0.5f, 0.11f, false);
+                    } catch (Exception e) {}
+                }
+            } else {
+                try {
+                    gui.imageSize(0.05f, 0.05f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("center").imageVAlign("bottom");
+                    gui.image("/cc0/clouds.png", 0.5f, 0.11f, false);
+                    gui.text(blockName(selected).substring(0, 1), 0.5f, 0.11f, false);
+                } catch (Exception e) {}
+            }
         } else {
-            gui.text("**No block selected**, press [F] key to select from inventory", 0.5f, 0.1f, null);
+            gui.text("**No block selected**, press [F] key and select from [INVENTORY]", 0.5f, 0.1f, null);
         }
 
         gui.textSize(0.02f);
