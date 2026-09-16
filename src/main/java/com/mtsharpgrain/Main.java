@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import com.mtsharpgrain.gui.GameState;
+import com.mtsharpgrain.gui.WKeyTracker;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.mainthread.EngineAccess;
@@ -61,6 +62,13 @@ public class Main extends SimpleApplication {
     // Fixed for now — wire this up to a real save/load value later if worlds
     // need to be regenerable/reproducible across sessions.
     private static final long WORLD_SEED = 1234L;
+
+    // ── Speed FOV ──────────────────────────────────────────────────────────
+    private static final float BASE_FOV = 70f;
+    private static final float SPRINT_FOV = 82f;   // +12° feels fast but still realistic
+    private static final float FOV_LERP_SPEED = 6f;
+    private float currentFov = BASE_FOV;
+    private WKeyTracker wKeyTracker;
 
     public static void main(String[] args) throws IOException {
         System.out.println(java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
@@ -113,13 +121,17 @@ public class Main extends SimpleApplication {
 
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
-        cam.setFrustumPerspective(70f, aspectRatio, 0.5f, 5000.0f);
+        cam.setFrustumPerspective(BASE_FOV, aspectRatio, 0.5f, 5000.0f);
         cam.setFrustumFar(180f);
+        currentFov = BASE_FOV;
         
 
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
         
         flyCam.setEnabled(false);
+
+        // Parallel W-key tracker so we can drive speed FOV without touching FlyByCamera.
+        wKeyTracker = new WKeyTracker(inputManager);
 
         //PhysicsControl physicsControl = new PhysicsControl(rootNode);
         //CameraNode camNode = new CameraNode("CamNode", cam);
@@ -168,7 +180,7 @@ public class Main extends SimpleApplication {
             System.err.println("Failed to load skybox: " + e.getMessage());
             e.printStackTrace();
         }
-        // ───────────────────────────────────────────────────────────────[...]
+        // ───────────────────────────────────────────────────────────────
 
         // ── Chunk generator: loads chunkgen.js once and binds the Chunk.* API.
         // templatesRoot must be the directory CONTAINING storageAir/ and
@@ -247,6 +259,11 @@ public class Main extends SimpleApplication {
         
     }
 
+    /** Easy getter: true while the W key is held. */
+    public boolean isWPressed() {
+        return wKeyTracker != null && wKeyTracker.isPressed();
+    }
+
     @Override
     public void simpleUpdate(float tpf) {
 
@@ -275,6 +292,15 @@ public class Main extends SimpleApplication {
         modPackManager.processGuiClicks(tpf);
 
         sunObject.update(tpf, trueWorldPos);
+
+        // ── Speed FOV (W held → higher FOV) ────────────────────────────────
+        boolean isMovingFast = isWPressed();
+        float targetFov = isMovingFast ? SPRINT_FOV : BASE_FOV;
+        currentFov += (targetFov - currentFov) * Math.min(1f, tpf * FOV_LERP_SPEED);
+        float aspect = (float) cam.getWidth() / (float) cam.getHeight();
+        cam.setFrustumPerspective(currentFov, aspect, 0.5f, 5000.0f);
+        // keep the shorter far plane used elsewhere if still desired
+        // cam.setFrustumFar(180f);
     }
 
     @Override
@@ -285,7 +311,10 @@ public class Main extends SimpleApplication {
         super.reshape(width, height);
         if (cam == null) return;
         float aspectRatio = (float) width / height;
-        cam.setFrustumPerspective(55.0f, aspectRatio, 0.5f, 5000.0f);
+        // Always restore to BASE_FOV on resize; the lerp in simpleUpdate will
+        // immediately continue from there if W is held.
+        cam.setFrustumPerspective(BASE_FOV, aspectRatio, 0.5f, 5000.0f);
+        currentFov = BASE_FOV;
         if (!(gui == null)) {
             gui.destroy();  // Properly detach and clean up the old GUI
         }
