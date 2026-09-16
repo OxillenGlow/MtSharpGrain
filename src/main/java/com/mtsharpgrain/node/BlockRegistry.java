@@ -188,14 +188,13 @@ public final class BlockRegistry {
 
         /* 10 – Glass: near-clear, low diffuse alpha, sharp specular */
         new BlockDef(
-            ColorRGBA.fromRGBA255(210, 230, 235,  35),   // diffuse (alpha ~14% — mostly transparent)
-            ColorRGBA.fromRGBA255(255, 255, 255, 200),   // specular
+            ColorRGBA.fromRGBA255(210, 210, 235,  20),   // diffuse (alpha ~14% — mostly transparent)
+            ColorRGBA.fromRGBA255(255, 255, 255, 150),   // specular
             96f,                                          // shininess
             false,
             "Py"
+            "
         ),
-
-        // ── NEW BLOCKS ────────────────────────────────────────────────────
 
         /* 11 – Plant: healthy green bush in a pan (connects sideways) */
         new BlockDef(
