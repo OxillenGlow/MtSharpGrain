@@ -33,7 +33,6 @@ import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
 import com.mtsharpgrain.gui.Inventory;
 import com.mtsharpgrain.newton.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,9 +63,9 @@ public class Main extends SimpleApplication {
     private static final long WORLD_SEED = 1234L;
 
     // ── Speed FOV ──────────────────────────────────────────────────────────
-    private static final float BASE_FOV = 70f;
-    private static final float SPRINT_FOV = 82f;   // +12° feels fast but still realistic
-    private static final float FOV_LERP_SPEED = 6f;
+    private static final float BASE_FOV = 80f;
+    private static final float SPRINT_FOV = 95f;   // feels faster
+    private static final float FOV_LERP_SPEED = 4f;
     private float currentFov = BASE_FOV;
     private WKeyTracker wKeyTracker;
 
@@ -129,6 +128,7 @@ public class Main extends SimpleApplication {
         TestInit.init(rootNode, flyCam, assetManager, inputManager);
         
         flyCam.setEnabled(false);
+        flyCam.setRotationSpeed(flyCam.getRotationSpeed()*1.5f);
 
         // Parallel W-key tracker so we can drive speed FOV without touching FlyByCamera.
         wKeyTracker = new WKeyTracker(inputManager);
@@ -244,7 +244,7 @@ public class Main extends SimpleApplication {
 
         check.setModPackManager(modPackManager); // enable spatial-click events now that mods are loaded
         
-        flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 3f);// fly cam is too slow
+        flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 5f);// fly cam is too slow
         
         this.vThread = Thread.ofVirtual().start(() -> {
             while(true){

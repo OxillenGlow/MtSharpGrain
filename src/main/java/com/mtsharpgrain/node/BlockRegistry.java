@@ -66,7 +66,6 @@ public final class BlockRegistry {
     public static final int ID_SULFUR       = 8;
     public static final int ID_METAL_BLOCK  = 9;
     public static final int ID_GLASS        = 10;
-
     public static final int ID_PLANT            = 11;
     public static final int ID_ALIEN_PLANT      = 12;
     public static final int ID_WOODEN_STOOL     = 13;
@@ -87,7 +86,7 @@ public final class BlockRegistry {
     public static final int ID_CUSHION_FLAT     = 28;
     public static final int ID_CRYSTAL_TALL     = 29;
     // Human-readable names, index == block id.
-    private static final String[] NAMES = {
+    public static final String[] NAMES = {
         "Air", "Reserved", "Stone", "Dirt", "Grass",
         "Crystal Ore", "Ice Sludge", "Silicon", "Sulfur", "Metal Block", "Glass",
         "Plant", "Alien Plant", "Wooden Stool", "Metal Stool", "Wooden Flat",
@@ -193,7 +192,6 @@ public final class BlockRegistry {
             96f,                                          // shininess
             false,
             "Py"
-            "
         ),
 
         /* 11 – Plant: healthy green bush in a pan (connects sideways) */

@@ -422,7 +422,7 @@ public class Master {
 
         Object[] lines = console.getLines().toArray();
         float y = 0.07f;
-        for (int i = lines.length - 1; i >= 0 && y < 0.4f; i--) {
+        for (int i = lines.length - 1; i >= 0 && y < 0.36f; i--) {
             String line = lines[i].toString();
             int endIndex = Math.min(50, line.length());
             gui.text(line.substring(0, endIndex), 0.65f, y, false);
@@ -432,7 +432,7 @@ public class Master {
         // --- 3. Input field using the plugin ---
         gui.textHAlign("left");
         gui.textVAlign("bottom");
-        gui.textSize(0.04f);
+        gui.textSize(0.08f);
         gui.textColor(ColorRGBA.Yellow);
 
         // Key handler (updates the console buffer)
