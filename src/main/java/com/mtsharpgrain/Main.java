@@ -63,8 +63,8 @@ public class Main extends SimpleApplication {
     private static final long WORLD_SEED = 1234L;
 
     // ── Speed FOV ──────────────────────────────────────────────────────────
-    private static final float BASE_FOV = 80f;
-    private static final float SPRINT_FOV = 95f;   // feels faster
+    private static final float BASE_FOV = 85f;
+    private static final float SPRINT_FOV = 97f;   // feels faster
     private static final float FOV_LERP_SPEED = 4f;
     private float currentFov = BASE_FOV;
     private WKeyTracker wKeyTracker;
@@ -363,13 +363,16 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/blocktrailmod.js", "worlds/"+world+"/mod/BlockTrail/blocktrailmod.js");
             AssetConverter.extract("/mods/426.js", "worlds/"+world+"/mod/GeoHasher/426.js");
             AssetConverter.extract("/mods/bridge.js", "worlds/"+world+"/mod/InstantBridges/bridge.js");
-            AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/Confetti/confetti.js");
+            AssetConverter.extract("/mods/confetti.js", "worlds/"+world+"/mod/ConfettiMAIN/confetti.js");
             AssetConverter.extract("/mods/teleport.js", "worlds/"+world+"/mod/TeleportMeMAIN/teleport.js");
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", "worlds/"+world+"/mod/SurvivalFramework/death.js");
             AssetConverter.extract("/mods/SurvivalFramework/05_location.js", "worlds/"+world+"/mod/SurvivalFramework/location.js");
             AssetConverter.extract("/mods/simpleNPC.js", "worlds/"+world+"/mod/SimpleNPC/simpleNPC.js");
-            AssetConverter.extract("/mods/TimerDemo.js", "worlds/"+world+"/mod/TimerTest/TimerDemo.js");
+            AssetConverter.extract("/mods/TimerDemo.js", "worlds/"+world+"/mod/Timer/TimerDemo.js");
             AssetConverter.extract("/mods/Delayed.js", "worlds/"+world+"/mod/TimerTest2/Delay.js");
+            AssetConverter.extract("/mods/orbs.js", "worlds/"+world+"/mod/Lights/orbs.js");
+            AssetConverter.extract("/mods/platform.js", "worlds/"+world+"/mod/Platforms/platform.js");
+            AssetConverter.extract("/mods/status.js", "worlds/"+world+"/mod/LFTInfo/status.js");
             
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {
