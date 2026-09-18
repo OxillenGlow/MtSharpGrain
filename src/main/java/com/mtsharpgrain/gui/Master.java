@@ -192,9 +192,9 @@ public class Master {
 
         // Anchor point for the whole widget (just above the block-type row)
         float centerX = 0.3f;
-        float baseY   = 0.10f;
-gui.textColor(ColorRGBA.Blue);
-        gui.textSize(0.03f);
+        float baseY   = 0.05f;
+        gui.textColor(ColorRGBA.Blue);
+        gui.textSize(0.02f);
         gui.text("View distance: "+String.valueOf(Main.VIEW_DISTANCE), centerX, baseY, null);
 
 
