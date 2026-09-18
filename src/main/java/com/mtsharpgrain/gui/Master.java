@@ -193,20 +193,12 @@ public class Master {
         // Anchor point for the whole widget (just above the block-type row)
         float centerX = 0.3f;
         float baseY   = 0.10f;
-
-        // ── Big number in the middle ───────────────────────────────────────
-        gui.textColor(ColorRGBA.Blue);
-        gui.textSize(0.04f);
+gui.textColor(ColorRGBA.Blue);
+        gui.textSize(0.03f);
         gui.text("View distance: "+String.valueOf(Main.VIEW_DISTANCE), centerX, baseY, null);
 
-        // ── Up arrow (increase view distance) ─────────────────────────────
-        gui.imageSize(0.03f, 0.03f)
-           .imageAlpha(true)
-           .imageColor(ColorRGBA.White)
-           .imageHAlign("center")
-           .imageVAlign("bottom");
 
-        gui.text("[+]", centerX + 0.07f, baseY, (event, arg) -> {
+        gui.text("[+]", centerX + 0.21f, baseY, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 if (Main.VIEW_DISTANCE < 9) Main.VIEW_DISTANCE++;
             }
@@ -214,7 +206,7 @@ public class Master {
         });
 
         // ── Down arrow (decrease view distance) ───────────────────────────
-        gui.text("[-]", centerX - 0.07f, baseY, (event, arg) -> {
+        gui.text("[-]", centerX - 0.21f, baseY, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 if (Main.VIEW_DISTANCE > 1) Main.VIEW_DISTANCE--;
             }
