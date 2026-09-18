@@ -74,7 +74,7 @@ public class Sun {
         float degPerSecond = 360f / rotationPeriodSeconds;
         angleDeg = (angleDeg + degPerSecond * tpf) % 360f;
         float rad = angleDeg * FastMath.DEG_TO_RAD;
-        var orbitRadius = com.mtsharpgrain.Main.VIEW_DISTANCE*16;
+        var orbitRadius = com.mtsharpgrain.Main.VIEW_DISTANCE*16+36;
         float x = playerTrueWorldPos.x + FastMath.cos(rad) * orbitRadius;
         float y = playerTrueWorldPos.y + FastMath.sin(rad) * orbitRadius;
         float z = playerTrueWorldPos.z;

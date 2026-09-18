@@ -188,30 +188,42 @@ public class Master {
     private static void drawViewDistanceSelector(IGui gui) {
         gui.textHAlign("center");
         gui.textVAlign("bottom");
+        gui.textSize(0.02f);
 
-        // sits above the block-type row (which occupies y .. y+0.045)
-        float y = 0.09f;
+        // Anchor point for the whole widget (just above the block-type row)
+        float centerX = 0.3f;
+        float baseY   = 0.10f;
 
-        gui.textColor(ColorRGBA.White);
-        gui.text("View Distance: [" + Main.VIEW_DISTANCE + "]", 0.5f, y + 0.045f, null);
+        // ── Big number in the middle ───────────────────────────────────────
+        gui.textColor(ColorRGBA.Blue);
+        gui.textSize(0.04f);
+        gui.text("View distance: "+String.valueOf(Main.VIEW_DISTANCE), centerX, baseY, null);
 
-        int slots = 9;
-        float slotSpacing = 0.1f;
+        // ── Up arrow (increase view distance) ─────────────────────────────
+        gui.imageSize(0.03f, 0.03f)
+           .imageAlpha(true)
+           .imageColor(ColorRGBA.White)
+           .imageHAlign("center")
+           .imageVAlign("bottom");
 
-        for (int i = 1; i <= slots; i++) {
-            final int dist = i;
-            float xpos = (float) (0.5f + (slotSpacing * (i - (float)slots/2)));
+        gui.text("[+]", centerX + 0.07f, baseY, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                if (Main.VIEW_DISTANCE < 9) Main.VIEW_DISTANCE++;
+            }
+            return true;
+        });
 
-            gui.textColor(dist == Main.VIEW_DISTANCE ? ColorRGBA.Green : ColorRGBA.Blue);
-            gui.text("[" + dist + "]", xpos, y, (event, arg) -> {
-                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                    Main.VIEW_DISTANCE = dist;
-                }
-                return true;
-            });
-        }
+        // ── Down arrow (decrease view distance) ───────────────────────────
+        gui.text("[-]", centerX - 0.07f, baseY, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                if (Main.VIEW_DISTANCE > 1) Main.VIEW_DISTANCE--;
+            }
+            return true;
+        });
+
+        gui.textSize(0.02f); // restore the size tic() set before this call
     }
-
+    
     // ── Navigation: home -> home/modview ────────────────────────────────
     private static void drawHomeNav(IGui gui) {
         gui.textHAlign("right");

@@ -120,8 +120,7 @@ public class Main extends SimpleApplication {
 
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
-        cam.setFrustumPerspective(BASE_FOV, aspectRatio, 0.5f, 5000.0f);
-        cam.setFrustumFar(180f);
+        cam.setFrustumPerspective(BASE_FOV, aspectRatio, 0.5f, 180.0f);
         currentFov = BASE_FOV;
         
 
@@ -151,7 +150,7 @@ public class Main extends SimpleApplication {
         // Create the orbiting Sun first so we can give the shadow renderer the same DirectionalLight.
         this.sunObject = new Sun(assetManager, rootNode);
         // Testing shadows: use the Sun's DirectionalLight so shadows follow the orbiting sun.
-        com.jme3.shadow.DirectionalLightShadowRenderer dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024*2, 1);
+        com.jme3.shadow.DirectionalLightShadowRenderer dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024*4, 1);
         dlsr.setLight(this.sunObject.getLight());
         viewPort.addProcessor(dlsr);
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
