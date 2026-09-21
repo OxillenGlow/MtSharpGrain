@@ -192,9 +192,6 @@ GitHub source: https://github.com/openconcerto/jVisualScripting
 - **GraalVM's community GraalJS** for the javascript modules
 GitHub source: https://github.com/oracle/graaljs
 
-- **Minkmin's HYPER Asset Pack** for some assets.
-Available at: https://minkmin.itch.io/hyper-starter-pack
-
 - **Kenney Assets** for great free CC0 assets
 Available at: https://kenney.nl/assets
 
