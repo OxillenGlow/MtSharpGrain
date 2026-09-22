@@ -371,7 +371,7 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/Delayed.js", "worlds/"+world+"/mod/TimerTest2/Delay.js");
             AssetConverter.extract("/mods/orbs.js", "worlds/"+world+"/mod/Lights/orbs.js");
             AssetConverter.extract("/mods/platform.js", "worlds/"+world+"/mod/Platforms/platform.js");
-            AssetConverter.extract("/mods/status.js", "worlds/"+world+"/mod/LFTInfo/status.js");
+            AssetConverter.extract("/mods/status.js", "worlds/"+world+"/mod/LFT-Coordinates/status.js");
             
             System.out.println("Extracted default mod files");
         } catch (IOException ex) {

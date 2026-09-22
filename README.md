@@ -125,6 +125,7 @@ map
       GUI Upgrade - Ongoing
       
     Core Systems
+      Fix the on block change system. (perhaps only for `MAIN` mods?)
       World selection UI - 0%
         Split Main.java before and after world creation
         Implement super simple gui for selection - 0%

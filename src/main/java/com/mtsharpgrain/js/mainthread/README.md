@@ -406,6 +406,8 @@ error in the log.
 
 ### Validating block changes
 
+> [!IMPORTANT] This whole section will be changed shortly.
+
 Register a function that runs on every `Block.place` / `Block.destroy` call
 (from any script in any pack, or from player-driven edits) and decides
 whether it's allowed.
