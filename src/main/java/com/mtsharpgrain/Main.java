@@ -104,6 +104,7 @@ public class Main extends SimpleApplication {
 
         // This takes some files out of resources and extracts them to world folder.
         extractFiles(worldname);
+        WorldData.init(Paths.get("worlds/" + worldname));
         
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("Interface/Fonts/Console.fnt");
