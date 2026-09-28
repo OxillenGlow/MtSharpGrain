@@ -3,6 +3,7 @@ package com.mtsharpgrain;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme.igui.IGui;
+import com.jme3.asset.plugins.FileLocator;
 import com.jme.igui.IGuiAppState;
 import com.jme.igui.IGuiComponent;
 import com.jme3.app.SimpleApplication;
@@ -103,6 +104,7 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        assetManager.registerLocator("worlds/" + worldname, FileLocator.class);
 
         // This takes some files out of resources and extracts them to world folder.
         extractFiles(worldname);
