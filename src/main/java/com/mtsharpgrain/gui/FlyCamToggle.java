@@ -11,15 +11,29 @@ public class FlyCamToggle implements ActionListener {
     private static final String TOGGLE_FLYCAM = "ToggleFlyCam";
     private final FlyByCamera flyCam;
     private final InputManager inputManager;
+    private static FlyCamToggle instance; // a static pointer for the object
 
     public FlyCamToggle(InputManager inputManager, FlyByCamera flyCam) {
         this.flyCam = flyCam;
         this.inputManager = inputManager;
+        instance = this;   // save it to static
 
-        inputManager.addMapping(TOGGLE_FLYCAM, new KeyTrigger(KeyInput.KEY_F), new KeyTrigger(KeyInput.KEY_ESCAPE));
+        inputManager.addMapping(TOGGLE_FLYCAM, new KeyTrigger(KeyInput.KEY_F));
         inputManager.addListener(this, TOGGLE_FLYCAM);
-
         System.out.println("FlyCamToggle initialized");
+    }
+
+    /** Called by the Play button (or anything else) to enter play mode. */
+    public static void enterPlayMode() {
+        if (instance == null) return;
+        if (instance.flyCam.isEnabled()) return; // already playing
+    
+        instance.flyCam.setEnabled(true);
+        GameState.setokPlace(true);
+        GameState.enterPlay();
+        instance.inputManager.setCursorVisible(false);
+
+        System.out.println("FlyCam is now ON (entered play via button)");
     }
 
     @Override
