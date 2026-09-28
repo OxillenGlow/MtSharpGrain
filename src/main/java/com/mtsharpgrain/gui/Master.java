@@ -346,10 +346,25 @@ public class Master {
 
         gui.text("-", 0.5f, 1f, null);
         gui.text("-", 0.5f, 0.0f, null);
-        // ── Big Play button ──────────────────────────────────────────────────
-        gui.textColor(ColorRGBA.Green);
-        gui.textSize(0.05f);
-        gui.text("Press [F] to play", 0.5f, 0.5f, false);
+        
+        // ── Green glass tab that encircles / sits under the Play label ─────────
+        gui.imageSize(0.28f, 0.12f)          // adjust to taste
+           .imageAlpha(true)
+           .imageColor(ColorRGBA.Green)  // green tint
+           .imageHAlign("center")
+           .imageVAlign("center");
+    
+        gui.image("/cc0/bw_glass_tab.png", 0.5f, 0.5f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                FlyCamToggle.enterPlayMode();
+            }
+            return true;
+         });
+
+        // Label on top of the glass tab
+        gui.textColor(ColorRGBA.White);
+        gui.textSize(0.045f);
+        gui.text("PLAY", 0.5f, 0.5f, false);   // or keep "Press [F] to play" if you still want the hint
 
         gui.pop();
     }
