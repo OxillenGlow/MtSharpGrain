@@ -1,6 +1,6 @@
 Notices will go here:
 
-So if any thread safty problems come up in the future change the creation of the:
+So if any thread safety problems come up in the future change the creation of the:
 ```
         Thread vThread = Thread.ofVirtual().start(() -> {
             while(true){
