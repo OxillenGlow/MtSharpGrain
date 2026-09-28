@@ -114,6 +114,9 @@ public class Master {
             drawModDetail(gui, modPackManager, packName);
             // The ONLY place a mod's own GuiApi elements are allowed to draw.
             modPackManager.setOnlyDrawing(packName);
+        } else if ("startscreen".equals(path)) {
+            modPackManager.disableAllDrawing();
+            drawStartScreen(gui);
         } else {
             // Unknown/stale path (e.g. saved from an old session) — fall back to home.
             GameState.navigateTo("home");
@@ -477,23 +480,71 @@ public class Master {
         inputPlugin.input("_____________________________________",
             0.65f, 0.023f,
             (mouse, bool) -> {
-                    if (mouse == IGuiMouseEvent.MOUSE_IN){
-                        in = true;
-                        return true;
-                    }
+                if (mouse == IGuiMouseEvent.MOUSE_IN){
+                    in = true;
+                    return true;
+                }
                     in = false;
-                    return false;
-                },
-                keyHandler,
+                return false;
+            },
+            keyHandler,
             false
         );
         
         gui.textSize(0.015f);
-
+    
         gui.text("YOU:"+console.getCurrentInput() + flash, 0.65f,0.03f, false);
         gui.imageSize(0.38f, 0.4f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("left").imageVAlign("top");
 
         gui.image("/cc0/Console.png",0.62f,0.4f);
         gui.zIndex(0f);
+    }
+
+    private static void drawStartScreen(IGui gui) {
+        var worldDir = Paths.get("worlds/" + Main.worldname);
+   
+        // ── background image (fullscreen if present) ───────────────────────
+        var png = worldDir.resolve("start.png");
+        if (Files.exists(png)) {
+            gui.imageSize(1f, 1f)
+                .imageAlpha(true)
+                .imageColor(ColorRGBA.White)
+                .imageHAlign("center")
+                .imageVAlign("center");
+            gui.image(png.toString().replace('\\', '/'), 0.5f, 0.5f);
+        }
+
+        // ── yellow text from start.txt ─────────────────────────────────────
+        var txt = worldDir.resolve("start.txt");
+        if (Files.exists(txt)) {
+            gui.textFont("Interface/Fonts/Console.fnt");
+            gui.textHAlign("center");
+            gui.textVAlign("center");
+            gui.textColor(ColorRGBA.Yellow);
+            gui.textSize(0.03f);
+            try {
+                var lines = Files.readAllLines(txt);
+                float y = 0.7f;
+                for (var line : lines) {
+                    gui.text(line, 0.5f, y, null);
+                    y -= 0.04f;
+                }
+            } catch (IOException e) {
+                System.err.println("[startscreen] failed to read start.txt: " + e.getMessage());
+            }
+        }
+
+        // ── big red [ Play Now ] bottom-right ──────────────────────────────
+        gui.textHAlign("right");
+        gui.textVAlign("bottom");
+        gui.textColor(ColorRGBA.Red);
+        gui.textSize(0.05f);
+        gui.text("[ Play Now ]", 0.95f, 0.08f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                WorldData.set("startScreened", "true");
+                GameState.navigateTo("home");
+            }
+            return true;
+        });
     }
 }
