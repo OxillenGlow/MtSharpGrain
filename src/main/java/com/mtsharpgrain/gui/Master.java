@@ -504,22 +504,19 @@ public class Master {
     }
 
     private static void drawStartScreen(IGui gui) {
-        var worldDir = Paths.get("worlds/" + Main.worldname);
-   
         // ── background image (fullscreen if present) ───────────────────────
-        var png = worldDir.resolve("start.png");
-        if (Files.exists(png)) {
+        try {
             gui.imageSize(1f, 1f)
                 .imageAlpha(true)
                 .imageColor(ColorRGBA.White)
                 .imageHAlign("center")
                 .imageVAlign("center");
-            gui.image(png.toString().replace('\\', '/'), 0.5f, 0.5f);
-        }
+            gui.image("start.png", 0.5f, 0.5f);
+        } catch (Exception e) {}
 
         // ── yellow text from start.txt ─────────────────────────────────────
-        var txt = worldDir.resolve("start.txt");
-        if (Files.exists(txt)) {
+        try {
+            var txt = worldDir.resolve("start.txt");
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
@@ -535,7 +532,7 @@ public class Master {
             } catch (IOException e) {
                 System.err.println("[startscreen] failed to read start.txt: " + e.getMessage());
             }
-        }
+        } catch (Exception e){}
 
         // ── big red [ Play Now ] bottom-right ──────────────────────────────
         gui.textHAlign("right");
