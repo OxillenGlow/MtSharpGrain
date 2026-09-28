@@ -310,7 +310,7 @@ public class Inventory {
                 } catch (Exception e) {}
             }
         } else {
-            gui.text("**No block selected**, press [F] key and select from [INVENTORY]", 0.5f, 0.1f, null);
+            gui.text("**No block selected**, press [F] or [ESC] and select from [INVENTORY]", 0.5f, 0.1f, null);
         }
 
         gui.textSize(0.02f);
