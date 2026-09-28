@@ -127,7 +127,7 @@ public class Main extends SimpleApplication {
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
         
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
-        IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
+        IGuiComponent text2 = gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
 
         gui.imageSize(0.035f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
            .imageHAlign("center").imageVAlign("center");
