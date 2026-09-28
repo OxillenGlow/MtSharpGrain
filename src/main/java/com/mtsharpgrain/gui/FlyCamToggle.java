@@ -18,7 +18,9 @@ public class FlyCamToggle implements ActionListener {
         this.inputManager = inputManager;
         instance = this;   // save it to static
 
-        inputManager.addMapping(TOGGLE_FLYCAM, new KeyTrigger(KeyInput.KEY_F));
+        inputManager.addMapping(TOGGLE_FLYCAM,
+            new KeyTrigger(KeyInput.KEY_F),
+            new KeyTrigger(KeyInput.KEY_ESCAPE));
         inputManager.addListener(this, TOGGLE_FLYCAM);
         System.out.println("FlyCamToggle initialized");
     }
