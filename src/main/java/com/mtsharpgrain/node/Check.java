@@ -48,8 +48,9 @@ public class Check implements ActionListener {
             System.out.println(System.currentTimeMillis()+ "block interaction");
             
             // ── Hit a voxel chunk — place or remove a block as before ────────
-            BlockSelection selection = blockSelector.selectionFrom(hit, leftPressed);
-            if (leftPressed) {
+            boolean isPlace = !leftPressed;
+            BlockSelection selection = blockSelector.selectionFrom(hit, isPlace);
+            if (isPlace) {
                 System.out.println(System.currentTimeMillis()+"Placing block at " + selection + " of type:" + blockType);
                 worldAccess.setBlockAt(selection.x, selection.y, selection.z, blockType);
                 System.out.println(System.currentTimeMillis()+"Finished: " + selection + " of type:" + blockType);
