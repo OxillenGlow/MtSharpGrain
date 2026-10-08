@@ -343,7 +343,7 @@ public class Main extends SimpleApplication {
 
         gui.imageSize(0.035f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
            .imageHAlign("center").imageVAlign("center");
-        IGuiComponent crosshair = gui.image("img/pointers.blue_4.png", .5f, .5f, true);
+        IGuiComponent crosshair = gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
         
     }
 
@@ -388,6 +388,7 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/platform.js", "worlds/"+world+"/mod/Platforms/platform.js");
             AssetConverter.extract("/mods/status.js", "worlds/"+world+"/mod/LFT-Coordinates/status.js");
             AssetConverter.extract("/stuff/start.txt", "worlds/"+world+"/start.txt");
+            AssetConverter.extract("/stuff/start.png", "worlds/"+world+"/start.png");
             
             System.out.println("Extracted files");
         } catch (IOException ex) {
