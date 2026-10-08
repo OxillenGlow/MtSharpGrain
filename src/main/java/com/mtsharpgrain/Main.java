@@ -372,8 +372,9 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/orbs.js", "worlds/"+world+"/mod/Lights/orbs.js");
             AssetConverter.extract("/mods/platform.js", "worlds/"+world+"/mod/Platforms/platform.js");
             AssetConverter.extract("/mods/status.js", "worlds/"+world+"/mod/LFT-Coordinates/status.js");
+            AssetConverter.extract("/stuff/start.txt", "worlds/"+world+"/start.txt");
             
-            System.out.println("Extracted default mod files");
+            System.out.println("Extracted files");
         } catch (IOException ex) {
             System.out.println("failed"+ex);
         }
