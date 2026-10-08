@@ -3,6 +3,7 @@ package com.mtsharpgrain;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme.igui.IGui;
+import com.jme3.asset.plugins.FileLocator;
 import com.jme.igui.IGuiAppState;
 import com.jme.igui.IGuiComponent;
 import com.jme3.app.SimpleApplication;
@@ -23,6 +24,7 @@ import com.tools.AssetConverter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 import com.mtsharpgrain.gui.GameState;
 import com.mtsharpgrain.gui.WKeyTracker;
 import com.mtsharpgrain.js.JsChunkGenerator;
@@ -31,6 +33,7 @@ import com.mtsharpgrain.js.mainthread.EngineAccess;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
+import com.mtsharpgrain.storage.WorldData;
 import com.mtsharpgrain.gui.Inventory;
 import com.mtsharpgrain.newton.*;
 import java.util.logging.Level;
@@ -101,9 +104,21 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        assetManager.registerLocator("worlds/" + worldname, FileLocator.class);
 
         // This takes some files out of resources and extracts them to world folder.
         extractFiles(worldname);
+        WorldData.init(Paths.get("worlds/" + worldname));
+        var alreadySeen = "true".equals(WorldData.get("startScreened"));
+        if (!alreadySeen) {
+            // only force startscreen if at least one of the assets exists
+            var worldDir = Paths.get("worlds/" + worldname);
+            var hasTxt = Files.exists(worldDir.resolve("start.txt"));
+            var hasPng = Files.exists(worldDir.resolve("start.png"));
+            GameState.guiState = (hasTxt || hasPng) ? "startscreen" : "home";
+        } else {
+            GameState.guiState = "home";
+        }
         
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("Interface/Fonts/Console.fnt");
@@ -112,7 +127,7 @@ public class Main extends SimpleApplication {
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
         
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
-        IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
+        IGuiComponent text2 = gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
 
         gui.imageSize(0.035f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
            .imageHAlign("center").imageVAlign("center");

@@ -16,6 +16,9 @@ import com.mtsharpgrain.js.mainthread.ModPackManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import com.mtsharpgrain.storage.WorldData;
 
 /**
  *
@@ -114,6 +117,9 @@ public class Master {
             drawModDetail(gui, modPackManager, packName);
             // The ONLY place a mod's own GuiApi elements are allowed to draw.
             modPackManager.setOnlyDrawing(packName);
+        } else if ("startscreen".equals(path)) {
+            modPackManager.disableAllDrawing();
+            drawStartScreen(gui);
         } else {
             // Unknown/stale path (e.g. saved from an old session) — fall back to home.
             GameState.navigateTo("home");
@@ -346,10 +352,25 @@ public class Master {
 
         gui.text("-", 0.5f, 1f, null);
         gui.text("-", 0.5f, 0.0f, null);
-        // ── Big Play button ──────────────────────────────────────────────────
-        gui.textColor(ColorRGBA.Green);
-        gui.textSize(0.05f);
-        gui.text("Press [F] to play", 0.5f, 0.5f, false);
+        
+        // ── Green glass tab that encircles / sits under the Play label ─────────
+        gui.imageSize(0.28f, 0.12f)          // adjust to taste
+           .imageAlpha(true)
+           .imageColor(ColorRGBA.Green)  // green tint
+           .imageHAlign("center")
+           .imageVAlign("center");
+    
+        gui.image("/cc0/bw_glass_tab.png", 0.5f, 0.5f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                FlyCamToggle.enterPlayMode();
+            }
+            return true;
+         });
+
+        // Label on top of the glass tab
+        gui.textColor(ColorRGBA.White);
+        gui.textSize(0.045f);
+        gui.text("PLAY", 0.5f, 0.5f, false);   // or keep "Press [F] to play" if you still want the hint
 
         gui.pop();
     }
@@ -462,23 +483,68 @@ public class Master {
         inputPlugin.input("_____________________________________",
             0.65f, 0.023f,
             (mouse, bool) -> {
-                    if (mouse == IGuiMouseEvent.MOUSE_IN){
-                        in = true;
-                        return true;
-                    }
+                if (mouse == IGuiMouseEvent.MOUSE_IN){
+                    in = true;
+                    return true;
+                }
                     in = false;
-                    return false;
-                },
-                keyHandler,
+                return false;
+            },
+            keyHandler,
             false
         );
         
         gui.textSize(0.015f);
-
+    
         gui.text("YOU:"+console.getCurrentInput() + flash, 0.65f,0.03f, false);
         gui.imageSize(0.38f, 0.4f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("left").imageVAlign("top");
 
         gui.image("/cc0/Console.png",0.62f,0.4f);
         gui.zIndex(0f);
+    }
+
+    private static void drawStartScreen(IGui gui) {
+        // ── background image (fullscreen if present) ───────────────────────
+        try {
+            gui.imageSize(1f, 1f)
+                .imageAlpha(true)
+                .imageColor(ColorRGBA.White)
+                .imageHAlign("center")
+                .imageVAlign("center");
+            gui.image("start.png", 0.5f, 0.5f);
+        } catch (Exception e) {}
+
+        // ── yellow text from start.txt ─────────────────────────────────────
+        try {
+            var txt = worldDir.resolve("start.txt");
+            gui.textFont("Interface/Fonts/Console.fnt");
+            gui.textHAlign("center");
+            gui.textVAlign("center");
+            gui.textColor(ColorRGBA.Yellow);
+            gui.textSize(0.03f);
+            try {
+                var lines = Files.readAllLines(txt);
+                float y = 0.7f;
+                for (var line : lines) {
+                    gui.text(line, 0.5f, y, null);
+                    y -= 0.04f;
+                }
+            } catch (IOException e) {
+                System.err.println("[startscreen] failed to read start.txt: " + e.getMessage());
+            }
+        } catch (Exception e){}
+
+        // ── big red [ Play Now ] bottom-right ──────────────────────────────
+        gui.textHAlign("right");
+        gui.textVAlign("bottom");
+        gui.textColor(ColorRGBA.Red);
+        gui.textSize(0.05f);
+        gui.text("[ Play Now ]", 0.95f, 0.08f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                WorldData.set("startScreened", "true");
+                GameState.navigateTo("home");
+            }
+            return true;
+        });
     }
 }
