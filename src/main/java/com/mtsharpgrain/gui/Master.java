@@ -235,7 +235,12 @@ public class Master {
             }
             return true;
         });
-        gui.textSize(0.02f);
+        gui.text("Help ?", 0.95f, 0.90f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                GameState.navigateTo("startscreen");
+            }
+            return true;
+        });
     }
 
     // ── home/modview: table of mods with enable/disable ────────────────
@@ -418,7 +423,7 @@ public class Master {
         }
     }
     
-    static boolean showTerminal = true;
+    static boolean showTerminal = false;
     
     private static void drawConsole(IGui gui) {
         gui.imageColor(ColorRGBA.Black);
@@ -426,7 +431,7 @@ public class Master {
         gui.textVAlign("top");
         gui.textSize(0.02f);
         gui.zIndex(9999999);
-        var terminalbtn = showTerminal? "[X]": ("play".equals(GameState.guiState))?"":"[<_]";
+        var terminalbtn = showTerminal? "[X - Close]": ("play".equals(GameState.guiState))?"":"[< Terminal]";
         gui.text(terminalbtn, 1f, 0.4f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 showTerminal = !showTerminal;
@@ -481,7 +486,7 @@ public class Master {
         var flash = (Master.in && (System.currentTimeMillis() / 200) % 2 == 1) ? ">" : "";
 
         inputPlugin.input("_____________________________________",
-            0.65f, 0.023f,
+            0.65f, 0.02f,
             (mouse, bool) -> {
                 if (mouse == IGuiMouseEvent.MOUSE_IN){
                     in = true;
@@ -516,12 +521,13 @@ public class Master {
 
         // ── yellow text from start.txt ─────────────────────────────────────
         try {
+            var worldDir = Paths.get("worlds/" + Main.worldname);
             var txt = worldDir.resolve("start.txt");
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
             gui.textColor(ColorRGBA.Yellow);
-            gui.textSize(0.03f);
+            gui.textSize(0.01f);
             try {
                 var lines = Files.readAllLines(txt);
                 float y = 0.7f;

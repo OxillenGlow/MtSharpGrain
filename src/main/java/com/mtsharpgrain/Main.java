@@ -131,7 +131,7 @@ public class Main extends SimpleApplication {
 
         gui.imageSize(0.035f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
            .imageHAlign("center").imageVAlign("center");
-        IGuiComponent crosshair = gui.image("img/pointers.blue_4.png", .5f, .5f, true);
+        IGuiComponent crosshair = gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
 
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
