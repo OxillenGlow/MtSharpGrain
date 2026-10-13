@@ -1,4 +1,4 @@
-<img src="Pictures/Sc.png" align="center"/> 
+<img src="Pictures/NewTerrain.png" align="center"/> 
 
 # MtSharpGrain 
 ![GitHub Release](https://img.shields.io/github/v/release/Oxillenglow/MtSharpGrain?include_prereleases)
