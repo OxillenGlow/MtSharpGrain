@@ -8,6 +8,7 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+// test
 
 public class Test {
     public static JFrame main(String[] args) throws IOException {
