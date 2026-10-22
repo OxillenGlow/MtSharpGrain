@@ -10,6 +10,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  * Orbiting day/night sun: a small unshaded cube + rotating DirectionalLight
@@ -154,7 +155,8 @@ public class Sun {
     public void loadTime() {
         String worldName = com.mtsharpgrain.Main.worldname;
         String effectiveWorldName = (worldName == null || worldName.isEmpty()) ? "my_world" : worldName;
-        try (var in = new java.io.BufferedReader(new java.io.FileReader("worlds/" + effectiveWorldName + "/sun_time.txt"))) {
+        var file = Main.worldDir.resolve("sun_time.txt");
+        try (var in = Files.newBufferedReader(file)) {
             angleDeg = Float.parseFloat(in.readLine());
         } catch (Exception e) {
             // file doesn't exist yet → ignore
@@ -162,10 +164,13 @@ public class Sun {
     }
 
     public void saveTime() {
-        String worldName = com.mtsharpgrain.Main.worldname;
-        String effectiveWorldName = (worldName == null || worldName.isEmpty()) ? "my_world" : worldName;
-        try (var out = new java.io.PrintWriter("worlds/" + effectiveWorldName + "/sun_time.txt")) {
-            out.println(angleDeg);
+        var file = Main.worldDir.resolve("sun_time.txt");
+        try {
+            Files.createDirectories(file.getParent()); // ensure ~/.mtsharpgrain/worlds/<name>/ exists
+            try (var out = Files.newBufferedWriter(file)) {
+                out.write(Float.toString(angleDeg));
+                out.newLine();
+            }
         } catch (Exception e) {
             System.err.println("Sun: could not save time: " + e.getMessage());
         }
