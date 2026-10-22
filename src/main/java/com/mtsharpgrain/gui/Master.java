@@ -1,9 +1,30 @@
 package com.mtsharpgrain.gui;
 
-// TEMP: file being restored - see next commit if truncated
+import com.jme.igui.IGui;
+import com.jme.igui.IGuiMouseEvent;
+import com.jme.igui.extras.IGuiInputFields;
+import com.jme.igui.extras.IGuiInputFieldsAppState;
+import com.jme3.app.state.AppStateManager;
+import com.jme3.input.InputManager;
+import com.jme3.input.KeyInput;
+import com.jme3.input.event.KeyInputEvent;
+import com.jme3.math.ColorRGBA;
+import com.mtsharpgrain.node.BlockRegistry;
+import com.mtsharpgrain.node.BlockRegistry.BlockDef;
+import com.mtsharpgrain.Main;
+import com.mtsharpgrain.js.mainthread.ModPackManager;
+import java.io.IOException;
+import java.util.List;
+import java.util.function.Consumer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import com.mtsharpgrain.storage.WorldData;
+
+/**
+ *
+ * @author oxillenglow
+ */
 public class Master {
-<<<<<<< HEAD
-=======
     // amount of block types (0..x inclusive => x+1 buttons)
     public static int x = 10;
     // currently selected block type
@@ -16,6 +37,8 @@ public class Master {
     public static IGuiInputFields inputPlugin;
     
     public static Console console = new Console(20); // show up to 20 lines
+    private static boolean opened=false;
+    private static boolean openedI=false;
     
     public static void init(IGui gui, InputManager inputManager, AppStateManager stateManager){
         
@@ -206,7 +229,7 @@ public class Master {
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.02f);
+        gui.textSize(0.017f);
         // TODO: swap for gui.image(...) once nav-arrow assets are picked from the Hyper pack
         gui.text("Mods >", 0.95f, 0.95f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
@@ -217,6 +240,22 @@ public class Master {
         gui.text("Help ?", 0.95f, 0.90f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 GameState.navigateTo("startscreen");
+            }
+            return true;
+        });
+        gui.textColor(opened? ColorRGBA.Green:ColorRGBA.Blue);
+        gui.text(opened? "Opened!" :"Github source code", 0.95f, 1f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                com.tools.AiGeneratedTools.openWebpage("https://github.com/OxillenGlow/MtSharpGrain");
+                opened = true;
+            }
+            return true;
+        });
+        gui.textColor(openedI? ColorRGBA.Green:ColorRGBA.Blue);
+        gui.text(openedI? "Opened!" :"Itch.io page", 0.95f, 0.85f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                com.tools.AiGeneratedTools.openWebpage("https://oxillenglowdist.itch.io/mt-sharpgrain");
+                openedI = true;
             }
             return true;
         });
@@ -244,7 +283,7 @@ public class Master {
         gui.text("Installed Mods:\n*click* on one to veiw it      press[Buttons] to disable", 0.05f, 0.85f, null);
         gui.textSize(0.013f);
         
-        float y = 0.76f;
+        float y = 0.75f;
         float rowSpacing = 0.03f;
 
         for (String packName : modPackManager.getSortedPackNames()) {
@@ -366,7 +405,7 @@ public class Master {
 
         gui.textColor(ColorRGBA.White);
         gui.textSize(0.018f);
-        gui.text("Saved Mods:", 0.95f, 0.85f, null);
+        gui.text("Saved Mods:", 0.95f, 0.80f, null);
 
         gui.textSize(0.015f);
         float y = 0.80f;
@@ -396,7 +435,7 @@ public class Master {
         if (!(com.mtsharpgrain.WorldAccess.percent == 0)){
             gui.textHAlign("center");
             gui.textVAlign("top");
-            gui.textSize(0.2f);
+            gui.textSize(0.02f);
             gui.textColor(ColorRGBA.Black);
             gui.text("[breaking/placing]"+ com.mtsharpgrain.WorldAccess.percent +"%", 0.5f, 0.4f, null);
         }
@@ -532,5 +571,4 @@ public class Master {
             return true;
         });
     }
->>>>>>> parent of 4df4c0c (hmm?)
 }
