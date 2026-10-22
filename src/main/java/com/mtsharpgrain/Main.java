@@ -75,7 +75,7 @@ public class Main extends SimpleApplication {
         AppSettings settings = new AppSettings(true);
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
-        settings.setTitle("MtSharpGrain-" + version + " js enabled");
+        settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
         settings.setResizable(true);
         settings.setSamples(4);
         System.out.println("new Main");

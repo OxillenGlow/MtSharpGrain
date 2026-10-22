@@ -26,13 +26,22 @@ project.ext {
     jmeVer = '3.9.0-stable'
 }
 
-// Assets live in the top-level assets/ folder and are included as resources
-// of the main project. This removes the multi-module dependency that broke
-// JitPack / jME library resolution (com.github.OxillenGlow:assets:...).
-sourceSets {
-    main {
-        resources {
-            srcDir 'assets'
+project(":assets") {
+    apply plugin: "java"
+
+    layout.buildDirectory.set(rootProject.file("build/assets"))
+
+    sourceSets {
+        main {
+            resources {
+                srcDir '.'
+            }
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
         }
     }
 }
@@ -56,6 +65,8 @@ dependencies {
     implementation "org.graalvm.polyglot:js-community:24.1.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    runtimeOnly project(':assets')
 }
 
 jar {
@@ -92,7 +103,7 @@ tasks.named('run', JavaExec) {
 // (inside the script, via uname) rather than baked in at build time.
 tasks.named('startScripts').configure {
     doLast {
-        def macBlock = '''if [[ "$(uname)" == *\"Darwin\"* ]]; then
+        def macBlock = '''if [[ "$(uname)" == *"Darwin"* ]]; then
     DEFAULT_JVM_OPTS="$DEFAULT_JVM_OPTS \\"-XstartOnFirstThread\\""
 fi
 '''
