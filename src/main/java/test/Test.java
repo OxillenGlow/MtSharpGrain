@@ -8,6 +8,7 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+// test
 
 public class Test {
     public static JFrame main(String[] args) throws IOException {
@@ -18,7 +19,7 @@ public class Test {
         
         
         Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-        System.out.println("0");
+        System.out.println("0"); 
         javax.swing.JFrame frame = new javax.swing.JFrame("Test");
         System.out.println("1");
         Main app = new Main();
