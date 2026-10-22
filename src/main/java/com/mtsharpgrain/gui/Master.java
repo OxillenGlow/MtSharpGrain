@@ -539,7 +539,7 @@ public class Master {
 
         // ── yellow text from start.txt ─────────────────────────────────────
         try {
-            var worldDir = Paths.get("worlds/" + Main.worldname);
+            var worldDir = Main.worldDir;
             var txt = worldDir.resolve("start.txt");
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
