@@ -1,1 +1,5 @@
-RESTORE_FROM_FILE
+package com.mtsharpgrain.gui;
+
+// TEMP: file being restored - see next commit if truncated
+public class Master {
+}
