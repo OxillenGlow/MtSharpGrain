@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tools;
 
 import java.io.IOException;
@@ -53,5 +49,30 @@ public class AiGeneratedTools {
 
         // Return the body of the response (the HTML)
         return response.body();
+    }
+    public static void openFolder(Path dir) {
+        try {
+            Files.createDirectories(dir); // so Finder/Explorer always has something to open
+            if (Desktop.isDesktopSupported()
+                && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+                Desktop.getDesktop().open(dir.toFile());
+                return;
+            }
+        } catch (Exception ignored) {}
+        var os = System.getProperty("os.name").toLowerCase();
+        ProcessBuilder pb;
+        var path = dir.toAbsolutePath().toString();
+        if (os.contains("win")) {
+            pb = new ProcessBuilder("explorer", path);
+        } else if (os.contains("mac")) {
+            pb = new ProcessBuilder("open", path);
+        } else {
+            pb = new ProcessBuilder("xdg-open", path);
+        }
+        try {
+            pb.start();
+        } catch (IOException e) {
+            System.err.println("Could not open folder: " + path + " — " + e.getMessage());
+        }
     }
 }
