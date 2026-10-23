@@ -1,10 +1,13 @@
 package com.tools;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  *
@@ -53,11 +56,10 @@ public class AiGeneratedTools {
     public static void openFolder(Path dir) {
         try {
             Files.createDirectories(dir); // so Finder/Explorer always has something to open
-            if (Desktop.isDesktopSupported()
-                && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-                Desktop.getDesktop().open(dir.toFile());
-                return;
-            }
+            //if (Desktop.isDesktopSupported() && !System.getProperty("os.name").toLowerCase().contains("mac") && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {// LWJGL doesent like AWT on macs :( (not sure if it likes awt on any other os though but i havent heard anything about that yet)
+            //    Desktop.getDesktop().open(dir.toFile());
+            //    return;
+            //}
         } catch (Exception ignored) {}
         var os = System.getProperty("os.name").toLowerCase();
         ProcessBuilder pb;

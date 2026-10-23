@@ -277,18 +277,23 @@ public class Master {
             }
             return true;
         });
-        gui.textSize(0.02f);
+        gui.textSize(0.015f);
 
         gui.textColor(ColorRGBA.White);
         gui.text("Installed Mods:\n*click* on one to veiw it      press[Buttons] to disable", 0.05f, 0.85f, null);
-        gui.textColor(ColorRGBA.Cyan);
-        gui.text("[Open mods folder]", 0.55f, 0.85f, (event, arg) -> {
+        gui.textSize(0.02f);
+        gui.textHAlign("right");
+        gui.textVAlign("top");
+        gui.textColor(ColorRGBA.Blue);
+        gui.text("[Open mods folder]", 0.55f, 0.95f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && Main.worldDir != null) {
                 com.tools.AiGeneratedTools.openFolder(Main.worldDir.resolve("mod"));
             }
             return true;
         });
         gui.textSize(0.013f);
+        gui.textHAlign("left");
+        gui.textVAlign("top");
         
         float y = 0.75f;
         float rowSpacing = 0.03f;
