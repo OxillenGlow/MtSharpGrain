@@ -52,7 +52,6 @@ public class Main extends SimpleApplication {
     private Sun sunObject;
     private Inventory inventory;
     private EngineAccess engineAccess;
-    private int modLastTick;
     public static String worldname;
     /** Absolute world folder: ~/.mtsharpgrain/worlds/<worldname> */
     public static Path worldDir;
@@ -245,7 +244,7 @@ public class Main extends SimpleApplication {
         }
         Vector3f trueWorldPos = cam.getLocation().subtract(rootNode.getLocalTranslation());
         renderManagermg.tick(trueWorldPos.x, trueWorldPos.y, trueWorldPos.z);
-        modPackManager.tick(modLastTick, "Update");
+        modPackManager.tick(tpf, "Update");
         modPackManager.draw(gui);
         modPackManager.processGuiClicks(tpf);
 

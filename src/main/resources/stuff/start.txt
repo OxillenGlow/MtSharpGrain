@@ -7,5 +7,6 @@ This is a small project, you can contact me directly at oxillenglow@proton.me
 - Press F to exit full screen
 - Press ESC for quick shutoff
 
-To start, you can press the button below
-If you enjoy, plz tell others. Want a feature? email me.
+
+If you enjoy, plz tell others. Want a feature? email me or make an issue on github.
+To start, you can press the button below -->>
