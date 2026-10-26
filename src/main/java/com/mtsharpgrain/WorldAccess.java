@@ -216,9 +216,6 @@ public final class WorldAccess {
                 change.result.complete(true);
             });
         }
-
-        // Reset percent after this processing pass
-        percent = 0;
     }
 
     /**
