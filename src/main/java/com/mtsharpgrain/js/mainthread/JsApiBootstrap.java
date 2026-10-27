@@ -40,12 +40,14 @@ public class JsApiBootstrap {
     private final EngineSceneApi sceneApi;
     private final Context context;
     private final BlockLoaderRegistry blockLoaderRegistry = new BlockLoaderRegistry();
-    private final MatrixApi matrixApiForPack; // created per-construct
+    private final MatrixApi matrixApiForPack;
+    private final WsApi wsApi;
      
     
     public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi,
                           Camera cam, Node rootNode, Path packDir, String packName,
-                          ModPackManager modPackManager, Inventory inventory, EngineAccess engine, TimerManager timerManager) {
+                          ModPackManager modPackManager, Inventory inventory, EngineAccess engine, TimerManager timerManager,
+                          boolean mainThread, ModBridge bridge) {
         // Init all APIs
         this.sceneDelegate = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
         this.sceneApi = new EngineSceneApi(sceneDelegate, engine);
@@ -54,6 +56,8 @@ public class JsApiBootstrap {
         this.guiApi = new GuiApi();
         this.matrixApiForPack = new MatrixApi(packName);
         this.timerManager = timerManager;
+        this.wsApi = new WsApi(mainThread, bridge, engine);
+        
             
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT)
                 .allowArrayAccess(true)
@@ -64,11 +68,10 @@ public class JsApiBootstrap {
                         Double::floatValue
                 )
                 .build();
-        this.context = Context.newBuilder("js")
+        context = Context.newBuilder("js")
                         .allowHostAccess(access)
                         .allowHostClassLookup(name -> false)
                         .build();
-        
 
         // Expose to JavaScript
         context.getBindings("js").putMember("__TimerManager", timerManager);
@@ -81,13 +84,11 @@ public class JsApiBootstrap {
         context.getBindings("js").putMember("__BlockApi", blockApi);
         context.getBindings("js").putMember("__BlockChangeRegistry", blockChangeRegistry);
         context.getBindings("js").putMember("__SpatialClickRegistry", spatialClickRegistry);
-        // Expose per-pack Matrix API (synchronous storage) and Engine lifecycle API
         context.getBindings("js").putMember("Matrix", matrixApiForPack);
         context.getBindings("js").putMember("Engine", new EngineApi(blockLoaderRegistry));
-        // Also keep block loader registry accessible if needed
         context.getBindings("js").putMember("__BlockLoaderRegistry", blockLoaderRegistry);
         context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode, engine));
-
+        context.getBindings("js").putMember("Ws", wsApi);
         context.eval("js",
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
@@ -154,5 +155,9 @@ public class JsApiBootstrap {
     // allow other classes (e.g. JSModifier) to access the per-pack registry
     public BlockLoaderRegistry getBlockLoaderRegistry() {
         return blockLoaderRegistry;
+    }
+    
+    public WsApi getWsApi() {
+        return wsApi;
     }
 }

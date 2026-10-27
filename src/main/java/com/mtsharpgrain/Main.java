@@ -332,6 +332,8 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/status.js", dir.resolve("mod/LFT-Coordinates/status.js").toString());
             AssetConverter.extract("/stuff/start.txt", dir.resolve("start.txt").toString());
             AssetConverter.extract("/stuff/start.png", dir.resolve("start.png").toString());
+            AssetConverter.extract("/mods/nostrFinder.js", dir.resolve("mod/Mtsharpgrain-ChatroomMAIN/nostr.js").toString());
+            
             System.out.println("Extracted files → " + dir.toAbsolutePath());
         } catch (IOException ex) {
             throw new RuntimeException("Failed extracting world files to " + dir, ex);

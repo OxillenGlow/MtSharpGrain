@@ -71,8 +71,9 @@ public final class JSModifier {
         BlockApi blockApi = new BlockApi(worldAccess, renderManager, engineAccess);
         this.timerManager = new TimerManager(bridge);
         JsApiBootstrap created = new JsApiBootstrap(
-                assetManager, worldAccessor, blockApi, cam, rootNode, packDir,
-                packName, modPackManager, inventory, engineAccess, timerManager);
+            assetManager, worldAccessor, blockApi, cam, rootNode, packDir,
+            packName, modPackManager, inventory, engineAccess, timerManager,
+            mainThreadMode, bridge);
         created.getNodeRegistry().registerFixed(0L, rootNode);
         bootstrap = created;
         initialized = true;
@@ -305,7 +306,11 @@ public final class JSModifier {
         if (currentBridge != null) currentBridge.requestShutdown();
         Thread currentThread = runtimeThread;
         if (currentThread != null) currentThread.interrupt();
-        if (timerManager != null) timerManager.shutdown(); // <-- Add this
+        if (timerManager != null) timerManager.shutdown();
+        var current = bootstrap;
+        if (current != null && current.getWsApi() != null) {
+            current.getWsApi().shutdown();
+        }
     }
 
     /** Closes a context when startup failed before the mailbox loop began. */
