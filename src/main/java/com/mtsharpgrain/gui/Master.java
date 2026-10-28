@@ -99,22 +99,26 @@ public class Master {
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
-            gui.textColor(new ColorRGBA(0f, 0f, 0f, 1f)); // 60% opaque black
-            gui.textSize(5f); // step below is tuned to roughly match this glyph size
-
-            gui.text("-", 0.5f, 1.9f, null);
-            gui.text("-", 0.5f, 0.5f, null);
+            gui.imageSize(0.5f, 0.4f)
+            .imageAlpha(true)
+            .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
+            .imageHAlign("center")
+            .imageVAlign("center");
+            gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
             drawModTable(com.mtsharpgrain.Main.worldname, gui, modPackManager);
             
         } else if (path.startsWith("home/modview/")) {
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
-            gui.textColor(new ColorRGBA(0f, 0f, 0f, 1f)); // 60% opaque black
-            gui.textSize(5f); // step below is tuned to roughly match this glyph size
-
-            gui.text("-", 0.5f, 1.9f, null);
-            gui.text("-", 0.5f, 0.5f, null);
+            
+            gui.imageSize(0.5f, 0.4f)
+            .imageAlpha(true)
+            .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
+            .imageHAlign("center")
+            .imageVAlign("center");
+            gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
+            
             String packName = path.substring("home/modview/".length());
             drawModDetail(gui, modPackManager, packName);
             // The ONLY place a mod's own GuiApi elements are allowed to draw.
@@ -382,11 +386,12 @@ public class Master {
         gui.textFont("Interface/Fonts/Console.fnt");
         gui.textHAlign("center");
         gui.textVAlign("center");
-        gui.textColor(new ColorRGBA(0f, 0f, 0f, 1f)); // 60% opaque black
-        gui.textSize(5f); // step below is tuned to roughly match this glyph size
-
-        gui.text("-", 0.5f, 1f, null);
-        gui.text("-", 0.5f, 0.0f, null);
+        gui.imageSize(0.5f, 0.4f)
+            .imageAlpha(true)
+            .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
+            .imageHAlign("center")
+            .imageVAlign("center");
+            gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
         
         // ── Green glass tab that encircles / sits under the Play label ─────────
         gui.imageSize(0.28f, 0.12f)          // adjust to taste
