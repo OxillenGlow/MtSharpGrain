@@ -9,16 +9,9 @@ import com.jme.igui.IGuiComponent;
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
-import com.jme3.font.BitmapFont;
-import com.jme3.font.BitmapText;
 import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
-import com.jme3.post.FilterPostProcessor;
-import com.jme3.post.filters.FogFilter;
-import com.jme3.scene.CameraNode;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.CameraControl.ControlDirection;
-import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.util.SkyFactory;
 import com.tools.AssetConverter;
 import java.io.File;
@@ -66,8 +59,24 @@ public class Main extends SimpleApplication {
     private static final float FOV_LERP_SPEED = 4f;
     private float currentFov = BASE_FOV;
     private WKeyTracker wKeyTracker;
-
+    public static Main INSTANCE;
+    private boolean loaded;
+    private String pendingPath;
+    
     public static void main(String[] args) throws IOException {
+        AppSettings settings = new AppSettings(true);
+        settings.setFullscreen(false);
+        settings.setResolution(1280, 720);
+        settings.setTitle("MtSharpGrain-" + version);
+        settings.setResizable(true);
+        settings.setSamples(4);
+        var app = new Main();
+        app.setSettings(settings);
+        app.setShowSettings(false);
+        app.start();
+    }
+
+    public static void mainold(String[] args) throws IOException {
         System.out.println(java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
         try {
             worldname = args[0];
