@@ -88,7 +88,6 @@ public class Master {
         
         
         if ("play".equals(path)) {
-            // Flying/playing: no menu chrome at all, and no mod owns the GuiApi canvas.
             modPackManager.disableAllDrawing();
             inventory.drawMini(gui);
             drawBreakPercentage(gui);
@@ -108,7 +107,6 @@ public class Master {
             gui.textVAlign("center");
             gui.imageSize(1f, 0.9f)
             .imageAlpha(true)
-            .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
             .imageHAlign("center")
             .imageVAlign("center");
             gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
@@ -121,7 +119,6 @@ public class Master {
             
             gui.imageSize(1f, 0.9f)
             .imageAlpha(true)
-            .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
             .imageHAlign("center")
             .imageVAlign("center");
             gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
@@ -395,7 +392,6 @@ public class Master {
         gui.textVAlign("center");
         gui.imageSize(1f, 0.9f)
             .imageAlpha(true)
-            .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
             .imageHAlign("center")
             .imageVAlign("center");
             gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
@@ -403,7 +399,6 @@ public class Master {
         // ── Green glass tab that encircles / sits under the Play label ─────────
         gui.imageSize(0.28f, 0.12f)          // adjust to taste
            .imageAlpha(true)
-           .imageColor(ColorRGBA.Green)  // green tint
            .imageHAlign("center")
            .imageVAlign("center");
     
@@ -413,6 +408,7 @@ public class Master {
             }
             return true;
          });
+        gui.imageSize(1f, 0.9f);
 
         // Label on top of the glass tab
         gui.textColor(ColorRGBA.White);
@@ -468,7 +464,6 @@ public class Master {
     static boolean showTerminal = false;
     
     private static void drawConsole(IGui gui) {
-        gui.imageColor(ColorRGBA.Black);
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textSize(0.02f);
@@ -544,7 +539,7 @@ public class Master {
         gui.textSize(0.015f);
     
         gui.text("YOU:"+console.getCurrentInput() + flash, 0.65f,0.03f, false);
-        gui.imageSize(0.38f, 0.4f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("left").imageVAlign("top");
+        gui.imageSize(0.38f, 0.4f).imageAlpha(true).imageHAlign("left").imageVAlign("top");
 
         gui.image("/cc0/Console.png",0.62f,0.4f);
         gui.zIndex(0f);
@@ -555,7 +550,6 @@ public class Master {
         try {
             gui.imageSize(1f, 1f)
                 .imageAlpha(true)
-                .imageColor(ColorRGBA.White)
                 .imageHAlign("center")
                 .imageVAlign("center");
             gui.image("start.png", 0.5f, 0.5f);

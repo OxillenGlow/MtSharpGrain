@@ -204,7 +204,7 @@ public final class Launcher {
     private static void captureKeys(IGui gui, boolean nameOnly) {
         if (Master.inputPlugin == null) return;
         gui.textSize(0.01f);
-        Master.inputPlugin.input("", -1f, -1f, evt -> onKey(evt, nameOnly), true);
+        Master.inputPlugin.input(nameDraft+">", -1f, -1f, evt -> onKey(evt, nameOnly), true);
     }
 
     private static void onKey(KeyInputEvent evt, boolean nameOnly) {
@@ -219,9 +219,6 @@ public final class Launcher {
             case KeyInput.KEY_RETURN, KeyInput.KEY_NUMPADENTER -> {
                 return;
             }
-            case KeyInput.KEY_V -> {
-                return;
-            }
             default -> {
                 char c = evt.getKeyChar();
                 if (c >= 32 && c < 127) next = target + c;
@@ -234,7 +231,6 @@ public final class Launcher {
     private static void field(IGui gui, String value, float x, float y) {
         gui.imageSize(0.56f, 0.06f)
                 .imageAlpha(true)
-                .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 160))
                 .imageHAlign("center")
                 .imageVAlign("center");
         gui.image("/cc0/white_pixel.png", x, y, false);
@@ -249,7 +245,6 @@ public final class Launcher {
     private static void dim(IGui gui) {
         gui.imageSize(1f, 1f)
                 .imageAlpha(true)
-                .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 170))
                 .imageHAlign("center")
                 .imageVAlign("center");
         gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
@@ -258,7 +253,6 @@ public final class Launcher {
     private static void card(IGui gui) {
         gui.imageSize(0.78f, 0.86f)
                 .imageAlpha(true)
-                .imageColor(ColorRGBA.fromRGBA255(12, 16, 22, 230))
                 .imageHAlign("center")
                 .imageVAlign("center");
         gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
@@ -267,7 +261,6 @@ public final class Launcher {
     private static void glass(IGui gui, float x, float y, float w, float h, ColorRGBA tint, String label, Runnable action) {
         gui.imageSize(w, h)
                 .imageAlpha(true)
-                .imageColor(tint)
                 .imageHAlign("center")
                 .imageVAlign("center");
         gui.image("/cc0/bw_glass_tab.png", x, y, (event, arg) -> {

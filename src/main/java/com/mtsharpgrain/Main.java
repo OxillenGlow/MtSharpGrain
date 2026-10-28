@@ -94,7 +94,7 @@ public class Main extends SimpleApplication {
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
         gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
 
-        gui.imageSize(0.035f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
+        gui.imageSize(0.035f, 0.06f).imageAlpha(true)
                 .imageHAlign("center").imageVAlign("center");
         gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
 
@@ -272,11 +272,11 @@ public class Main extends SimpleApplication {
         gui.textFontStyle("bold");
         gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
-
+        gui.imageHAlign("left");
+        gui.imageHAlign("top");
         gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
-        IGuiComponent text2 = gui.text("Press [F] to exit/enter full screen [Escape] to close.", 0.5f, 1f, true);
-
-        gui.imageSize(0.035f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
+        IGuiComponent text2 = gui.text("Press [F] to escape mouse, [Esc] to close game", 0f, 1f, true);
+        gui.imageSize(0.035f, 0.06f).imageAlpha(true)
            .imageHAlign("center").imageVAlign("center");
         IGuiComponent crosshair = gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
 
@@ -292,7 +292,8 @@ public class Main extends SimpleApplication {
                 System.err.println("[Main] chunkGen.close() failed to close cleanly: " + e.getMessage());
             }
         }
-        this.vThread.interrupt();
+        if (this.vThread != null) this.vThread.interrupt();
+        
         sunObject.saveTime();
         if (modPackManager != null) modPackManager.onClose();
         if (inventory != null) inventory.onClose();
