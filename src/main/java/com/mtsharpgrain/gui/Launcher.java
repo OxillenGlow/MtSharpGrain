@@ -149,7 +149,7 @@ public final class Launcher {
         glass(gui, 0.38f, 0.28f, 0.22f, 0.08f, ColorRGBA.Gray, "Back", () -> {
             if (!busy) GameState.navigateTo("launcher");
         });
-        glass(gui, 0.64f, 0.28f, 0.22f, 0.08f, ColorRGBA.Green, "Download", this::cloneAsync);
+        glass(gui, 0.64f, 0.28f, 0.22f, 0.08f, ColorRGBA.Green, "Download", () -> Launcher.cloneAsync());
     }
 
     private static void cloneAsync() {
@@ -212,15 +212,20 @@ public final class Launcher {
         var target = (!nameOnly && "url".equals(focus)) ? urlDraft : nameDraft;
         int code = evt.getKeyCode();
         String next = target;
-        if (code == KeyInput.KEY_BACK || code == KeyInput.KEY_DELETE) {
-            if (!target.isEmpty()) next = target.substring(0, target.length() - 1);
-        } else if (code == KeyInput.KEY_RETURN || code == KeyInput.KEY_NUMPADENTER) {
-            return;
-        } else if (code == KeyInput.KEY_V && evt.isCtrlDown()) {
-            return;
-        } else {
-            char c = evt.getKeyChar();
-            if (c >= 32 && c < 127) next = target + c;
+        switch (code) {
+            case KeyInput.KEY_BACK, KeyInput.KEY_DELETE -> {
+                if (!target.isEmpty()) next = target.substring(0, target.length() - 1);
+            }
+            case KeyInput.KEY_RETURN, KeyInput.KEY_NUMPADENTER -> {
+                return;
+            }
+            case KeyInput.KEY_V -> {
+                return;
+            }
+            default -> {
+                char c = evt.getKeyChar();
+                if (c >= 32 && c < 127) next = target + c;
+            }
         }
         if (!nameOnly && "url".equals(focus)) urlDraft = next;
         else nameDraft = next;

@@ -69,7 +69,7 @@ public class Master {
     }
 
     public static void tic(IGui gui, ModPackManager modPackManager, Inventory inventory) {
-
+        
         gui.push(false);
         gui.textFont("Interface/Fonts/Console.fnt");
 
@@ -77,6 +77,13 @@ public class Master {
         gui.textHAlign("center");
         gui.textVAlign("top");
         String path = GameState.guiState;
+        
+        if (path != null && (path.equals("launcher") || path.startsWith("launcher/"))) {
+            Launcher.draw(gui);
+            gui.pop();
+            return;
+        }
+        
         gui.text(path, 0.5f, 1f, false);
         
         
