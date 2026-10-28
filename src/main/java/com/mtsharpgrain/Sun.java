@@ -153,20 +153,19 @@ public class Sun {
     }
 
     public void loadTime() {
-        String worldName = com.mtsharpgrain.Main.worldname;
-        String effectiveWorldName = (worldName == null || worldName.isEmpty()) ? "my_world" : worldName;
+        if (Main.worldDir == null) return;
         var file = Main.worldDir.resolve("sun_time.txt");
         try (var in = Files.newBufferedReader(file)) {
             angleDeg = Float.parseFloat(in.readLine());
         } catch (Exception e) {
-            // file doesn't exist yet → ignore
         }
     }
 
     public void saveTime() {
+        if (Main.worldDir == null) return;
         var file = Main.worldDir.resolve("sun_time.txt");
         try {
-            Files.createDirectories(file.getParent()); // ensure ~/.mtsharpgrain/worlds/<name>/ exists
+            Files.createDirectories(file.getParent());
             try (var out = Files.newBufferedWriter(file)) {
                 out.write(Float.toString(angleDeg));
                 out.newLine();

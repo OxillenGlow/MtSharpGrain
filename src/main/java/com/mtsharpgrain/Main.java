@@ -62,7 +62,9 @@ public class Main extends SimpleApplication {
     private WKeyTracker wKeyTracker;
     public static Main INSTANCE;
     private boolean loaded;
-    private String pendingPath;
+    private String pendingPath;private IGui gui;
+    private ModPackManager modPackManager;
+    
     
     public static void main(String[] args) throws IOException {
         AppSettings settings = new AppSettings(true);
@@ -79,11 +81,6 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        if (gui == null) return;
-        if (!loaded) {
-            com.mtsharpgrain.gui.Master.tic(gui, null, null);
-            return;
-        }
         INSTANCE = this;
         loaded = false;
         GameState.guiState = "launcher";
@@ -208,164 +205,22 @@ public class Main extends SimpleApplication {
         } else {
                 GameState.navigateTo(thenPath);
         }
-    }
-
-    public static void mainold(String[] args) throws IOException {
-        System.out.println(java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
-        try {
-            worldname = args[0];
-        } catch (Exception e) {
-            worldname = "my_world";
-        }
-        if (worldname == null || worldname.isEmpty()) worldname = "my_world";
-        worldDir = resolveWorldDir(worldname);
-        System.out.println("World dir: " + worldDir.toAbsolutePath());
-
-        AppSettings settings = new AppSettings(true);
-        settings.setFullscreen(false);
-        settings.setResolution(1280, 720);
-        settings.setTitle("MtSharpGrain-" + version + " .jvs enabled");
-        settings.setResizable(true);
-        settings.setSamples(4);
-        System.out.println("new Main");
-
-        var app = new Main();
-        System.out.println("set settings settings");
-        app.setSettings(settings);
-        System.out.println("show settings false");
-
-        app.setShowSettings(false);
-        System.out.println("Calling start()...");
-        app.start();
-    }
-
-    private IGui gui;
-    private ModPackManager modPackManager;
-
-    public void simpleInitAppOld() {
-        assetManager.registerLocator(worldDir.toString(), FileLocator.class);
-
-        extractFiles(worldDir);
-        WorldData.init(worldDir);
-        var alreadySeen = "true".equals(WorldData.get("startScreened"));
-        if (!alreadySeen) {
-            var hasTxt = Files.exists(worldDir.resolve("start.txt"));
-            var hasPng = Files.exists(worldDir.resolve("start.png"));
-            GameState.guiState = (hasTxt || hasPng) ? "startscreen" : "home";
-        } else {
-            GameState.guiState = "home";
-        }
-
-        gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
-        gui.textFont("Interface/Fonts/Console.fnt");
-        gui.textFontStyle("bold");
-        gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
-        IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
-
-        gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
-        IGuiComponent text2 = gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
-
-        gui.imageSize(0.035f, 0.06f).imageAlpha(true).imageColor(ColorRGBA.White)
-           .imageHAlign("center").imageVAlign("center");
-        IGuiComponent crosshair = gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
-
-        GameState.setModes(false, false);
-        float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
-        cam.setFrustumPerspective(BASE_FOV, aspectRatio, 0.5f, 180.0f);
-        currentFov = BASE_FOV;
-
-        TestInit.init(rootNode, flyCam, assetManager, inputManager);
-
-        flyCam.setEnabled(false);
-        flyCam.setRotationSpeed(flyCam.getRotationSpeed()*1.5f);
-
-        wKeyTracker = new WKeyTracker(inputManager);
-
-        this.sunObject = new Sun(assetManager, rootNode);
-        com.jme3.shadow.DirectionalLightShadowRenderer dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024*4, 1);
-        dlsr.setLight(this.sunObject.getLight());
-        viewPort.addProcessor(dlsr);
-        rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
-
-        ColorRGBA darkBlue = new ColorRGBA(247/1000f , 45/1000f , 0f , 1f );
-        viewPort.setBackgroundColor(darkBlue);
-
-        try {
-            Spatial sky = SkyFactory.createSky(assetManager, "/SkyBox.png", SkyFactory.EnvMapType.EquirectMap);
-            rootNode.attachChild(sky);
-        } catch (Exception e) {
-            System.err.println("Failed to load skybox: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        try {
-            chunkGen = new JsChunkGenerator(
-                worldDir.resolve("chunkgen.js").toFile(),
-                worldDir
-            );
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load chunkgen.js", e);
-        }
-
-        blockSelector = new BlockSelector(cam, rootNode);
-        worldAccess = new WorldAccess(worldDir.toString(), chunkGen, WORLD_SEED);
-        inventory = new Inventory(worldDir.toString());
-        worldAccess.setInventory(inventory);
-        var player = new Player();
-        this.renderManagermg = new com.mtsharpgrain.RenderManager(
-            worldAccess, rootNode, assetManager, player, this, chunkGen, WORLD_SEED
-        );
-
-        worldAccess.setRenderManager(this.renderManagermg);
-
-        OnPrintScript printScript = new OnPrintScript();
-        printScript.attach();
-        CommandListener commandListener = new CommandListener(worldAccess, renderManagermg);
-        printScript.addListener(commandListener);
-
-        check = new Check(worldAccess, blockSelector);
-        inputManager.addMapping(Check.MOUSE_LEFT, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addMapping(Check.MOUSE_RIGHT, new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
-        inputManager.addListener(check, Check.MOUSE_LEFT, Check.MOUSE_RIGHT);
-
-        Vector3f spawn = new Vector3f(10000f, 16f, 0f);
-        cam.setLocation(spawn);
-        player.setWorldPosition(spawn);
-
-        modPackManager = new com.mtsharpgrain.js.mainthread.ModPackManager();
-        engineAccess = new EngineAccess(this);
-        modPackManager.setEngineAccess(engineAccess);
-        worldAccess.addModifier(modPackManager);
-        try {
-            modPackManager.loadAll(worldDir.resolve("mod"), assetManager, rootNode,
-                    worldAccess, renderManagermg, cam, inventory);
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to load mod packs", ex);
-        }
-
-        check.setModPackManager(modPackManager);
-
-        flyCam.setMoveSpeed(flyCam.getMoveSpeed() * 5f);
-
-        this.vThread = Thread.ofVirtual().start(() -> {
-            while(true){
-                worldAccess.processPendingBlockChanges();
-                try {
-                    Thread.sleep(200);
-                } catch (Exception e) {}
-            }
-        });
-
-        com.mtsharpgrain.gui.Master.init(gui,inputManager,stateManager);
-
-    }
-
+        if (sunObject != null) sunObject.loadTime();
+    } 
+    
     public boolean isWPressed() {
         return wKeyTracker != null && wKeyTracker.isPressed();
     }
 
     @Override
     public void simpleUpdate(float tpf) {
+
+        if (gui == null) return;
+        if (!loaded) {
+            com.mtsharpgrain.gui.Master.tic(gui, null, null);
+            if (sunObject != null) sunObject.update(tpf, cam.getLocation());
+            return;
+        }
 
         Vector3f camPos = cam.getLocation();
         Vector3f shift = new Vector3f(

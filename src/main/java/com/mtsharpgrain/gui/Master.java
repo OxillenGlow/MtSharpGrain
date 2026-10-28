@@ -106,7 +106,7 @@ public class Master {
             gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
-            gui.imageSize(0.5f, 0.4f)
+            gui.imageSize(1f, 0.9f)
             .imageAlpha(true)
             .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
             .imageHAlign("center")
@@ -119,7 +119,7 @@ public class Master {
             gui.textHAlign("center");
             gui.textVAlign("center");
             
-            gui.imageSize(0.5f, 0.4f)
+            gui.imageSize(1f, 0.9f)
             .imageAlpha(true)
             .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
             .imageHAlign("center")
@@ -393,7 +393,7 @@ public class Master {
         gui.textFont("Interface/Fonts/Console.fnt");
         gui.textHAlign("center");
         gui.textVAlign("center");
-        gui.imageSize(0.5f, 0.4f)
+        gui.imageSize(1f, 0.9f)
             .imageAlpha(true)
             .imageColor(ColorRGBA.fromRGBA255(0, 0, 0, 120))
             .imageHAlign("center")
