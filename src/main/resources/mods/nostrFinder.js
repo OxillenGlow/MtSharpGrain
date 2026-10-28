@@ -262,7 +262,7 @@ function paint() {
         var letters = rows[r];
         for (var c = 0; c < letters.length; c++) {
             var x = 0.14 + c * 0.09;
-            Gui.guiWord(letters.charAt(c), x, 0.34 - r * 0.045, 0, 0.022, "key_" + letters.charAt(c));
+            Gui.guiWord("< " + letters.charAt(c) + " >", x, 0.34 - r * 0.045, 0, 0.022, "key_" + letters.charAt(c));
         }
     }
     for (var n = 0; n < 10; n++) {
