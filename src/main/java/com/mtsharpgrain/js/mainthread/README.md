@@ -14,7 +14,7 @@ Modding solves both as **you** can make your own game without messing with borin
 Your imagination is *literally* the limit (and my API).
 
 > [!TIP]
-> **Using an AI to help write mods:** paste the "Essential API Reference for
+> **If you are using an AI to help write mods,** paste the "Essential API Reference for
 > AI context" block near the bottom of this page into your prompt along with
 > what you want built. It's a condensed version of every global with just
 > enough signature/behavior info for an AI to write correct code without
@@ -166,6 +166,7 @@ You cannot access arbitrary Java classes — only what is listed here.
 | `Player` | Read/set the player camera's position                   |
 | `Data`   | Save/load simple per-pack XML save data                 |
 | `Mod`    | Send messages to other loaded packs                     |
+| `ws`     | Make websocket connections and servers in mods          |
 | `Matrix` | Stores relevant info on coordinates between mods, Define new blocks |
 
 Note: `Scene` node handles, `Gui` element handles, and tick tags are only
@@ -602,6 +603,42 @@ a pack never receives its own `Mod.send()` calls back.
 </details>
 
 <details>
+<summary><strong> ws — the Websocket gateway to the wider internet</strong></summary>
+
+Client and simple host over text frames. Available to MAIN and background packs.
+
+```js
+// Basic functions
+var ws = Ws.connect("wss://example.com/path")
+ws.onOpen(function () { ws.send("hello"); })
+ws.onMessage(function (text) { /* ... */ })
+ws.onClose(function (code, reason) { /* ... */ })
+ws.onError(function (message) { /* ... */ })
+ws.send(text)
+ws.isOpen() -> boolean
+ws.close()
+
+var server = Ws.listen(8765);
+
+server.onConnection(fn (peer){...})                      // fn(peer)
+    peer.onMessage(function (text) { peer.send("echo: " + text); });
+    peer.onClose(fn)
+    peer.onError(fn)
+    peer.send(text)
+    peer.isOpen() -> boolean
+    peer.close()
+
+server.onError(fn)                           // fn(message)
+server.close()
+```
+
+Events are marshalled onto the pack’s owning thread (enqueue on MAIN,
+
+mailbox on background). Keep onMessage work short on MAIN packs if possible.
+
+</details>
+
+<details>
 <summary><strong>Matrix — register custom blocks & per-block key/value storage</strong></summary>
 
 `Matrix` is the pack-scoped registry and simple key/value store exposed to
@@ -844,8 +881,8 @@ Engine.onTick(function(tpf, tag) {
   affect edits triggered by any other pack.
 - `Player` moves the camera with no collision checks — it's a teleport, not
   physics-driven movement.
-- No filesystem, network, or Java class access from scripts (unless I have
-  a sudden urge to add them).
+- No filesystem, or Java class access from scripts (unless I have
+  a sudden urge to add them)(i added websocket now so theres that)
 - `console.log` output appears in the game's standard output (currently
   only accessible by players via running with terminal).
 
@@ -863,7 +900,7 @@ MtSharpGrain JS mod API — condensed reference.
  
 Runtime: GraalVM JS, one isolated Context per mod pack folder under
 worlds/my_world/mod/<packName>/. Globals below are fresh per pack — no
-cross-pack sharing except where noted. No filesystem/network/Java access
+cross-pack sharing except where noted. No filesystem/Java access
 beyond what's listed.
  
 Scene (handle-based 3D objects; handle 0 = world root, shared by all packs):
@@ -944,6 +981,30 @@ Mod (cross-pack broadcast messaging; only between enabled packs):
   Mod.send(dataString)   // broadcasts to every other enabled pack
   // define a top-level function to receive:
   function onReceive(dataString, fromModName) { ... }
+
+Ws (WebSocket client + host):
+
+  var ws = Ws.connect("ws://host:port/path")   // or wss://
+  ws.onOpen(fn)                                // fn()
+  ws.onMessage(fn)                             // fn(text)
+  ws.onClose(fn)                               // fn(code, reason)
+  ws.onError(fn)                               // fn(message)
+  ws.send(text)
+  ws.isOpen() -> boolean
+  ws.close()
+
+  var server = Ws.listen(port)                 // or Ws.listen(host, port)
+  server.onConnection(fn)                      // fn(peer)
+  server.onError(fn)                           // fn(message)
+  server.close()
+  peer.onMessage(fn)                           // same shape as client
+  peer.onClose(fn)
+  peer.onError(fn)
+  peer.send(text)
+  peer.isOpen() -> boolean
+  peer.close()
+
+  Threading: It is highly recomended to use this with a MAIN mod for better performace (takes a few seconds for a mod not on main thread to see anything)
 
 Matrix: Matrix.addNew(name, builderType, propertiesJson) -> int Matrix.addNew(name, builderType, propertiesJson, dr,dg,db,da, sr,sg,sb,sa, shininess) -> int Matrix.getId(name, modPackName) -> Integer|null Matrix.getBlockNameMod(blockId) -> [name, modPack] | null Matrix.getProperties(name, modPackName) -> string Matrix.setValue(x,y,z,key,value) Matrix.getValue(x,y,z,key) -> string|null
 
