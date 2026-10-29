@@ -41,12 +41,11 @@ public final class EngineAccess {
             return future.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("Interrupted waiting for the render thread", e);
+            return null;
         } catch (ExecutionException e) {
             throw propagate(e.getCause());
         }
     }
-
     // Not much use in run now that there is post but i will still keep this 
     // just in case an api in the future needs some return value in a different form
     public void run(Runnable runnable) {
