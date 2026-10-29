@@ -219,7 +219,7 @@ public class Inventory {
             gui.text("[EMPTY] - go break some blocks!", 0.05f, y, null);
         } else {
             // prepare small icon drawing parameters: left-aligned, center vertical
-            gui.imageSize(0.02f, 0.02f).imageAlpha(true).imageColor(ColorRGBA.White)
+            gui.imageSize(0.02f, 0.02f).imageAlpha(true)
                .imageHAlign("left").imageVAlign("top");
 
             for (Map.Entry<Integer, Integer> entry : entries) {
@@ -298,13 +298,13 @@ public class Inventory {
                 String iconPath = ICONS[selected];
                 if (iconPath != null && !iconPath.isEmpty()) {
                     try {
-                        gui.imageSize(0.05f, 0.05f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("center").imageVAlign("bottom");
+                        gui.imageSize(0.05f, 0.05f).imageAlpha(true).imageHAlign("center").imageVAlign("bottom");
                         gui.image(iconPath, 0.5f, 0.11f, false);
                     } catch (Exception e) {}
                 }
             } else {
                 try {
-                    gui.imageSize(0.05f, 0.05f).imageAlpha(true).imageColor(ColorRGBA.White).imageHAlign("center").imageVAlign("bottom");
+                    gui.imageSize(0.05f, 0.05f).imageAlpha(true).imageHAlign("center").imageVAlign("bottom");
                     gui.image("/cc0/clouds.png", 0.5f, 0.11f, false);
                     gui.text(blockName(selected).substring(0, 1), 0.5f, 0.11f, false);
                 } catch (Exception e) {}
