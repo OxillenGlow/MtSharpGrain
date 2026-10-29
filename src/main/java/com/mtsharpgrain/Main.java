@@ -294,7 +294,7 @@ public class Main extends SimpleApplication {
         }
         if (this.vThread != null) this.vThread.interrupt();
         
-        sunObject.saveTime();
+        if (com.mtsharpgrain.gui.GameState.guiState.startsWith("launcher")) sunObject.saveTime();
         if (modPackManager != null) modPackManager.onClose();
         if (inventory != null) inventory.onClose();
 

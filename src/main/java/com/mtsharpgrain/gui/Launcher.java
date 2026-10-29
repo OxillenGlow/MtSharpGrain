@@ -3,10 +3,12 @@ package com.mtsharpgrain.gui;
 import com.jme.igui.IGui;
 import com.jme.igui.IGuiMouseEvent;
 import com.jme3.input.KeyInput;
-import com.jme3.input.event.KeyInputEvent;
 import com.jme3.math.ColorRGBA;
 import com.mtsharpgrain.Main;
 import com.mtsharpgrain.storage.WorldGit;
+import java.util.HashMap;
+
+import java.util.function.Consumer;
 
 public final class Launcher {
     private Launcher() {}
@@ -17,9 +19,10 @@ public final class Launcher {
     private static volatile boolean busy;
     private static String nameDraft = "";
     private static String urlDraft = "";
-    private static String focus = "name"; // "name" or "url"
+    private static HashMap<String, Boolean> active;
 
     public static void draw(IGui gui) {
+        if (active == null) active = new HashMap<>();
         var path = GameState.guiState;
         dim(gui);
         card(gui);
@@ -100,7 +103,6 @@ public final class Launcher {
             if (busy) return;
             nameDraft = "";
             urlDraft = "https://github.com/";
-            focus = "url";
             status = "";
             GameState.navigateTo("launcher/clone");
         });
@@ -111,8 +113,9 @@ public final class Launcher {
         gui.textSize(0.022f);
         gui.textColor(ColorRGBA.White);
         gui.text("New world name", 0.5f, 0.62f, false);
-        field(gui, nameDraft.isEmpty() ? "my_world" : nameDraft, 0.5f, 0.52f);
-        captureKeys(gui, true);
+
+        field(gui, nameDraft, s -> nameDraft = s, 0.5f, 0.52f,
+              "enter world name here");
 
         glass(gui, 0.38f, 0.36f, 0.22f, 0.08f, ColorRGBA.Gray, "Back", () -> {
             if (!busy) GameState.navigateTo("launcher");
@@ -120,7 +123,7 @@ public final class Launcher {
         glass(gui, 0.62f, 0.36f, 0.22f, 0.08f, ColorRGBA.Green, "Create", () -> {
             if (busy) return;
             try {
-                var name = WorldGit.sanitize(nameDraft.isEmpty() ? "my_world" : nameDraft);
+                var name = WorldGit.sanitize(nameDraft.isEmpty() ? "world" : nameDraft);
                 Main.INSTANCE.enterWorld(name, "home");
             } catch (RuntimeException ex) {
                 status = ex.getMessage();
@@ -131,20 +134,15 @@ public final class Launcher {
     private static void drawClone(IGui gui) {
         gui.textHAlign("center");
         gui.textSize(0.02f);
-        gui.textColor(focus.equals("url") ? ColorRGBA.Yellow : ColorRGBA.White);
-        gui.text("Repo URL", 0.5f, 0.68f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) focus = "url";
-            return true;
-        });
-        field(gui, urlDraft, 0.5f, 0.60f);
+        gui.textColor(ColorRGBA.White);
+        gui.text("Repo URL", 0.5f, 0.68f);
+        field(gui, urlDraft, s -> urlDraft = s, 0.5f, 0.60f,
+              "https://github.com/...");
 
-        gui.textColor(focus.equals("name") ? ColorRGBA.Yellow : ColorRGBA.White);
-        gui.text("Folder name (blank = repo name)", 0.5f, 0.50f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) focus = "name";
-            return true;
-        });
-        field(gui, nameDraft.isEmpty() ? "_" : nameDraft, 0.5f, 0.42f);
-        captureKeys(gui, false);
+        gui.textColor(ColorRGBA.White);
+        gui.text("Folder name (blank = repo name)", 0.5f, 0.50f);
+        field(gui, nameDraft, s -> nameDraft = s, 0.5f, 0.42f,
+              "optional folder name");
 
         glass(gui, 0.38f, 0.28f, 0.22f, 0.08f, ColorRGBA.Gray, "Back", () -> {
             if (!busy) GameState.navigateTo("launcher");
@@ -201,47 +199,72 @@ public final class Launcher {
         });
     }
 
-    private static void captureKeys(IGui gui, boolean nameOnly) {
+    /**
+     * Universal text field (console style).
+     * Left-aligned so the blinking cursor never shifts the text.
+     * Both fields stay registered; only the focused one accepts keys.
+     */
+    private static void field(IGui gui, String value, Consumer<String> setter,
+                              float x, float y, String placeholder) {
         if (Master.inputPlugin == null) return;
-        gui.textSize(0.01f);
-        Master.inputPlugin.input(nameDraft+">", -1f, -1f, evt -> onKey(evt, nameOnly), true);
-    }
-
-    private static void onKey(KeyInputEvent evt, boolean nameOnly) {
-        if (!evt.isPressed()) return;
-        var target = (!nameOnly && "url".equals(focus)) ? urlDraft : nameDraft;
-        int code = evt.getKeyCode();
-        String next = target;
-        switch (code) {
-            case KeyInput.KEY_BACK, KeyInput.KEY_DELETE -> {
-                if (!target.isEmpty()) next = target.substring(0, target.length() - 1);
-            }
-            case KeyInput.KEY_RETURN, KeyInput.KEY_NUMPADENTER -> {
-                return;
-            }
-            default -> {
-                char c = evt.getKeyChar();
-                if (c >= 32 && c < 127) next = target + c;
-            }
-        }
-        if (!nameOnly && "url".equals(focus)) urlDraft = next;
-        else nameDraft = next;
-    }
-
-    private static void field(IGui gui, String value, float x, float y) {
-        gui.imageSize(0.56f, 0.06f)
-                .imageAlpha(true)
-                .imageHAlign("center")
-                .imageVAlign("center");
-        gui.image("/cc0/white_pixel.png", x, y, false);
-        gui.textHAlign("center");
+        Launcher.active.putIfAbsent(placeholder, false);
+ 
+        float left = x - 0.26f;
+ 
+        // underline = visual + hit target
+        gui.textHAlign("left");
+        gui.textVAlign("center");
+        gui.textSize(0.08f);
+        gui.textColor(Launcher.active.get(placeholder)? ColorRGBA.Yellow :ColorRGBA.Gray);
+        Master.inputPlugin.input(
+            "_____________________________________",
+            left, y,
+            (mouse, arg) -> {
+                if (mouse == IGuiMouseEvent.MOUSE_IN) {
+                    active.put(placeholder, true);
+                } else if (mouse == IGuiMouseEvent.MOUSE_OUT) {
+                    active.put(placeholder, false);
+                }
+                return true;
+            },
+            e -> {
+                if (!e.isPressed() || !Boolean.TRUE.equals(active.get(placeholder))) return;
+                int code = e.getKeyCode();
+                // always read the live draft
+                String cur = switch (placeholder) {
+                    case "https://github.com/..." -> urlDraft;
+                    case "optional folder name" -> nameDraft;
+                    default -> nameDraft; // "enter world name here"
+                };
+                switch (code) {
+                    case KeyInput.KEY_BACK, KeyInput.KEY_DELETE -> {
+                        if (!cur.isEmpty()) setter.accept(cur.substring(0, cur.length() - 1));
+                    }
+                    case KeyInput.KEY_RETURN, KeyInput.KEY_NUMPADENTER -> {}
+                    default -> {
+                        char c = e.getKeyChar();
+                        if (c >= 32 && c < 127) setter.accept(cur + c);
+                    }
+                }
+            },
+            false
+        );
+ 
+        // live text + blink (left-aligned → no shake)
+        gui.textHAlign("left");
         gui.textVAlign("center");
         gui.textSize(0.018f);
-        gui.textColor(ColorRGBA.White);
-        var shown = value.length() > 48 ? value.substring(value.length() - 48) : value;
-        gui.text(shown + "_", x, y, false);
+        var flash = Launcher.active.get(placeholder) && ((System.currentTimeMillis() / 200) % 2 == 1) ? "_" : " ";
+        if (value.isEmpty()) {
+            gui.textColor(ColorRGBA.Gray);
+            gui.text(placeholder + flash, left, y, false);
+        } else {
+            gui.textColor(ColorRGBA.White);
+            var shown = value.length() > 40 ? value.substring(value.length() - 40) : value;
+            gui.text(shown + flash, left, y, false);
+        }
     }
-
+ 
     private static void dim(IGui gui) {
         gui.imageSize(1f, 1f)
                 .imageAlpha(true)

@@ -500,7 +500,7 @@ public class Master {
         gui.textHAlign("left");
         gui.textVAlign("bottom");
         gui.textSize(0.08f);
-        gui.textColor(ColorRGBA.Yellow);
+        gui.textColor(Master.in?ColorRGBA.Yellow:ColorRGBA.Gray);
 
         // Key handler (updates the console buffer)
         Consumer<KeyInputEvent> keyHandler = e -> {
@@ -523,7 +523,7 @@ public class Master {
         var flash = (Master.in && (System.currentTimeMillis() / 200) % 2 == 1) ? ">" : "";
 
         inputPlugin.input("_____________________________________",
-            0.65f, 0.02f,
+            0.65f, 0.01f,
             (mouse, bool) -> {
                 if (mouse == IGuiMouseEvent.MOUSE_IN){
                     in = true;
