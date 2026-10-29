@@ -2,49 +2,39 @@
 
 # MtSharpGrain 
 ![GitHub Release](https://img.shields.io/github/v/release/Oxillenglow/MtSharpGrain?include_prereleases)
-![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain) <sup>_<-- constantly improving!_</sup>
+![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/MtSharpGrain?label=stars) ![Last comit](https://img.shields.io/github/last-commit/OxillenGlow/Mtsharpgrain) <sup>_<-- constantly improving!_</sup>
 
 <sup><sup>_If you don't see any comits in the last few days, I have been lazy._</sup></sup>
-![GitHub Repo stars](https://img.shields.io/github/stars/Oxillenglow/MtSharpGrain?label=Please%20help%20increase%20%E2%86%92%20stars) 
 
+Just another kind of voxel game with some strange, slightly smooth interconnected blocks rather than traditional blocks. But I am focusing on making a good plugin/modifier system.
 
-<img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-A sand box, non voxel, highly modifiable game with slightly smooth interconnected blocks rather than traditional blocks. It is coded 100% in java (openGL lwjgl and jme).
+It is coded 100% in java (openGL lwjgl and jMonkeyEngine).
 
 ---
+The most special part of this game is the [JavaScript modifier system](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) 
+A pretty full modifier/plugin system to allow for JavaScript modding via GraalJS.
 
-### What's special?
-
-#### Semi-smooth node meshes
-blocks are connect with rounded transitions rather than hard cube edges
-#### [JavaScript modifier system](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) 
-Full powerful modding system to allow for JavaScript modding via GraalJS
-
-You can control everything from player location to making new things floating around.
- 
 Why mods?
-- I am a single person and do not have the resources to make a full game.
+- I just like them way too much for some reason.(probably just me loving how minecraft mods allowed the game to have almost infinite things to explore)
+- I am a single person and I do not have the resources to make a full game with everything.
 - I will **not** be able to make my game fit everyone's taste.
 
-Modding solves both as **anyone including you!** can make *their own mini game* on top without messing with boring parts. This is more true with AI.
+Currently, mods can:
+- Move the player around
+- Change the world
+- Make websocket connections
+- Add new blocks
+and some more stuff...
+
+Modding solves both as **anyone including you!** can make *their own mini game* on top without messing with boring parts.
 
 Like the idea? **[download now](https://github.com/OxillenGlow/MtSharpGrain/releases)** And go [here](https://github.com/OxillenGlow/MtSharpGrain/wiki/2.1-Code) to learn more on the modding system.
 
-##### Proceduraly generated world
-
-The world is generated on the fly based on a seed. (soon to be implemented: selecting a seed to make a new world)
-
-Like with mods, you can edit the way worlds are made. See [wiki on this](https://github.com/OxillenGlow/MtSharpGrain/wiki/WorldGeneration)
-
-##### Console command system
-
-<sup>`!place` / `!destroy` commands. In progress...
-
+Other than mods, its basically another sandbox game with a procedually generated world
 
 ---
 
-### [⬇️Download Now!](https://github.com/OxillenGlow/MtSharpGrain/releases)
-
+#### [Download Here](https://github.com/OxillenGlow/MtSharpGrain/releases)
 available for MacOS, Windows, and Linux
 
 ---
@@ -52,15 +42,9 @@ available for MacOS, Windows, and Linux
 ## Screen shots/Showcase
 <details>
 <summary> Click here to see screen shots</summary>
-
-![](Pictures/jVS-ingame-demo.png)
-Using jVisualScript to break and place blocks (too bad i did not do a GIF)
-
+ 
 ![](Pictures/NewTerrain.png) 
 The latest looks of the world.
-
-![](Pictures/Poster.png)
-Dumb poster I made.
 
 ![](Pictures/SidewaysHouses.png)
 A bunch of sideways houses... I think i like this? I think it looks kind of cool?
@@ -68,14 +52,13 @@ A bunch of sideways houses... I think i like this? I think it looks kind of cool
 ![](Pictures/Hubs.png)
 Small greenhouses with grass(edible? idk yet) inside.
 
+Three common NPCs (there are more!):
 ![](Pictures/npc1.png)
 A drone?
 ![](Pictures/npc2.png)
 A duck? (rover)
 ![](Pictures/npc3.png)
 Anouther one.
-
-Three common NPCs (there are more!)
 
 </details>
 
@@ -87,10 +70,7 @@ Three common NPCs (there are more!)
 - 💬 **[Discussions](https://github.com/OxillenGlow/MtSharpGrain/discussions)**
 
 ---
-
-### Special points
 <img src="Pictures/content-1.png" align="left" width="25" style="margin-right: 20px;" />
-This is a project aimed at making a futuristic grided sanbox game using shaders, enviroment, and interconnected nodes. Of course, the current version falls short by a lot.
 
 ---
 
@@ -103,77 +83,6 @@ This is a project aimed at making a futuristic grided sanbox game using shaders,
 
 ---
 
-### Important? stuff
-#### What am i working on now?
-
-> [!IMPORTANT]
-> I am a bit tired already so i am going to make a publishable beta release before I finish the rest here.
->
-> The biggest problem is to make the NPC stuff work with mods which will likely be 10x harder than the completed refactoring of mods. Im just going to make a tiny java class for a independent NPC mini system.
-
-My todo/doing list:
-
-```
-map
-  root((To Do List))
-    Rendering & Graphics
-      Shadow renderer bug (Can be easily fixed by increasing shaddow map sampling but that decreases performance)
-      Graphics toggle options
-        View distance
-        Shadows
-      Fix window transparency bug
-    GUI
-      GUI Upgrade - Ongoing
-      
-    Core Systems
-      Fix the on block change system. (perhaps only for `MAIN` mods?)
-      World selection UI - 0%
-        Split Main.java before and after world creation
-        Implement super simple gui for selection - 0%
-        Current world selection is done with arguments on starting the app but really, no one will use that.
-      Physics System - 0%
-        Implement as Java module
-        Fix collision system
-        Add fall damage mod
-      Multiplayer Mod Support - 0%
-        Real multiplayer (later phase)
-      JS mod system fix
-        Fix confetti.js, it does not seem to work inside of MAIN thread or outside of it
-    Content Generation
-      Randomly Spawned Buildings
-        Ground buildings - 0/100
-        Air buildings - 1/100
-        **Help wanted**: Add building, variations email me if you are a good world builder and want to help!
-      NPC System - 70%
-        NPC spawning fixes 100%
-        NPC behavior system - 50%
-        NPC control scripts
-        NPC lagging 0%
-    Bug Fixes & Refactoring
-      Performance Optimization
-        Reduce blocks drawn
-      Remove the "Update" flag stuff in JS for new, working, java timed update. 50%
-```
-
-<sup>80% here means it is basically done but could be improved</sup>
-
-Done:
-
- - Java Timed Update API, Alternative to blocking setInterval 80%
- - Mod blocks with a Matrix API 70%
- - remove mod thread from main thread. 90% ?(This is a **big** refactoring and because I am bad at this stuff, I gave the work to replit agent, hopefully, it did its job well but idk commit: [328a...](https://github.com/OxillenGlow/MtSharpGrain/commit/328a0d94e4593c1bdab88822d84c2999c514918f) and [575e...](https://github.com/OxillenGlow/MtSharpGrain/commit/575e299de24305037bb86f87c4f3d860c8318754)) 90%
- - Added space skybox 90% - i need to refine skybox
- - Used the java zip tool to allow for compressing chunks to much smaller sizes 80%
- - Extend JS API further
-     - Simple save data api with XML 90%
-     - Intermod communication API 100%
-     - Utility constant display support for prefixing mods with:
-         - LFT
-         - RHT
-         - BTM
-         - to constantly display gui on left, right bottom of screen. 60%
- - JavaScript, to add some real and powerfull scripting (thanks a lot to claude)100%
-
 ### ⭐ [Other Projects ✨](https://github.com/OxillenGlow)
 [My other projects](https://github.com/OxillenGlow)
 ### This project uses:
@@ -181,31 +90,20 @@ Done:
 - **JavaMonkeyEngine** (and everthing that LWJGL has)
 Website: https://www.jmonkeyengine.org
 GitHub organization: https://github.com/jmonkeyengine
-
 - **Riccardobl's simple IGui** for jme
 GitHub source: https://github.com/riccardobl/jme-igui
-
 - **Neuroph** for mlp (unused)
 GitHub source: https://github.com/neuroph/NeurophFramework 
-
 - **jVisualScripting** for visual scripts and engine (unused) see
 GitHub source: https://github.com/openconcerto/jVisualScripting
-
 - **GraalVM's community GraalJS** for the javascript modules
 GitHub source: https://github.com/oracle/graaljs
-
 - **Kenney Assets** for great free CC0 assets
 Available at: https://kenney.nl/assets
-
 - **And much more who has made coding this easier for me and free**
 
 #### AI?
 
-Yes, I use claude a lot, perhaps too much? idk just speeds things up and removes need for constantly checking the API of whatever thing is implemented. Also, to be honest, Claude write code with less bugs and faster than me.
+Yes, I use claude(and now other ais) a lot, perhaps too much? idk just speeds things up and removes need for constantly checking the API of whatever thing is implemented. Also, to be honest, Claude write code with less bugs and faster than me.
 
 This is only for code, all assets/ideas are human made (not that i use a lot of assets).
-
----
-<details>
-<summary>The dumb section</summary>
-empty...
