@@ -281,25 +281,30 @@ public class Main extends SimpleApplication {
         IGuiComponent crosshair = gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
 
     }
-
+    
     @Override
     public void destroy() {
+        if (modPackManager != null) modPackManager.onClose();
+        if (vThread != null) {
+            vThread.interrupt();
+            try {
+                vThread.join(500); // don't hang the exit
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+            vThread = null;
+        }
         if (worldAccess != null) worldAccess.saveAll();
         if (chunkGen != null) {
             try {
                 chunkGen.close();
-            } catch (IllegalStateException e) {
-                System.err.println("[Main] chunkGen.close() failed to close cleanly: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println("[Main] chunkGen.close(): " + e.getMessage());
             }
         }
-        if (this.vThread != null) this.vThread.interrupt();
-        
         if (com.mtsharpgrain.gui.GameState.guiState.startsWith("launcher")) sunObject.saveTime();
-        if (modPackManager != null) modPackManager.onClose();
         if (inventory != null) inventory.onClose();
-
         super.destroy();
-
     }
 
     private static Path resolveWorldDir(String name) {
