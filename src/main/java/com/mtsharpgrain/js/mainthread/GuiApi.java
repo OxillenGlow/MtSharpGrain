@@ -150,7 +150,6 @@ public class GuiApi {
         if (canDraw) {
             List<GuiElement> snapshot = new ArrayList<>(drawOrder);
             gui.push(false);
-            gui.textFont("Interface/Fonts/Default.fnt");
             gui.textHAlign("center");
             gui.textVAlign("bottom");
 

@@ -86,12 +86,12 @@ public class Main extends SimpleApplication {
         GameState.guiState = "launcher";
 
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
-        gui.textFont("Interface/Fonts/Console.fnt");
+        gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         gui.text("MtSharpGrain " + version, 1f, 0f, true);
 
-        gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
+        gui.textSize(0.015f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
         gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
 
         gui.imageSize(0.035f, 0.06f).imageAlpha(true)
@@ -268,14 +268,12 @@ public class Main extends SimpleApplication {
             gui.destroy();
         }
         gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
-        gui.textFont("Interface/Fonts/Console.fnt");
+        gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
-        gui.imageHAlign("left");
-        gui.imageHAlign("top");
-        gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("center").textVAlign("top");
-        IGuiComponent text2 = gui.text("Press [F] to escape mouse, [Esc] to close game", 0f, 1f, true);
+        gui.textSize(0.015f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
+        gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
         gui.imageSize(0.035f, 0.06f).imageAlpha(true)
            .imageHAlign("center").imageVAlign("center");
         IGuiComponent crosshair = gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);

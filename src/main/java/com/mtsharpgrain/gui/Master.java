@@ -71,7 +71,7 @@ public class Master {
     public static void tic(IGui gui, ModPackManager modPackManager, Inventory inventory) {
         
         gui.push(false);
-        gui.textFont("Interface/Fonts/Console.fnt");
+        gui.textFont("DotGothic16/DotGothic16.fnt");
 
         gui.textSize(0.016f);
         gui.textHAlign("center");
@@ -102,7 +102,6 @@ public class Master {
             drawConsole(gui);
         } else if ("home/modview".equals(path)) {
             modPackManager.disableAllDrawing();
-            gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
             gui.imageSize(1f, 0.9f)
@@ -113,7 +112,6 @@ public class Master {
             drawModTable(com.mtsharpgrain.Main.worldname, gui, modPackManager);
             
         } else if (path.startsWith("home/modview/")) {
-            gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
             
@@ -386,8 +384,6 @@ public class Master {
     
     private static void drawBGandButtons(IGui gui) {
         gui.push(false);
-
-        gui.textFont("Interface/Fonts/Console.fnt");
         gui.textHAlign("center");
         gui.textVAlign("center");
         gui.imageSize(1f, 0.9f)
@@ -559,7 +555,6 @@ public class Master {
         try {
             var worldDir = Main.worldDir;
             var txt = worldDir.resolve("start.txt");
-            gui.textFont("Interface/Fonts/Console.fnt");
             gui.textHAlign("center");
             gui.textVAlign("center");
             gui.textColor(ColorRGBA.Yellow);

@@ -18,10 +18,8 @@ import java.nio.file.Files;
 public class Sun {
 
     private float rotationPeriodSeconds;
-
-    // ── Color model — same three anchor colors as sun.js ────────────────
-    private static final ColorRGBA DAWN_COLOR  = new ColorRGBA(0.35f, 0.05f, 0f,   1f);
-    private static final ColorRGBA NOON_COLOR  = new ColorRGBA(1.0f,  0.55f, 0.15f, 1f);
+    private static final ColorRGBA DAWN_COLOR  = new ColorRGBA(0.5f, 0.45f, 0.3f,   1f);
+    private static final ColorRGBA NOON_COLOR  = new ColorRGBA(1.0f,  0.9f, 0.6f, 1f);
     private static final ColorRGBA NIGHT_COLOR = new ColorRGBA(0f,    0f,    0f,   1f);
 
     private final Geometry cube;

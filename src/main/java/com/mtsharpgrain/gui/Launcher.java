@@ -27,7 +27,7 @@ public final class Launcher {
         dim(gui);
         card(gui);
 
-        gui.textFont("Interface/Fonts/Console.fnt");
+        gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textHAlign("center");
         gui.textVAlign("center");
         gui.textColor(ColorRGBA.White);
