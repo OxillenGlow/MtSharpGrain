@@ -26,16 +26,34 @@ class TestInit {
         sun.setDirection((new Vector3f(-0.5f, -0.8f, -0.3f)).normalizeLocal());
         sun.setColor(ColorRGBA.White);
         rootNode.addLight(sun);
-        /* A colored lit cube. Needs light source! */ 
-        Box boxMesh = new Box(1f,1f,1f); 
-        Geometry boxGeo = new Geometry("Colored Box", boxMesh); 
-        Material boxMat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
-        boxMat.setBoolean("UseMaterialColors", true); 
-        boxMat.setColor("Ambient", ColorRGBA.Green); 
-        boxMat.setColor("Diffuse", ColorRGBA.Green); 
-        boxGeo.setMaterial(boxMat); 
-        rootNode.attachChild(boxGeo);
-        boxGeo.move(3.0f, 0, 0);
+        /* A colored lit cube. Needs light source! */ /* A colored lit cube. Needs light source! */ 
+        //Box boxMesh = new Box(1f,1f,1f); 
+        //Geometry boxGeo = new Geometry("Colored Box", boxMesh); 
+        //Material boxMat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        //boxMat.setBoolean("UseMaterialColors", true); 
+        //boxMat.setColor("Ambient", ColorRGBA.Green); 
+        //boxMat.setColor("Diffuse", ColorRGBA.Green); 
+        //boxGeo.setMaterial(boxMat); 
+        //rootNode.attachChild(boxGeo);
+        //boxGeo.move(3.0f, 0, 0);
+        //var boxMesh2 = new Box(1f,1f,1f); 
+        //var boxGeo2 = new Geometry("Colored Box", boxMesh); 
+        //Material boxMat2 = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        //boxMat2.setBoolean("UseMaterialColors", true); 
+        //boxMat2.setColor("Ambient", ColorRGBA.Blue); 
+        //boxMat2.setColor("Diffuse", ColorRGBA.Blue); 
+        //boxGeo2.setMaterial(boxMat2); 
+        //rootNode.attachChild(boxGeo2);
+        //boxGeo2.move(0f, 2f, 0);
+        //var boxMesh3 = new Box(1f,1f,1f); 
+        //var boxGeo3 = new Geometry("Colored Box", boxMesh); 
+        //Material boxMat3 = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        //boxMat3.setBoolean("UseMaterialColors", true); 
+        //boxMat3.setColor("Ambient", ColorRGBA.Red); 
+        //boxMat3.setColor("Diffuse", ColorRGBA.Red); 
+        //boxGeo3.setMaterial(boxMat3); 
+        //rootNode.attachChild(boxGeo3);
+        //boxGeo3.move(-2.4f, -1f, 0);
         PyBallJmeMesh.init();
         flyCam.setEnabled(true);// AHHHhHHHHH
         var flyCamToggle = new com.mtsharpgrain.gui.FlyCamToggle(inputManager, flyCam);

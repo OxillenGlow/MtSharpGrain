@@ -274,7 +274,7 @@ public final class Launcher {
     }
 
     private static void card(IGui gui) {
-        gui.imageSize(0.78f, 0.86f)
+        gui.imageSize(1f, 0.89f)
                 .imageAlpha(true)
                 .imageHAlign("center")
                 .imageVAlign("center");
