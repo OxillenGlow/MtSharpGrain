@@ -52,7 +52,7 @@ import com.jme3.math.ColorRGBA;
 public final class BlockRegistry {
 
     // ── Shared ambient (same for every block) ──────────────────────────────
-    public static final ColorRGBA AMBIENT = ColorRGBA.fromRGBA255(5, 5, 15, 255);
+    public static final ColorRGBA AMBIENT = ColorRGBA.fromRGBA255(30, 30, 50, 255);
 
     // ── Named ID constants (add one when you add a new block) ──────────────
     public static final int ID_AIR          = 0;

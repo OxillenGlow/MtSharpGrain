@@ -31,6 +31,7 @@ import com.mtsharpgrain.storage.WorldData;
 import com.mtsharpgrain.gui.Inventory;
 import com.mtsharpgrain.newton.*;
 import com.mtsharpgrain.storage.WorldGit;
+import static java.lang.System.out;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -325,7 +326,6 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/mods/teleport.js", dir.resolve("mod/TeleportMeMAIN/teleport.js").toString());
             AssetConverter.extract("/mods/SurvivalFramework/03_death.js", dir.resolve("mod/SurvivalFramework/death.js").toString());
             AssetConverter.extract("/mods/SurvivalFramework/05_location.js", dir.resolve("mod/SurvivalFramework/location.js").toString());
-            AssetConverter.extract("/mods/simpleNPC.js", dir.resolve("mod/SimpleNPC/simpleNPC.js").toString());
             AssetConverter.extract("/mods/TimerDemo.js", dir.resolve("mod/Timer/TimerDemo.js").toString());
             AssetConverter.extract("/mods/Delayed.js", dir.resolve("mod/TimerTest2/Delay.js").toString());
             AssetConverter.extract("/mods/orbs.js", dir.resolve("mod/Lights/orbs.js").toString());
@@ -334,9 +334,25 @@ public class Main extends SimpleApplication {
             AssetConverter.extract("/stuff/start.txt", dir.resolve("start.txt").toString());
             AssetConverter.extract("/stuff/start.png", dir.resolve("start.png").toString());
             AssetConverter.extract("/mods/nostrFinder.js", dir.resolve("mod/Mtsharpgrain-ChatroomMAIN/nostr.js").toString());
-            
+            var npcs = dir.resolve("mod/npcs-MAIN");
+            for (var name : java.util.List.of(
+                    "simple_npcs.js",
+                    "npc_drone.js",
+                    "npc_attack_drone.js",
+                    "npc_bomber.js",
+                    "npc_rover.js",
+                    "npc_blob.js",
+                    "npc_lantern_wisp.js",
+                    "npc_moth.js",
+                    "npc_stair_beetle.js",
+                    "npc_crystal_sentry.js",
+                    "npc_miner_bot.js",
+                    "npc_shadow_skitter.js")) {
+                AssetConverter.extract("/mods/npcs/" + name, npcs.resolve(name).toString());
+            }
             System.out.println("Extracted files → " + dir.toAbsolutePath());
         } catch (IOException ex) {
+            out.println(ex);
             throw new RuntimeException("Failed extracting world files to " + dir, ex);
         }
     }

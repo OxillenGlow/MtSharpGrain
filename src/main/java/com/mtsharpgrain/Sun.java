@@ -18,8 +18,8 @@ import java.nio.file.Files;
 public class Sun {
 
     private float rotationPeriodSeconds;
-    private static final ColorRGBA DAWN_COLOR  = new ColorRGBA(0.5f, 0.45f, 0.3f,   1f);
-    private static final ColorRGBA NOON_COLOR  = new ColorRGBA(1.0f,  0.9f, 0.6f, 1f);
+    private static final ColorRGBA DAWN_COLOR  = new ColorRGBA(0.5f, 0.4f, 0.3f,   1f);
+    private static final ColorRGBA NOON_COLOR  = new ColorRGBA(1.0f,  0.9f, 0.8f, 1f);
     private static final ColorRGBA NIGHT_COLOR = new ColorRGBA(0f,    0f,    0f,   1f);
 
     private final Geometry cube;
@@ -89,9 +89,9 @@ public class Sun {
         ColorRGBA c = colorForAngle(angleDeg);
         // Make cube brighter and unshaded (so it's always visible): amplify color a bit.
         ColorRGBA bright = new ColorRGBA(
-            Math.min(1f, c.r * 1.5f),
-            Math.min(1f, c.g * 1.5f),
-            Math.min(1f, c.b * 1.5f),
+            Math.min(1f, c.r * 2f),
+            Math.min(1f, c.g * 2f),
+            Math.min(1f, c.b * 2f),
             1f
         );
         cube.getMaterial().setColor("Color", bright);

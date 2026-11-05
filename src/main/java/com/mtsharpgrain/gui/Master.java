@@ -286,7 +286,7 @@ public class Master {
         gui.textSize(0.015f);
 
         gui.textColor(ColorRGBA.White);
-        gui.text("Installed Mods:\n*click* on one to veiw it      press[Buttons] to disable", 0.05f, 0.85f, null);
+        gui.text("Installed Mods:\n*click* on one to view it      press[Buttons] to disable", 0.05f, 0.85f, null);
         gui.textSize(0.02f);
         gui.textHAlign("right");
         gui.textVAlign("top");

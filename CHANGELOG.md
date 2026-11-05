@@ -6,3 +6,5 @@
 - Fixed IO problems
 - Addded the nostr.js mod (Mtsharpgrain-ChatroomMAIN) for a simple (anonymous) chat system to other players.
   - chat with other online mtsharpgrain players.
+- Added a simple launcher for creating worlds, importing worlds, and playing
+- Added some more NPCs
