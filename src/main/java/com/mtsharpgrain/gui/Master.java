@@ -420,12 +420,12 @@ public class Master {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.018f);
+        gui.textSize(0.014f);
         gui.text("Saved Mods:", 0.95f, 0.80f, null);
 
         gui.textSize(0.015f);
-        float y = 0.80f;
-        float rowSpacing = 0.03f;
+        float y = 0.70f;
+        float rowSpacing = 0.023f;
 
         List<String> savedNames = modPackManager.getSavedPackNames();
         if (savedNames.isEmpty()) {
