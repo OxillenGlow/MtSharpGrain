@@ -4,8 +4,7 @@ import com.jme3.input.MouseInput;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme.igui.IGui;
 import com.jme3.asset.plugins.FileLocator;
-import com.jme.igui.IGuiAppState;
-import com.jme.igui.IGuiComponent;
+import com.mtsharpgrain.gui.SquareIGui;
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -86,7 +85,7 @@ public class Main extends SimpleApplication {
         loaded = false;
         GameState.guiState = "launcher";
 
-        gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
+        gui = SquareIGui.create(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
@@ -265,19 +264,21 @@ public class Main extends SimpleApplication {
         float aspectRatio = (float) width / height;
         cam.setFrustumPerspective(BASE_FOV, aspectRatio, 0.5f, 5000.0f);
         currentFov = BASE_FOV;
-        if (!(gui == null)) {
+        if (gui instanceof SquareIGui square) {
+            square.reshape(width, height);
+        } else if (gui != null) {
             gui.destroy();
+            gui = SquareIGui.create(assetManager, stateManager, inputManager, guiNode, width, height);
         }
-        gui = IGuiAppState.newRelative(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
-        IGuiComponent text = gui.text("MtSharpGrain " + version, 1f, 0f, true);
+        gui.text("MtSharpGrain " + version, 1f, 0f, true);
         gui.textSize(0.015f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
         gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
         gui.imageSize(0.035f, 0.06f).imageAlpha(true)
            .imageHAlign("center").imageVAlign("center");
-        IGuiComponent crosshair = gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
+        gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
 
     }
     
