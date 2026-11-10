@@ -33,7 +33,7 @@ public class ChunkMeshBuilder {
         String cnkName = "Ck" + X + "y" + Y + "z" + Z;
 
         Node tempNode = new Node(cnkName);
-
+        Node transparentNode = new Node(cnkName + "T");
         for (int x = 0; x < 16; x++) {
             for (int y = 0; y < 16; y++) {
                 for (int z = 0; z < 16; z++) {
@@ -71,19 +71,30 @@ public class ChunkMeshBuilder {
 
                     Material mat = buildMaterial(assetManager, block);
                     geo.setMaterial(mat);
-                    if (isTransparent(block)) {
+                    geo.setLocalTranslation(x + 16 * X, y + 16 * Y, z + 16 * Z);
+
+                    ColorRGBA diffuse = mat.getParamValue("Diffuse");
+                    if (diffuse != null && diffuse.getAlpha() < 1f) {
                         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
                         geo.setQueueBucket(Bucket.Transparent);
+                        transparentNode.attachChild(geo);
+                    } else {
+                        tempNode.attachChild(geo);
                     }
-                    geo.setLocalTranslation(x + 16 * X, y + 16 * Y, z + 16 * Z);
-                    tempNode.attachChild(geo);
                 }
             }
         }
 
         Spatial batched = GeometryBatchFactory.optimize(tempNode);
-        batched.setName(cnkName);
-        return batched;
+        if (transparentNode.getQuantity() == 0) {
+            batched.setName(cnkName);
+            return batched;
+        }
+        var root = new Node(cnkName);
+        batched.setName(cnkName + "B");
+        root.attachChild(batched);
+        root.attachChild(transparentNode);
+        return root;
     }
 
     // —— Geometry helper ————————————————————————————————————————
