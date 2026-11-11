@@ -104,11 +104,11 @@ public class Master {
             modPackManager.disableAllDrawing();
             gui.textHAlign("center");
             gui.textVAlign("center");
-            gui.imageSize(1f, 0.9f)
+            gui.imageSize(1.1f, 1f)
             .imageAlpha(true)
-            .imageHAlign("center")
+            .imageHAlign("left")
             .imageVAlign("center");
-            gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
+            gui.image("/self/bkg.png", 0f, 0.5f, false);
             drawModTable(com.mtsharpgrain.Main.worldname, gui, modPackManager);
             
         } else if (path.startsWith("home/modview/")) {
@@ -386,11 +386,11 @@ public class Master {
         gui.push(false);
         gui.textHAlign("center");
         gui.textVAlign("center");
-        gui.imageSize(1f, 0.9f)
+        gui.imageSize(1.1f, 1f)
             .imageAlpha(true)
-            .imageHAlign("center")
+            .imageHAlign("left")
             .imageVAlign("center");
-            gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
+            gui.image("/self/bkg.png", 0f, 0.5f, false);
         
         // ── Green glass tab that encircles / sits under the Play label ─────────
         gui.imageSize(0.28f, 0.12f)          // adjust to taste
@@ -518,7 +518,7 @@ public class Master {
 
         var flash = (Master.in && (System.currentTimeMillis() / 200) % 2 == 1) ? ">" : "";
 
-        inputPlugin.input("_____________________________________",
+        inputPlugin.input("______",
             0.65f, 0.01f,
             (mouse, bool) -> {
                 if (mouse == IGuiMouseEvent.MOUSE_IN){
