@@ -77,7 +77,7 @@ public class Master {
         gui.textHAlign("center");
         gui.textVAlign("top");
         String path = GameState.guiState;
-        
+
         if (path != null && (path.equals("launcher") || path.startsWith("launcher/"))) {
             Launcher.draw(gui);
             gui.pop();
@@ -93,6 +93,7 @@ public class Master {
             drawBreakPercentage(gui);
             drawConsole(gui);
         } else if ("home".equals(path)) {
+            drawPersistentNav(gui, path);
             modPackManager.disableAllDrawing();
             drawBGandButtons(gui);
             drawViewDistanceSelector(gui);
@@ -101,6 +102,7 @@ public class Master {
             inventory.draw(gui);
             drawConsole(gui);
         } else if ("home/modview".equals(path)) {
+            drawPersistentNav(gui, path);
             modPackManager.disableAllDrawing();
             gui.textHAlign("center");
             gui.textVAlign("center");
@@ -112,6 +114,7 @@ public class Master {
             drawModTable(com.mtsharpgrain.Main.worldname, gui, modPackManager);
             
         } else if (path.startsWith("home/modview/")) {
+            drawPersistentNav(gui, path);
             gui.textHAlign("center");
             gui.textVAlign("center");
             
@@ -120,7 +123,8 @@ public class Master {
             .imageHAlign("center")
             .imageVAlign("center");
             gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
-            
+            pixelPanel(gui, 0.5f, 0.5f, 0.92f, 0.82f, new ColorRGBA(0f, 0f, 0f, 0.24f));
+
             String packName = path.substring("home/modview/".length());
             drawModDetail(gui, modPackManager, packName);
             // The ONLY place a mod's own GuiApi elements are allowed to draw.
@@ -133,12 +137,38 @@ public class Master {
             GameState.navigateTo("home");
             drawSavedModsList(gui, modPackManager);
             drawViewDistanceSelector(gui);
-            drawHomeNav(gui);
             modPackManager.disableAllDrawing();
             inventory.draw(gui);
         }
-
         gui.pop();
+    }
+
+    private static void drawPersistentNav(IGui gui, String path) {
+        gui.push(false);
+        drawImageNavButton(gui, "/self/HomeB.png", 1.02f, 0.94f,
+                () -> GameState.navigateTo("home"));
+        drawImageNavButton(gui, "/self/CodeB.png", 1.02f, 0.90f,
+                () -> GameState.navigateTo("home/modview"));
+        drawImageNavButton(gui, "/self/X-closeB.png", 1.02f, 0.86f, () -> {
+            if (path != null && path.startsWith("home/modview/")) GameState.navigateTo("home/modview");
+            else GameState.navigateTo("home");
+        });
+        gui.pop();
+    }
+
+    private static void drawImageNavButton(IGui gui, String image, float x, float y, Runnable action) {
+        gui.imageSize(0.03f, 0.03f).imageAlpha(true).imageHAlign("center").imageVAlign("center");
+        pixelPanel(gui, x, y, 0.034f, 0.034f, new ColorRGBA(0f, 0f, 0f, 0.42f));
+        gui.image(image, x, y, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) action.run();
+            return true;
+        });
+    }
+
+    private static void pixelPanel(IGui gui, float x, float y, float width, float height, ColorRGBA tint) {
+        gui.imageSize(width, height).imageAlpha(true).imageHAlign("center").imageVAlign("center").imageColor(tint);
+        gui.image("/cc0/white_pixel.png", x, y, false);
+        gui.imageColor(ColorRGBA.White);
     }
 
     private static void drawBlockTypeSelector(IGui gui) {
@@ -235,22 +265,15 @@ public class Master {
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.017f);
-        // TODO: swap for gui.image(...) once nav-arrow assets are picked from the Hyper pack
-        gui.text("Mods >", 0.95f, 0.95f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                GameState.navigateTo("home/modview");
-            }
-            return true;
-        });
-        gui.text("Help ?", 0.95f, 0.90f, (event, arg) -> {
+        gui.textSize(0.022f);
+        gui.text("Help ?", 0.95f, 0.98f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 GameState.navigateTo("startscreen");
             }
             return true;
         });
         gui.textColor(opened? ColorRGBA.Green:ColorRGBA.Blue);
-        gui.text(opened? "Opened!" :"Github source code", 0.95f, 1f, (event, arg) -> {
+        gui.text(opened? "Opened!" :"Github source code", 0.95f, 0.94f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 com.tools.AiGeneratedTools.openWebpage("https://github.com/OxillenGlow/MtSharpGrain");
                 opened = true;
@@ -258,7 +281,7 @@ public class Master {
             return true;
         });
         gui.textColor(openedI? ColorRGBA.Green:ColorRGBA.Blue);
-        gui.text(openedI? "Opened!" :"Itch.io page", 0.95f, 0.85f, (event, arg) -> {
+        gui.text(openedI? "Opened!" :"Itch.io page", 0.95f, 0.9f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 com.tools.AiGeneratedTools.openWebpage("https://oxillenglowdist.itch.io/mt-sharpgrain");
                 openedI = true;
@@ -275,14 +298,7 @@ public class Master {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
-        
-        gui.textSize(0.04f);
-        gui.text("< Back", 0.05f, 0.95f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                GameState.navigateTo("home");
-            }
-            return true;
-        });
+        pixelPanel(gui, 0.34f, 0.53f, 0.62f, 0.62f, new ColorRGBA(0f, 0f, 0f, 0.42f));
         gui.textSize(0.015f);
 
         gui.textColor(ColorRGBA.White);
@@ -360,13 +376,6 @@ public class Master {
         float previousZ = gui.getZIndex();
         gui.zIndex(previousZ + 100f);
         
-        gui.textSize(0.04f);
-        gui.text("< Back", 0.05f, 0.95f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                GameState.navigateTo("home/modview");
-            }
-            return true;
-        });
         gui.textSize(0.02f);
         gui.zIndex(previousZ);
 
@@ -389,24 +398,14 @@ public class Master {
             .imageVAlign("center");
             gui.image("/self/bkg.png", 0f, 0.5f, false);
         
-        // ── Green glass tab that encircles / sits under the Play label ─────────
-        gui.imageSize(0.28f, 0.12f)          // adjust to taste
-           .imageAlpha(true)
-           .imageHAlign("center")
-           .imageVAlign("center");
-    
-        gui.image("/cc0/bw_glass_tab.png", 0.5f, 0.5f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                FlyCamToggle.enterPlayMode();
-            }
+        // Play image button; keep the existing /self/bkg.png background.
+        gui.imageSize(0.28f, 0.12f).imageAlpha(true)
+                .imageHAlign("center").imageVAlign("center");
+        gui.image("/self/PlayB.png", 0.5f, 0.5f, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) FlyCamToggle.enterPlayMode();
             return true;
-         });
+        });
         gui.imageSize(1f, 0.9f);
-
-        // Label on top of the glass tab
-        gui.textColor(ColorRGBA.White);
-        gui.textSize(0.045f);
-        gui.text("PLAY", 0.5f, 0.5f, false);   // or keep "Press [F] to play" if you still want the hint
 
         gui.pop();
     }

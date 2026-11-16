@@ -76,10 +76,14 @@ public final class Launcher {
             gui.textSize(0.022f);
             gui.textColor(ColorRGBA.White);
             gui.text(name + (git ? "  (git)" : ""), 0.17f, y, false);
-
+            
+            
+            gui.textColor(ColorRGBA.Green);
             smallTextButton(gui, "Play", 0.47f, y, () -> {
                 if (!busy) Main.INSTANCE.enterWorld(name, "home");
             });
+            
+            gui.textColor(ColorRGBA.White);
             smallTextButton(gui, "Mods", 0.56f, y, () -> {
                 if (!busy) Main.INSTANCE.enterWorld(name, "home/modview");
             });
