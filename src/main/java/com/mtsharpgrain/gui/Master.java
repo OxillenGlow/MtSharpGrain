@@ -77,10 +77,10 @@ public class Master {
         gui.textHAlign("center");
         gui.textVAlign("top");
         String path = GameState.guiState;
-        drawPersistentNav(gui, path);
 
         if (path != null && (path.equals("launcher") || path.startsWith("launcher/"))) {
             Launcher.draw(gui);
+            drawPersistentNav(gui, path);
             gui.pop();
             return;
         }
@@ -139,6 +139,7 @@ public class Master {
             inventory.draw(gui);
         }
 
+        drawPersistentNav(gui, path);
         gui.pop();
     }
 
