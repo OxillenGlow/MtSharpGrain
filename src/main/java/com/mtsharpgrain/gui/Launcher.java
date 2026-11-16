@@ -6,6 +6,9 @@ import com.jme3.math.ColorRGBA;
 import com.mtsharpgrain.Main;
 import com.mtsharpgrain.storage.WorldGit;
 import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Comparator;
 import java.util.function.Consumer;
 public final class Launcher {
     private Launcher() {}
@@ -17,6 +20,9 @@ public final class Launcher {
     private static String urlDraft = "";
     private static HashMap<String, Boolean> active;
     private static boolean hoverFolder;
+    private static boolean hoverNewWorld;
+    private static boolean hoverGithub;
+    private static String deleteConfirmName = "";
     public static void draw(IGui gui) {
         if (active == null) active = new HashMap<>();
         var path = GameState.guiState;
@@ -33,6 +39,7 @@ public final class Launcher {
         gui.text(status == null ? "" : status, 0.5f, 0.18f, false);
         if ("launcher/new".equals(path)) drawNew(gui);
         else if ("launcher/clone".equals(path)) drawClone(gui);
+        else if ("launcher/delete".equals(path)) drawDelete(gui);
         else drawList(gui);
     }
     private static void drawList(IGui gui) {
@@ -41,119 +48,170 @@ public final class Launcher {
         if (page >= pages) page = pages - 1;
         int from = page * PAGE;
         int to = Math.min(worlds.size(), from + PAGE);
-        gui.textSize(0.022f);
+
+        // A soft pixel-texture panel keeps the world list visually grouped.
+        pixelPanel(gui, 0.50f, 0.53f, 0.76f, 0.57f, new ColorRGBA(0.10f, 0.13f, 0.17f, 0.78f));
         gui.textHAlign("left");
         gui.textVAlign("center");
-        if (worlds.isEmpty()) {
-            gui.textColor(ColorRGBA.Gray);
-            gui.text("No worlds yet.", 0.22f, 0.70f, false);
-        }
-        float y = 0.74f;
-        for (int i = from; i < to; i++) {
-            var name = worlds.get(i);
-            var dir = WorldGit.worldsRoot().resolve(name);
-            var git = WorldGit.isGit(dir);
-            float row = y;
-            gui.textColor(ColorRGBA.White);
-            gui.textSize(0.022f);
-            gui.text(name + (git ? "  (git)" : ""), 0.20f, row, false);
-
-            gui.imageSize(0.05f, 0.05f)
-                    .imageAlpha(true)
-                    .imageHAlign("center")
-                    .imageVAlign("center");
-            gui.image("/self/PlayB.png", 0.62f, row, (event, arg) -> {
-                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && !busy) {
-                    Main.INSTANCE.enterWorld(name, "home");
-                }
-                return true;
-            });
-
-            gui.imageSize(0.05f, 0.05f)
-                    .imageAlpha(true)
-                    .imageHAlign("center")
-                    .imageVAlign("center");
-            gui.image("/self/CodeB.png", 0.78f, row, (event, arg) -> {
-                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && !busy) {
-                    Main.INSTANCE.enterWorld(name, "home/modview");
-                }
-                return true;
-            });
-
-            if (git) {
-                glass(gui, 0.94f, row, 0.10f, 0.055f, ColorRGBA.Yellow, "Up", () -> pullAsync(name));
-            }
-            y -= 0.07f;
-        }
-        gui.textHAlign("center");
-        gui.textSize(0.022f);
+        gui.textSize(0.026f);
         gui.textColor(ColorRGBA.White);
-        gui.text("<", 0.42f, 0.24f, (event, arg) -> {
+        gui.text("worlds:", 0.15f, 0.78f, false);
+
+        if (worlds.isEmpty()) {
+            gui.textSize(0.022f);
+            gui.textColor(ColorRGBA.Gray);
+            gui.text("No worlds yet. Create one below or clone one from GitHub.", 0.17f, 0.70f, false);
+        }
+
+        float y = 0.70f;
+        for (int i = from; i < to; i++) {
+            final String name = worlds.get(i);
+            var dir = WorldGit.worldsRoot().resolve(name);
+            boolean git = WorldGit.isGit(dir);
+            pixelPanel(gui, 0.50f, y, 0.70f, 0.058f,
+                    new ColorRGBA(0.78f, 0.86f, 0.94f, 0.13f));
+
+            gui.textHAlign("left");
+            gui.textVAlign("center");
+            gui.textSize(0.022f);
+            gui.textColor(ColorRGBA.White);
+            gui.text(name + (git ? "  (git)" : ""), 0.17f, y, false);
+
+            smallTextButton(gui, "Play", 0.67f, y, () -> {
+                if (!busy) Main.INSTANCE.enterWorld(name, "home");
+            });
+            smallTextButton(gui, "Mods", 0.76f, y, () -> {
+                if (!busy) Main.INSTANCE.enterWorld(name, "home/modview");
+            });
+            if (git) smallTextButton(gui, "Up", 0.85f, y, () -> pullAsync(name));
+            smallTextButton(gui, "Del", 0.94f, y, () -> {
+                if (!busy) {
+                    deleteConfirmName = name;
+                    status = "";
+                    GameState.navigateTo("launcher/delete");
+                }
+            });
+            y -= 0.071f;
+        }
+
+        gui.textHAlign("center");
+        gui.textSize(0.020f);
+        gui.textColor(ColorRGBA.White);
+        gui.text("<", 0.45f, 0.24f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && page > 0) page--;
             return true;
         });
         gui.text((page + 1) + " / " + pages, 0.50f, 0.24f, false);
-        gui.text(">", 0.58f, 0.24f, (event, arg) -> {
+        gui.text(">", 0.55f, 0.24f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && page + 1 < pages) page++;
             return true;
         });
 
-        gui.imageSize(0.09f, 0.058f)
-                .imageAlpha(true)
-                .imageHAlign("center")
-                .imageVAlign("center");
-        gui.image("/self/PlusB.png", 0.28f, 0.10f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && !busy) {
+        // Main actions are deliberately compact and anchored to the bottom-left.
+        smallImageButton(gui, "/self/PlusB.png", 0.055f, 0.095f, () -> {
+            if (!busy) {
                 nameDraft = "";
                 status = "";
                 GameState.navigateTo("launcher/new");
             }
-            return true;
-        });
-        gui.textHAlign("left");
-        gui.textVAlign("center");
-        gui.textSize(0.022f);
-        gui.textColor(ColorRGBA.White);
-        gui.text("New world", 0.34f, 0.10f, false);
-
-        gui.imageSize(0.09f, 0.058f)
-                .imageAlpha(true)
-                .imageHAlign("center")
-                .imageVAlign("center");
-        gui.image("/self/Download.png", 0.58f, 0.10f, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && !busy) {
+        }, () -> hoverNewWorld = true, () -> hoverNewWorld = false);
+        smallImageButton(gui, "/self/Download.png", 0.105f, 0.095f, () -> {
+            if (!busy) {
                 nameDraft = "";
                 urlDraft = "https://github.com/";
                 status = "";
                 GameState.navigateTo("launcher/clone");
             }
-            return true;
-        });
-        gui.text("From GitHub", 0.64f, 0.10f, false);
+        }, () -> hoverGithub = true, () -> hoverGithub = false);
+        smallImageButton(gui, "/self/FileB.png", 0.155f, 0.095f, () -> {
+            if (!busy) com.tools.AiGeneratedTools.openFolder(WorldGit.worldsRoot().getParent());
+        }, () -> hoverFolder = true, () -> hoverFolder = false);
 
-        var folderX = 0.98f;
-        var folderY = 0.5f;
-        gui.imageSize(0.1f, 0.06f)
-                .imageAlpha(true)
-                .imageHAlign("right")
-                .imageVAlign("center");
-        gui.image("/self/FileB.png", folderX, folderY, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_IN) hoverFolder = true;
-            else if (event == IGuiMouseEvent.MOUSE_OUT) hoverFolder = false;
-            else if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && !busy) {
-                com.tools.AiGeneratedTools.openFolder(WorldGit.worldsRoot().getParent());
+        if (hoverNewWorld) tooltip(gui, "Create a new standard world", 0.055f, 0.145f);
+        if (hoverGithub) tooltip(gui, "Clone a world from a GitHub repository", 0.105f, 0.145f);
+        if (hoverFolder) tooltip(gui, "Open the worlds folder to manage worlds and plug-ins", 0.155f, 0.145f);
+    }
+
+    private static void drawDelete(IGui gui) {
+        pixelPanel(gui, 0.50f, 0.50f, 0.58f, 0.34f, new ColorRGBA(0.12f, 0.14f, 0.18f, 0.94f));
+        gui.textHAlign("center");
+        gui.textVAlign("center");
+        gui.textSize(0.030f);
+        gui.textColor(ColorRGBA.White);
+        gui.text("Delete world?", 0.50f, 0.62f, false);
+        gui.textSize(0.022f);
+        gui.textColor(ColorRGBA.fromRGBA255(210, 215, 225, 255));
+        gui.text("Are you sure you want to permanently delete", 0.50f, 0.53f, false);
+        gui.textColor(ColorRGBA.Yellow);
+        gui.text(deleteConfirmName + "?", 0.50f, 0.48f, false);
+        gui.textColor(ColorRGBA.Gray);
+        gui.text("This cannot be undone.", 0.50f, 0.42f, false);
+        smallTextButton(gui, "Cancel", 0.40f, 0.33f, () -> GameState.navigateTo("launcher"));
+        smallTextButton(gui, "Delete", 0.60f, 0.33f, () -> {
+            if (!busy && !deleteConfirmName.isBlank()) {
+                try {
+                    deleteWorldTree(WorldGit.worldsRoot().resolve(WorldGit.sanitize(deleteConfirmName)));
+                    status = deleteConfirmName + " deleted";
+                    deleteConfirmName = "";
+                    GameState.navigateTo("launcher");
+                } catch (IOException | RuntimeException ex) {
+                    status = "Delete failed: " + ex.getMessage();
+                }
             }
-            return true;
         });
-        if (hoverFolder) {
-            gui.textHAlign("left");
-            gui.textVAlign("top");
-            gui.textSize(0.022f);
-            gui.textColor(ColorRGBA.Gray);
-            String characters = "!1234567890!@#$%^&*()abcdefghijklmnopqrstuvwxyz";
-            gui.text("manage plug-ins and world files in external file manager" + characters.charAt(new java.util.Random().nextInt(characters.length())), folderX, folderY, false);
+    }
+
+    private static void deleteWorldTree(java.nio.file.Path root) throws IOException {
+        if (!Files.exists(root)) return;
+        try (var walk = Files.walk(root)) {
+            for (var path : walk.sorted(Comparator.reverseOrder()).toList()) {
+                Files.deleteIfExists(path);
+            }
         }
     }
+
+    private static void pixelPanel(IGui gui, float x, float y, float w, float h, ColorRGBA tint) {
+        gui.imageSize(w, h).imageAlpha(true).imageHAlign("center").imageVAlign("center")
+                .imageColor(tint);
+        gui.image("/cc0/white_pixel.png", x, y, false);
+        gui.imageColor(ColorRGBA.White);
+    }
+
+    private static void smallImageButton(IGui gui, String image, float x, float y,
+                                         Runnable action, Runnable onHover, Runnable onOut) {
+        gui.imageSize(0.03f, 0.03f).imageAlpha(true)
+                .imageHAlign("center").imageVAlign("center");
+        gui.image(image, x, y, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_IN) onHover.run();
+            else if (event == IGuiMouseEvent.MOUSE_OUT) onOut.run();
+            else if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) action.run();
+            return true;
+        });
+    }
+
+    private static void smallTextButton(IGui gui, String label, float x, float y, Runnable action) {
+        pixelPanel(gui, x, y, 0.060f, 0.034f, new ColorRGBA(0.80f, 0.88f, 0.96f, 0.22f));
+        gui.textHAlign("center");
+        gui.textVAlign("center");
+        gui.textSize(0.015f);
+        gui.textColor(ColorRGBA.White);
+        gui.text(label, x, y, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) action.run();
+            return true;
+        });
+    }
+
+    private static void tooltip(IGui gui, String message, float x, float y) {
+        float width = Math.min(0.43f, 0.025f + message.length() * 0.008f);
+        pixelPanel(gui, x + width * 0.5f, y, width, 0.052f,
+                new ColorRGBA(0.08f, 0.10f, 0.13f, 0.96f));
+        gui.textHAlign("left");
+        gui.textVAlign("center");
+        gui.textSize(0.015f);
+        gui.textColor(ColorRGBA.White);
+        gui.text(message, x + 0.012f, y, false);
+    }
+
     private static void drawNew(IGui gui) {
         gui.textHAlign("center");
         gui.textSize(0.022f);
