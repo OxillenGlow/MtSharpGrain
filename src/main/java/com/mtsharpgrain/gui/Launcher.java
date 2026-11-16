@@ -16,6 +16,7 @@ public final class Launcher {
     private static String nameDraft = "";
     private static String urlDraft = "";
     private static HashMap<String, Boolean> active;
+    private static boolean hoverFolder;
     public static void draw(IGui gui) {
         if (active == null) active = new HashMap<>();
         var path = GameState.guiState;
@@ -129,6 +130,28 @@ public final class Launcher {
             return true;
         });
         gui.text("From GitHub", 0.64f, 0.10f, false);
+
+        var folderX = 0.12f;
+        var folderY = 0.10f;
+        gui.imageSize(1f / 7.5f, 1f / 15f)
+                .imageAlpha(true)
+                .imageHAlign("center")
+                .imageVAlign("center");
+        gui.image("/self/folder_button.png", folderX, folderY, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_IN) hoverFolder = true;
+            else if (event == IGuiMouseEvent.MOUSE_OUT) hoverFolder = false;
+            else if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && !busy) {
+                com.tools.AiGeneratedTools.openFolder(WorldGit.worldsRoot().getParent());
+            }
+            return true;
+        });
+        if (hoverFolder) {
+            gui.textHAlign("left");
+            gui.textVAlign("top");
+            gui.textSize(0.012f);
+            gui.textColor(ColorRGBA.Gray);
+            gui.text("manage plug-ins and world files in external file manager", folderX, folderY, false);
+        }
     }
     private static void drawNew(IGui gui) {
         gui.textHAlign("center");
