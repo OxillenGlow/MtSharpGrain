@@ -77,14 +77,14 @@ public final class Launcher {
             gui.textColor(ColorRGBA.White);
             gui.text(name + (git ? "  (git)" : ""), 0.17f, y, false);
 
-            smallTextButton(gui, "Play", 0.67f, y, () -> {
+            smallTextButton(gui, "Play", 0.47f, y, () -> {
                 if (!busy) Main.INSTANCE.enterWorld(name, "home");
             });
-            smallTextButton(gui, "Mods", 0.76f, y, () -> {
+            smallTextButton(gui, "Mods", 0.56f, y, () -> {
                 if (!busy) Main.INSTANCE.enterWorld(name, "home/modview");
             });
             if (git) smallTextButton(gui, "Up", 0.85f, y, () -> pullAsync(name));
-            smallTextButton(gui, "Del", 0.94f, y, () -> {
+            smallTextButton(gui, "Del", 0.74f, y, () -> {
                 if (!busy) {
                     deleteConfirmName = name;
                     status = "";
@@ -95,7 +95,7 @@ public final class Launcher {
         }
 
         gui.textHAlign("center");
-        gui.textSize(0.020f);
+        gui.textSize(0.022f);
         gui.textColor(ColorRGBA.White);
         gui.text("<", 0.45f, 0.24f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && page > 0) page--;
@@ -173,7 +173,7 @@ public final class Launcher {
     private static void pixelPanel(IGui gui, float x, float y, float w, float h, ColorRGBA tint) {
         gui.imageSize(w, h).imageAlpha(true).imageHAlign("center").imageVAlign("center")
                 .imageColor(tint);
-        gui.image("/cc0/white_pixel.png", x, y, false);
+        gui.image("/cc0/white_pixel.png", x, y, false);//its actually black despite the "white pixel" name
         gui.imageColor(ColorRGBA.White);
     }
 
@@ -193,7 +193,7 @@ public final class Launcher {
         pixelPanel(gui, x, y, 0.060f, 0.034f, new ColorRGBA(0.80f, 0.88f, 0.96f, 0.22f));
         gui.textHAlign("center");
         gui.textVAlign("center");
-        gui.textSize(0.015f);
+        gui.textSize(0.02f);
         gui.textColor(ColorRGBA.White);
         gui.text(label, x, y, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) action.run();
@@ -207,7 +207,7 @@ public final class Launcher {
                 new ColorRGBA(0.08f, 0.10f, 0.13f, 0.96f));
         gui.textHAlign("left");
         gui.textVAlign("center");
-        gui.textSize(0.015f);
+        gui.textSize(0.02f);
         gui.textColor(ColorRGBA.White);
         gui.text(message, x + 0.012f, y, false);
     }
@@ -361,7 +361,7 @@ public final class Launcher {
         // live text + blink (left-aligned → no shake)
         gui.textHAlign("left");
         gui.textVAlign("center");
-        gui.textSize(0.018f);
+        gui.textSize(0.02f);
         var flash = Launcher.active.get(placeholder) && ((System.currentTimeMillis() / 200) % 2 == 1) ? "_" : " ";
         if (value.isEmpty()) {
             gui.textColor(ColorRGBA.Gray);
