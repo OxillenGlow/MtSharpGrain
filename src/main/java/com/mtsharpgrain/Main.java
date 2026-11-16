@@ -88,10 +88,10 @@ public class Main extends SimpleApplication {
         gui = SquareIGui.create(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        gui.textSize(0.015f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         gui.text("MtSharpGrain " + version, 1f, 0f, true);
 
-        gui.textSize(0.015f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
+        gui.textSize(0.02f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
         gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
 
         gui.imageSize(0.035f, 0.06f).imageAlpha(true)
@@ -272,9 +272,9 @@ public class Main extends SimpleApplication {
         }
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.01f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        gui.textSize(0.015f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
         gui.text("MtSharpGrain " + version, 1f, 0f, true);
-        gui.textSize(0.015f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
+        gui.textSize(0.02f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
         gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
         gui.imageSize(0.035f, 0.06f).imageAlpha(true)
            .imageHAlign("center").imageVAlign("center");

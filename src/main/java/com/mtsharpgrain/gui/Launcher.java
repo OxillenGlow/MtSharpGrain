@@ -26,9 +26,9 @@ public final class Launcher {
         gui.textHAlign("center");
         gui.textVAlign("center");
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.04f);
+        gui.textSize(0.03f);
         gui.text("Mt. SharpGrain", 0.5f, 0.86f, false);
-        gui.textSize(0.016f);
+        gui.textSize(0.022f);
         gui.textColor(ColorRGBA.fromRGBA255(180, 190, 200, 255));
         gui.text(status == null ? "" : status, 0.5f, 0.18f, false);
         if ("launcher/new".equals(path)) drawNew(gui);
@@ -41,7 +41,7 @@ public final class Launcher {
         if (page >= pages) page = pages - 1;
         int from = page * PAGE;
         int to = Math.min(worlds.size(), from + PAGE);
-        gui.textSize(0.018f);
+        gui.textSize(0.022f);
         gui.textHAlign("left");
         gui.textVAlign("center");
         if (worlds.isEmpty()) {
@@ -55,7 +55,7 @@ public final class Launcher {
             var git = WorldGit.isGit(dir);
             float row = y;
             gui.textColor(ColorRGBA.White);
-            gui.textSize(0.02f);
+            gui.textSize(0.022f);
             gui.text(name + (git ? "  (git)" : ""), 0.20f, row, false);
 
             gui.imageSize(0.05f, 0.05f)
@@ -86,7 +86,7 @@ public final class Launcher {
             y -= 0.07f;
         }
         gui.textHAlign("center");
-        gui.textSize(0.016f);
+        gui.textSize(0.022f);
         gui.textColor(ColorRGBA.White);
         gui.text("<", 0.42f, 0.24f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && page > 0) page--;
@@ -112,7 +112,7 @@ public final class Launcher {
         });
         gui.textHAlign("left");
         gui.textVAlign("center");
-        gui.textSize(0.018f);
+        gui.textSize(0.022f);
         gui.textColor(ColorRGBA.White);
         gui.text("New world", 0.34f, 0.10f, false);
 
@@ -131,13 +131,13 @@ public final class Launcher {
         });
         gui.text("From GitHub", 0.64f, 0.10f, false);
 
-        var folderX = 0.12f;
-        var folderY = 0.10f;
-        gui.imageSize(1f / 7.5f, 1f / 15f)
+        var folderX = 0.98f;
+        var folderY = 0.5f;
+        gui.imageSize(0.1f, 0.06f)
                 .imageAlpha(true)
-                .imageHAlign("center")
+                .imageHAlign("right")
                 .imageVAlign("center");
-        gui.image("/self/folder_button.png", folderX, folderY, (event, arg) -> {
+        gui.image("/self/FileB.png", folderX, folderY, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_IN) hoverFolder = true;
             else if (event == IGuiMouseEvent.MOUSE_OUT) hoverFolder = false;
             else if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT && !busy) {
@@ -148,9 +148,10 @@ public final class Launcher {
         if (hoverFolder) {
             gui.textHAlign("left");
             gui.textVAlign("top");
-            gui.textSize(0.012f);
+            gui.textSize(0.022f);
             gui.textColor(ColorRGBA.Gray);
-            gui.text("manage plug-ins and world files in external file manager", folderX, folderY, false);
+            String characters = "!1234567890!@#$%^&*()abcdefghijklmnopqrstuvwxyz";
+            gui.text("manage plug-ins and world files in external file manager" + characters.charAt(new java.util.Random().nextInt(characters.length())), folderX, folderY, false);
         }
     }
     private static void drawNew(IGui gui) {
@@ -180,7 +181,7 @@ public final class Launcher {
     }
     private static void drawClone(IGui gui) {
         gui.textHAlign("center");
-        gui.textSize(0.02f);
+        gui.textSize(0.022f);
         gui.textColor(ColorRGBA.White);
         gui.text("Repo URL", 0.5f, 0.68f);
         field(gui, urlDraft, s -> urlDraft = s, 0.5f, 0.60f,

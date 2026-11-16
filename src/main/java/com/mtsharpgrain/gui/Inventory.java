@@ -206,10 +206,10 @@ public class Inventory {
         gui.textVAlign("top");
 
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.018f);
+        gui.textSize(0.03f);
         gui.text("[INVENTORY]:", 0.05f, 0.95f, null);
 
-        gui.textSize(0.016f);
+        gui.textSize(0.02f);
         float y = 0.85f;
         float rowSpacing = 0.035f;
 
@@ -270,22 +270,19 @@ public class Inventory {
 
                 // "subscript" amount, slightly right and below the thumbnail
                 gui.textColor(ColorRGBA.Gray);
-                gui.textSize(0.018f);
+                gui.textSize(0.02f);
                 gui.text("x" + amount, 0.03f, y - 0.014f, null);
-                gui.textSize(0.016f);
 
                 y -= rowSpacing;
             }
         }
-
-        gui.textSize(0.02f); // restore the size tic() had set before this call
     }
 
-    /** Draws a compact inventory HUD while the player is in the world. */
+    /** Draws a compact inventory while the player is in the world. */
     public void drawMini(IGui gui) {
         gui.textHAlign("center");
         gui.textVAlign("top");
-        gui.textSize(0.016f);
+        gui.textSize(0.025f);
         gui.textColor(ColorRGBA.Gray);
 
         int selected = Master.blockType;
@@ -312,7 +309,5 @@ public class Inventory {
         } else {
             gui.text("**No block selected**, press [F] and select from [INVENTORY]", 0.5f, 0.1f, null);
         }
-
-        gui.textSize(0.02f);
     }
 }

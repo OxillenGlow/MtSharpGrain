@@ -357,9 +357,6 @@ public class Master {
 
         gui.textColor(ColorRGBA.White);
 
-        // High, fixed zIndex so a mod's own GuiApi elements (drawn after this,
-        // in a separate push/pop in ModPackManager.draw) can never visually or
-        // click-wise cover the only way out of this screen.
         float previousZ = gui.getZIndex();
         gui.zIndex(previousZ + 100f);
         
