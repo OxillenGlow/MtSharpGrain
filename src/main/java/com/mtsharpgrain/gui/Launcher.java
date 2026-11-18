@@ -88,6 +88,7 @@ public final class Launcher {
                 if (!busy) Main.INSTANCE.enterWorld(name, "home/modview");
             });
             if (git) smallTextButton(gui, "Up", 0.85f, y, () -> pullAsync(name));
+            gui.textColor(ColorRGBA.Red);
             smallTextButton(gui, "Del", 0.74f, y, () -> {
                 if (!busy) {
                     deleteConfirmName = name;
@@ -150,7 +151,9 @@ public final class Launcher {
         gui.text(deleteConfirmName + "?", 0.50f, 0.48f, false);
         gui.textColor(ColorRGBA.Gray);
         gui.text("This cannot be undone.", 0.50f, 0.42f, false);
+        gui.textColor(ColorRGBA.White);
         smallTextButton(gui, "Cancel", 0.40f, 0.33f, () -> GameState.navigateTo("launcher"));
+        gui.textColor(ColorRGBA.Red);
         smallTextButton(gui, "Delete", 0.60f, 0.33f, () -> {
             if (!busy && !deleteConfirmName.isBlank()) {
                 try {
@@ -198,7 +201,7 @@ public final class Launcher {
         gui.textHAlign("center");
         gui.textVAlign("center");
         gui.textSize(0.02f);
-        gui.textColor(ColorRGBA.White);
+        // text color left to caller (Play=green, Del=red, etc.)
         gui.text(label, x, y, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) action.run();
             return true;
@@ -382,14 +385,14 @@ public final class Launcher {
                 .imageAlpha(true)
                 .imageHAlign("center")
                 .imageVAlign("center");
-        gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
+        gui.image("/self/bkgl.png", 0.5f, 0.5f, false);
     }
     private static void card(IGui gui) {
         gui.imageSize(1f, 0.89f)
                 .imageAlpha(true)
                 .imageHAlign("center")
                 .imageVAlign("center");
-        gui.image("/cc0/white_pixel.png", 0.5f, 0.5f, false);
+        gui.image("/self/bkgl.png", 0.5f, 0.5f, false);
     }
     private static void glass(IGui gui, float x, float y, float w, float h, ColorRGBA tint, String label, Runnable action) {
         gui.imageSize(w, h)
