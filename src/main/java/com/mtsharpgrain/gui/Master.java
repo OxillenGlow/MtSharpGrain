@@ -1,6 +1,5 @@
 package com.mtsharpgrain.gui;
 
-import com.jme.igui.IGui;
 import com.jme.igui.IGuiMouseEvent;
 import com.jme.igui.extras.IGuiInputFields;
 import com.jme.igui.extras.IGuiInputFieldsAppState;
@@ -39,8 +38,9 @@ public class Master {
     public static Console console = new Console(20); // show up to 20 lines
     private static boolean opened=false;
     private static boolean openedI=false;
+    public static String niceBlocks = "▁▂▃▄▅▆▇█▖▘▝▗";
     
-    public static void init(IGui gui, InputManager inputManager, AppStateManager stateManager){
+    public static void init(SquareIGui gui, InputManager inputManager, AppStateManager stateManager){
         
         Master.inputPlugin = IGuiInputFieldsAppState.newPlugin(gui, inputManager, stateManager);
         
@@ -68,7 +68,7 @@ public class Master {
         console.println("Type /help for commands");
     }
 
-    public static void tic(IGui gui, ModPackManager modPackManager, Inventory inventory) {
+    public static void tic(SquareIGui gui, ModPackManager modPackManager, Inventory inventory) {
         
         gui.push(false);
         gui.textFont("DotGothic16/DotGothic16.fnt");
@@ -92,6 +92,8 @@ public class Master {
             inventory.drawMini(gui);
             drawBreakPercentage(gui);
             drawConsole(gui);
+            gui.textSize(0.025f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("top");
+            gui.textScreen("Press [F] to exit full screen [Escape] to close game."+niceBlocks.charAt(((int) (System.currentTimeMillis()/100))%12), 0.9f, 1f);
         } else if ("home".equals(path)) {
             drawPersistentNav(gui, path);
             modPackManager.disableAllDrawing();
@@ -143,7 +145,7 @@ public class Master {
         gui.pop();
     }
 
-    private static void drawPersistentNav(IGui gui, String path) {
+    private static void drawPersistentNav(SquareIGui gui, String path) {
         gui.push(false);
         drawImageNavButton(gui, "/self/HomeB.png", 1.02f, 0.94f,
                 () -> GameState.navigateTo("home"));
@@ -156,7 +158,7 @@ public class Master {
         gui.pop();
     }
 
-    private static void drawImageNavButton(IGui gui, String image, float x, float y, Runnable action) {
+    private static void drawImageNavButton(SquareIGui gui, String image, float x, float y, Runnable action) {
         gui.imageSize(0.03f, 0.03f).imageAlpha(true).imageHAlign("center").imageVAlign("center");
         pixelPanel(gui, x, y, 0.034f, 0.034f, new ColorRGBA(0f, 0f, 0f, 0.42f));
         gui.image(image, x, y, (event, arg) -> {
@@ -165,13 +167,13 @@ public class Master {
         });
     }
 
-    private static void pixelPanel(IGui gui, float x, float y, float width, float height, ColorRGBA tint) {
+    private static void pixelPanel(SquareIGui gui, float x, float y, float width, float height, ColorRGBA tint) {
         gui.imageSize(width, height).imageAlpha(true).imageHAlign("center").imageVAlign("center").imageColor(tint);
         gui.image("/cc0/white_pixel.png", x, y, false);
         gui.imageColor(ColorRGBA.White);
     }
 
-    private static void drawBlockTypeSelector(IGui gui) {
+    private static void drawBlockTypeSelector(SquareIGui gui) {
         gui.textHAlign("center");
         gui.textVAlign("bottom");
 
@@ -229,7 +231,7 @@ public class Master {
         });
     }
     
-    private static void drawViewDistanceSelector(IGui gui) {
+    private static void drawViewDistanceSelector(SquareIGui gui) {
         gui.textHAlign("center");
         gui.textVAlign("bottom");
         gui.textSize(0.02f);
@@ -261,7 +263,7 @@ public class Master {
     }
     
     // ── Navigation: home -> home/modview ────────────────────────────────
-    private static void drawHomeNav(IGui gui) {
+    private static void drawHomeNav(SquareIGui gui) {
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textColor(ColorRGBA.White);
@@ -291,7 +293,7 @@ public class Master {
     }
 
     // ── home/modview: table of mods with enable/disable ────────────────
-    private static void drawModTable(String worldName, IGui gui, ModPackManager modPackManager) {
+    private static void drawModTable(String worldName, SquareIGui gui, ModPackManager modPackManager) {
         String effectiveWorldName = (worldName == null || worldName.isEmpty()) ? "my_world" : worldName;
         
         gui.textHAlign("left");
@@ -367,7 +369,7 @@ public class Master {
     }
 
     // ── home/modview/<pack>: the only place that pack's own GuiApi draws ──
-    private static void drawModDetail(IGui gui, ModPackManager modPackManager, String packName) {
+    private static void drawModDetail(SquareIGui gui, ModPackManager modPackManager, String packName) {
         gui.textHAlign("left");
         gui.textVAlign("top");
 
@@ -388,7 +390,7 @@ public class Master {
         }
     }
     
-    private static void drawBGandButtons(IGui gui) {
+    private static void drawBGandButtons(SquareIGui gui) {
         gui.push(false);
         gui.textHAlign("center");
         gui.textVAlign("center");
@@ -411,7 +413,7 @@ public class Master {
     }
 
     // ── home: saved mods list, right side ───────────────────────────────
-    private static void drawSavedModsList(IGui gui, ModPackManager modPackManager) {
+    private static void drawSavedModsList(SquareIGui gui, ModPackManager modPackManager) {
         gui.textHAlign("right");
         gui.textVAlign("top");
 
@@ -443,7 +445,7 @@ public class Master {
         gui.textSize(0.02f); // restore the size tic() set before this call
     }
 
-    private static void drawBreakPercentage(IGui gui) {
+    private static void drawBreakPercentage(SquareIGui gui) {
         if (!(com.mtsharpgrain.WorldAccess.percent == 0)){
             gui.textHAlign("center");
             gui.textVAlign("top");
@@ -455,7 +457,7 @@ public class Master {
     
     static boolean showTerminal = false;
     
-    private static void drawConsole(IGui gui) {
+    private static void drawConsole(SquareIGui gui) {
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textSize(0.02f);
@@ -537,7 +539,7 @@ public class Master {
         gui.zIndex(0f);
     }
 
-    private static void drawStartScreen(IGui gui) {
+    private static void drawStartScreen(SquareIGui gui) {
         // ── background image (fullscreen if present) ───────────────────────
         try {
             gui.imageSize(1f, 1f)
@@ -579,5 +581,16 @@ public class Master {
             }
             return true;
         });
+    }
+    
+    private static void tooltip(SquareIGui gui, String message, float x, float y) {
+        float width =  0.025f + message.length() * 0.015f;
+        pixelPanel(gui, x + width * 0.5f, y+0.005f, width, 0.052f,
+                new ColorRGBA(0.08f, 0.10f, 0.13f, 0.96f));
+        gui.textHAlign("left");
+        gui.textVAlign("center");
+        gui.textSize(0.025f);
+        gui.textColor(ColorRGBA.White);
+        gui.text(message, x + 0.012f, y, false);
     }
 }

@@ -26,7 +26,6 @@ public final class Launcher {
     public static void draw(IGui gui) {
         if (active == null) active = new HashMap<>();
         var path = GameState.guiState;
-        dim(gui);
         card(gui);
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textHAlign("center");
@@ -50,7 +49,7 @@ public final class Launcher {
         int to = Math.min(worlds.size(), from + PAGE);
 
         // A soft pixel-texture panel keeps the world list visually grouped.
-        pixelPanel(gui, 0.50f, 0.53f, 0.76f, 0.57f, new ColorRGBA(0.10f, 0.13f, 0.17f, 0.78f));
+        pixelPanel(gui, 0.50f, 0.50f, 0.76f, 0.65f, new ColorRGBA(0.10f, 0.13f, 0.17f, 0.78f));
         gui.textHAlign("left");
         gui.textVAlign("center");
         gui.textSize(0.026f);
@@ -73,23 +72,23 @@ public final class Launcher {
 
             gui.textHAlign("left");
             gui.textVAlign("center");
-            gui.textSize(0.022f);
+            gui.textSize(0.025f);
             gui.textColor(ColorRGBA.White);
             gui.text(name + (git ? "  (git)" : ""), 0.17f, y, false);
             
             
             gui.textColor(ColorRGBA.Green);
-            smallTextButton(gui, "Play", 0.47f, y, () -> {
+            smallTextButton(gui, "Play", 0.55f, y, () -> {
                 if (!busy) Main.INSTANCE.enterWorld(name, "home");
             });
             
             gui.textColor(ColorRGBA.White);
-            smallTextButton(gui, "Mods", 0.56f, y, () -> {
+            smallTextButton(gui, "Mods", 0.65f, y, () -> {
                 if (!busy) Main.INSTANCE.enterWorld(name, "home/modview");
             });
             if (git) smallTextButton(gui, "Up", 0.85f, y, () -> pullAsync(name));
             gui.textColor(ColorRGBA.Red);
-            smallTextButton(gui, "Del", 0.74f, y, () -> {
+            smallTextButton(gui, "Del", 0.75f, y, () -> {
                 if (!busy) {
                     deleteConfirmName = name;
                     status = "";
@@ -200,21 +199,21 @@ public final class Launcher {
         pixelPanel(gui, x, y, 0.060f, 0.034f, new ColorRGBA(0.80f, 0.88f, 0.96f, 0.22f));
         gui.textHAlign("center");
         gui.textVAlign("center");
-        gui.textSize(0.02f);
+        gui.textSize(0.023f);
         // text color left to caller (Play=green, Del=red, etc.)
-        gui.text(label, x, y, (event, arg) -> {
+        gui.text(label, x, y-0.01f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) action.run();
             return true;
         });
     }
 
     private static void tooltip(IGui gui, String message, float x, float y) {
-        float width = Math.min(0.43f, 0.025f + message.length() * 0.008f);
-        pixelPanel(gui, x + width * 0.5f, y, width, 0.052f,
+        float width =  0.025f + message.length() * 0.015f;
+        pixelPanel(gui, x + width * 0.5f, y+0.005f, width, 0.052f,
                 new ColorRGBA(0.08f, 0.10f, 0.13f, 0.96f));
         gui.textHAlign("left");
         gui.textVAlign("center");
-        gui.textSize(0.02f);
+        gui.textSize(0.025f);
         gui.textColor(ColorRGBA.White);
         gui.text(message, x + 0.012f, y, false);
     }
@@ -379,20 +378,14 @@ public final class Launcher {
             gui.text(shown + flash, left, y, false);
         }
     }
-
-    private static void dim(IGui gui) {
-        gui.imageSize(1f, 1f)
-                .imageAlpha(true)
-                .imageHAlign("center")
-                .imageVAlign("center");
-        gui.image("/self/bkgl.png", 0.5f, 0.5f, false);
-    }
+    
     private static void card(IGui gui) {
-        gui.imageSize(1f, 0.89f)
+        gui.imageSize(2f, 0.9f)
                 .imageAlpha(true)
                 .imageHAlign("center")
                 .imageVAlign("center");
-        gui.image("/self/bkgl.png", 0.5f, 0.5f, false);
+        gui.image("/self/bkgl.png", 0.8f, 0.5f, false);
+        gui.image("/self/bkgl.png", 0.8f, 0.5f, false);
     }
     private static void glass(IGui gui, float x, float y, float w, float h, ColorRGBA tint, String label, Runnable action) {
         gui.imageSize(w, h)

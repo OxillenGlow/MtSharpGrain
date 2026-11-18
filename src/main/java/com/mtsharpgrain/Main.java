@@ -62,7 +62,8 @@ public class Main extends SimpleApplication {
     private WKeyTracker wKeyTracker;
     public static Main INSTANCE;
     private boolean loaded;
-    private String pendingPath;private IGui gui;
+    private String pendingPath;
+    private SquareIGui gui;
     private ModPackManager modPackManager;
     
     
@@ -88,15 +89,12 @@ public class Main extends SimpleApplication {
         gui = SquareIGui.create(assetManager, stateManager, inputManager, guiNode, cam.getWidth(), cam.getHeight());
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.015f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
-        gui.text("MtSharpGrain " + version, 1f, 0f, true);
+        gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        gui.textScreen("MtSharpGrain " + version, 1f, 0f, true);
 
-        gui.textSize(0.02f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
-        gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
-
-        gui.imageSize(0.035f, 0.06f).imageAlpha(true)
+        gui.imageSize(0.06f, 0.06f).imageAlpha(true)
                 .imageHAlign("center").imageVAlign("center");
-        gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
+        gui.imageScreen("stuff/pointers.blue_4.png", .5f, .5f, true);
 
         GameState.setModes(false, false);
         float aspectRatio = (float) cam.getWidth() / (float) cam.getHeight();
@@ -272,13 +270,13 @@ public class Main extends SimpleApplication {
         }
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.015f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
-        gui.text("MtSharpGrain " + version, 1f, 0f, true);
+        gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
+        gui.textScreen("MtSharpGrain " + version, 1f, 0f, true);
         gui.textSize(0.02f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
         gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
-        gui.imageSize(0.035f, 0.06f).imageAlpha(true)
+        gui.imageSize(0.06f, 0.06f).imageAlpha(true)
            .imageHAlign("center").imageVAlign("center");
-        gui.image("stuff/pointers.blue_4.png", .5f, .5f, true);
+        gui.imageScreen("stuff/pointers.blue_4.png", .5f, .5f, true);
 
     }
     
