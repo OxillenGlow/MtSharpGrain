@@ -17,10 +17,16 @@ public final class EngineAccess {
 
     private final SimpleApplication app;
     private final Thread mainThread;
+    private final PointLightShadowManager pointLightShadowManager;
 
-    public EngineAccess(SimpleApplication app) {
+    public EngineAccess(SimpleApplication app, PointLightShadowManager pointLightShadowManager) {
         this.app = app;
+        this.pointLightShadowManager = pointLightShadowManager;
         this.mainThread = Thread.currentThread();
+    }
+
+    public PointLightShadowManager getPointLightShadowManager() {
+        return pointLightShadowManager;
     }
 
     public boolean isMainThread() {

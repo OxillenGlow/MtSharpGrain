@@ -30,6 +30,7 @@ public class SceneApi {
     private final AssetManager assets;
     private final WorldAccessor world;
     private final Node rootNode;
+    private final PointLightShadowManager pointLightShadows;
 
     // handle -> Light, for handles that are light-carrier nodes created by
     // createLight(). Not every registry handle has an entry here — only
@@ -38,11 +39,13 @@ public class SceneApi {
     // of leaving it registered (and shining) with no owning Spatial.
     private final Map<Long, Light> lightsByHandle = new HashMap<>();
 
-    public SceneApi(NodeRegistry registry, AssetManager assets, WorldAccessor world, Node rootNode) {
+    public SceneApi(NodeRegistry registry, AssetManager assets, WorldAccessor world, Node rootNode,
+                    PointLightShadowManager pointLightShadows) {
         this.rootNode = rootNode;
         this.registry = registry;
         this.assets = assets;
         this.world = world;
+        this.pointLightShadows = pointLightShadows;
     }
 
     @HostAccess.Export
@@ -219,6 +222,20 @@ public class SceneApi {
         ((PointLight) light).setColor(new ColorRGBA(r, g, b, 1f));
     }
 
+    /**
+     * Enables or disables dynamic shadows for a point light. Disabled by default:
+     * each enabled point light renders six shadow-map faces per frame, so mods
+     * should opt in only for lights where shadows materially improve the scene.
+     */
+    @HostAccess.Export
+    public void setLightShadows(long handle, boolean enabled) {
+        Light light = lightsByHandle.get(handle);
+        if (!(light instanceof PointLight pointLight)) {
+            throw new IllegalArgumentException("Handle " + handle + " is not a point light");
+        }
+        pointLightShadows.setEnabled(pointLight, enabled);
+    }
+
     @HostAccess.Export
     public void setLightRadius(long handle, float radius) {
         Light light = lightsByHandle.get(handle);
@@ -240,6 +257,9 @@ public class SceneApi {
         // the light, which was added via rootNode.addLight(), not attachChild().
         Light light = lightsByHandle.remove(handle);
         if (light != null) {
+            if (light instanceof PointLight pointLight) {
+                pointLightShadows.setEnabled(pointLight, false);
+            }
             rootNode.removeLight(light);
         }
     }

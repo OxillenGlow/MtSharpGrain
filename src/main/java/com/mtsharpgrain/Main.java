@@ -23,6 +23,7 @@ import com.mtsharpgrain.gui.WKeyTracker;
 import com.mtsharpgrain.js.JsChunkGenerator;
 import com.mtsharpgrain.js.mainthread.ModPackManager;
 import com.mtsharpgrain.js.mainthread.EngineAccess;
+import com.mtsharpgrain.js.mainthread.PointLightShadowManager;
 import com.mtsharpgrain.node.Check;
 import com.mtsharpgrain.node.OnPrintScript;
 import com.mtsharpgrain.node.CommandListener;
@@ -46,6 +47,7 @@ public class Main extends SimpleApplication {
     private Sun sunObject;
     private Inventory inventory;
     private EngineAccess engineAccess;
+    private PointLightShadowManager pointLightShadowManager;
     public static String worldname;
     /** Absolute world folder: ~/.mtsharpgrain/worlds/<worldname> */
     public static Path worldDir;
@@ -115,6 +117,7 @@ public class Main extends SimpleApplication {
         dlsr.setLight(this.sunObject.getLight());
         viewPort.addProcessor(dlsr);
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
+        pointLightShadowManager = new PointLightShadowManager(assetManager, viewPort, rootNode);
 
         viewPort.setBackgroundColor(new ColorRGBA(247 / 1000f, 45 / 1000f, 0f, 1f));
 
@@ -173,7 +176,7 @@ public class Main extends SimpleApplication {
         player.setWorldPosition(spawn);
 
         modPackManager = new com.mtsharpgrain.js.mainthread.ModPackManager();
-        engineAccess = new EngineAccess(this);
+        engineAccess = new EngineAccess(this, pointLightShadowManager);
         modPackManager.setEngineAccess(engineAccess);
         worldAccess.addModifier(modPackManager);
         try {
@@ -283,6 +286,7 @@ public class Main extends SimpleApplication {
     @Override
     public void destroy() {
         if (modPackManager != null) modPackManager.onClose();
+        if (pointLightShadowManager != null) pointLightShadowManager.clear();
         if (vThread != null) {
             vThread.interrupt();
             try {
@@ -365,6 +369,7 @@ public class Main extends SimpleApplication {
         if (vThread != null) vThread.interrupt();
         if (sunObject != null) sunObject.saveTime();
         if (modPackManager != null) modPackManager.onClose();
+        if (pointLightShadowManager != null) pointLightShadowManager.clear();
         if (inventory != null) inventory.onClose();
         rootNode.detachAllChildren();
         worldAccess = null;

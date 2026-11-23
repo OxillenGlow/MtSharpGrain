@@ -54,6 +54,9 @@ public final class EngineSceneApi {
     @HostAccess.Export public void setLightRadius(long handle, float radius) {
         engine.post(() -> delegate.setLightRadius(handle, radius));
     }
+    @HostAccess.Export public void setLightShadows(long handle, boolean enabled) {
+        engine.post(() -> delegate.setLightShadows(handle, enabled));
+    }
     @HostAccess.Export public void destroy(long handle) {
         engine.post(() -> delegate.destroy(handle));
     }
