@@ -49,7 +49,8 @@ public class JsApiBootstrap {
                           ModPackManager modPackManager, Inventory inventory, EngineAccess engine, TimerManager timerManager,
                           boolean mainThread, ModBridge bridge) {
         // Init all APIs
-        this.sceneDelegate = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
+        this.sceneDelegate = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode,
+                engine.getPointLightShadowManager());
         this.sceneApi = new EngineSceneApi(sceneDelegate, engine);
         this.dataApi = new DataApi(packDir);
         this.messagingApi = new MessagingApi(packName, modPackManager);
