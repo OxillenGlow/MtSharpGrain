@@ -115,7 +115,7 @@ public class Main extends SimpleApplication {
         wKeyTracker = new WKeyTracker(inputManager);
 
         this.sunObject = new Sun(assetManager, rootNode);
-        var dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024 * 4, 1);
+        var dlsr = new com.jme3.shadow.DirectionalLightShadowRenderer(assetManager, 1024 * 2, 1);
         dlsr.setLight(this.sunObject.getLight());
         viewPort.addProcessor(dlsr);
         rootNode.setShadowMode(com.jme3.renderer.queue.RenderQueue.ShadowMode.CastAndReceive);
@@ -273,7 +273,7 @@ public class Main extends SimpleApplication {
 
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
-        gui.textSize(0.011f).textColor(ColorRGBA.White)
+        gui.textSize(0.022f).textColor(ColorRGBA.White)
                 .textHAlign("right").textVAlign("bottom");
         gui.textScreen(statsLine, 1f, 0.012f);
     }

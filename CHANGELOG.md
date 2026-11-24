@@ -8,3 +8,5 @@
   - chat with other online mtsharpgrain players.
 - Added a simple launcher for creating worlds, importing worlds, and playing
 - Added some more NPCs
+- Added the DotGothic16 font
+- Added a java api using janino for compiling and running java classes on runtime

@@ -89,18 +89,25 @@ Anouther one.
 
 - **JavaMonkeyEngine** (and everthing that LWJGL has)
 Website: https://www.jmonkeyengine.org
-GitHub organization: https://github.com/jmonkeyengine
+GitHub: https://github.com/jmonkeyengine
 - **Riccardobl's simple IGui** for jme
-GitHub source: https://github.com/riccardobl/jme-igui
+GitHub: https://github.com/riccardobl/jme-igui
 - **Neuroph** for mlp (unused)
-GitHub source: https://github.com/neuroph/NeurophFramework 
+GitHub: https://github.com/neuroph/NeurophFramework 
 - **jVisualScripting** for visual scripts and engine (unused) see
-GitHub source: https://github.com/openconcerto/jVisualScripting
+GitHub: https://github.com/openconcerto/jVisualScripting
 - **GraalVM's community GraalJS** for the javascript modules
-GitHub source: https://github.com/oracle/graaljs
+GitHub: https://github.com/oracle/graaljs
 - **Kenney Assets** for great free CC0 assets
-Available at: https://kenney.nl/assets
+Website: https://kenney.nl/assets
+- **Janino** for compiling Java code at runtime in JavaScript mods. 
+GitHub: https://github.com/janino-compiler/janino
+- **DotGothic16** by Fontworks for typography.
+Github: https://github.com/fontworks-fonts/DotGothic16 Google fonts: https://fonts.google.com/specimen/DotGothic16
+
+
 - **And much more who has made coding this easier for me and free**
+
 
 #### AI?
 

@@ -26,22 +26,20 @@ import com.mtsharpgrain.storage.WorldData;
 public class Master {
     // amount of block types (0..x inclusive => x+1 buttons)
     public static int x = 10;
-    // currently selected block type
     public static int blockType = 0;
-
-     public static int pageStart = 1;
-
+    public static int pageStart = 1;
     public static boolean in;
-    
     public static IGuiInputFields inputPlugin;
-    
     public static Console console = new Console(20); // show up to 20 lines
     private static boolean opened=false;
     private static boolean openedI=false;
     public static String niceBlocks = "▁▂▃▄▅▆▇█▖▘▝▗";
+    private static boolean hoverHome = false;
+    private static boolean hoverMods = false;
+    private static boolean hoverClose = false;
     
     public static void init(SquareIGui gui, InputManager inputManager, AppStateManager stateManager){
-        
+   
         Master.inputPlugin = IGuiInputFieldsAppState.newPlugin(gui, inputManager, stateManager);
         
         
@@ -73,7 +71,7 @@ public class Master {
         gui.push(false);
         gui.textFont("DotGothic16/DotGothic16.fnt");
 
-        gui.textSize(0.016f);
+        gui.textSize(0.022f);
         gui.textHAlign("center");
         gui.textVAlign("top");
         String path = GameState.guiState;
@@ -147,24 +145,67 @@ public class Master {
 
     private static void drawPersistentNav(SquareIGui gui, String path) {
         gui.push(false);
-        drawImageNavButton(gui, "/self/HomeB.png", 1.02f, 0.94f,
-                () -> GameState.navigateTo("home"));
-        drawImageNavButton(gui, "/self/CodeB.png", 1.02f, 0.90f,
-                () -> GameState.navigateTo("home/modview"));
-        drawImageNavButton(gui, "/self/X-closeB.png", 1.02f, 0.86f, () -> {
-            if (path != null && path.startsWith("home/modview/")) GameState.navigateTo("home/modview");
-            else GameState.navigateTo("home");
-        });
+
+        // Refined placement: slightly inset from the right edge, evenly spaced
+        float bx = 1.05f;
+        float byHome  = 0.93f;
+        float byMods  = 0.88f;
+        float byClose = 0.83f;
+
+        drawImageNavButton(gui, "/self/HomeB.png", bx, byHome,
+                () -> GameState.navigateTo("home"),
+                (hovered) -> hoverHome = hovered,
+                hoverHome, "Home");
+
+        drawImageNavButton(gui, "/self/CodeB.png", bx, byMods,
+                () -> GameState.navigateTo("home/modview"),
+                (hovered) -> hoverMods = hovered,
+                hoverMods, "Mods");
+
+        // Close → enter play mode (same as the Play button), not back to modview
+        drawImageNavButton(gui, "/self/X-closeB.png", bx, byClose,
+                () -> FlyCamToggle.enterPlayMode(),
+                (hovered) -> hoverClose = hovered,
+                hoverClose, "Close / Play");
+
         gui.pop();
     }
 
-    private static void drawImageNavButton(SquareIGui gui, String image, float x, float y, Runnable action) {
-        gui.imageSize(0.03f, 0.03f).imageAlpha(true).imageHAlign("center").imageVAlign("center");
-        pixelPanel(gui, x, y, 0.034f, 0.034f, new ColorRGBA(0f, 0f, 0f, 0.42f));
+    private static void drawImageNavButton(SquareIGui gui, String image,
+                                           float x, float y,
+                                           Runnable action,
+                                           Consumer<Boolean> hoverSetter,
+                                           boolean isHovered,
+                                           String tip) {
+        gui.imageSize(0.03f, 0.03f).imageAlpha(true)
+           .imageHAlign("center").imageVAlign("center");
+
+        // Slightly stronger panel when hovered
+        ColorRGBA panelTint = isHovered
+                ? new ColorRGBA(0.15f, 0.18f, 0.22f, 0.72f)
+                : new ColorRGBA(0f, 0f, 0f, 0.42f);
+        pixelPanel(gui, x, y, 0.034f, 0.034f, panelTint);
+
         gui.image(image, x, y, (event, arg) -> {
-            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) action.run();
+            if (event == IGuiMouseEvent.MOUSE_IN) {
+                hoverSetter.accept(true);
+                return true;
+            }
+            if (event == IGuiMouseEvent.MOUSE_OUT) {
+                hoverSetter.accept(false);
+                return true;
+            }
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                action.run();
+                return true;
+            }
             return true;
         });
+
+        if (isHovered) {
+            // Tooltip sits just to the left of the button
+            tooltip(gui, tip, x, y);
+        }
     }
 
     private static void pixelPanel(SquareIGui gui, float x, float y, float width, float height, ColorRGBA tint) {
@@ -240,7 +281,7 @@ public class Master {
         float centerX = 0.3f;
         float baseY   = 0.05f;
         gui.textColor(ColorRGBA.Blue);
-        gui.textSize(0.02f);
+        gui.textSize(0.04f);
         gui.text("View distance: "+String.valueOf(Main.VIEW_DISTANCE), centerX, baseY, null);
 
 
@@ -258,8 +299,6 @@ public class Master {
             }
             return true;
         });
-
-        gui.textSize(0.02f); // restore the size tic() set before this call
     }
     
     // ── Navigation: home -> home/modview ────────────────────────────────
@@ -267,7 +306,7 @@ public class Master {
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textColor(ColorRGBA.White);
-        gui.textSize(0.022f);
+        gui.textSize(0.027f);
         gui.text("Help ?", 0.95f, 0.98f, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
                 GameState.navigateTo("startscreen");
@@ -301,11 +340,11 @@ public class Master {
 
         gui.textColor(ColorRGBA.White);
         pixelPanel(gui, 0.34f, 0.53f, 0.62f, 0.62f, new ColorRGBA(0f, 0f, 0f, 0.42f));
-        gui.textSize(0.015f);
+        gui.textSize(0.022f);
 
         gui.textColor(ColorRGBA.White);
         gui.text("Installed Mods:\n*click* on one to view it      press[Buttons] to disable", 0.05f, 0.85f, null);
-        gui.textSize(0.02f);
+        gui.textSize(0.022f);
         gui.textHAlign("right");
         gui.textVAlign("top");
         gui.textColor(ColorRGBA.Blue);
@@ -315,7 +354,7 @@ public class Master {
             }
             return true;
         });
-        gui.textSize(0.013f);
+        gui.textSize(0.022f);
         gui.textHAlign("left");
         gui.textVAlign("top");
         
@@ -365,7 +404,6 @@ public class Master {
 
             y -= rowSpacing;
         }
-        gui.textSize(0.02f);
     }
 
     // ── home/modview/<pack>: the only place that pack's own GuiApi draws ──
@@ -378,7 +416,7 @@ public class Master {
         float previousZ = gui.getZIndex();
         gui.zIndex(previousZ + 100f);
         
-        gui.textSize(0.02f);
+        gui.textSize(0.022f);
         gui.zIndex(previousZ);
 
         gui.textColor(ColorRGBA.White);
@@ -593,6 +631,7 @@ public class Master {
     }
     
     private static void tooltip(SquareIGui gui, String message, float x, float y) {
+        gui.textFont("DotGothic16/DotGothic16.fnt");
         float width =  0.025f + message.length() * 0.015f;
         pixelPanel(gui, x + width * 0.5f, y+0.005f, width, 0.052f,
                 new ColorRGBA(0.08f, 0.10f, 0.13f, 0.96f));

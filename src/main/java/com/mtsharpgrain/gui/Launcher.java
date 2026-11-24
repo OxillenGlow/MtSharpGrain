@@ -380,12 +380,12 @@ public final class Launcher {
     }
     
     private static void card(IGui gui) {
-        gui.imageSize(2f, 0.9f)
+        gui.imageSize(1.5f, 0.9f)
                 .imageAlpha(true)
                 .imageHAlign("center")
                 .imageVAlign("center");
-        gui.image("/self/bkgl.png", 0.8f, 0.5f, false);
-        gui.image("/self/bkgl.png", 0.8f, 0.5f, false);
+        gui.image("/self/bkgl.png", 0.6f, 0.5f, false);
+        gui.image("/self/bkgl.png", 0.6f, 0.5f, false);
     }
     private static void glass(IGui gui, float x, float y, float w, float h, ColorRGBA tint, String label, Runnable action) {
         gui.imageSize(w, h)
