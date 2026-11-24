@@ -147,27 +147,23 @@ public class Master {
         gui.push(false);
 
         // Refined placement: slightly inset from the right edge, evenly spaced
-        float bx = 1.05f;
-        float byHome  = 0.93f;
-        float byMods  = 0.88f;
-        float byClose = 0.83f;
+        float bx = 1.03f;
+        float byHome  = 0.97f;
+        float byMods  = 0.92f;
+        float byClose = 0.87f;
 
         drawImageNavButton(gui, "/self/HomeB.png", bx, byHome,
                 () -> GameState.navigateTo("home"),
                 (hovered) -> hoverHome = hovered,
                 hoverHome, "Home");
-
         drawImageNavButton(gui, "/self/CodeB.png", bx, byMods,
                 () -> GameState.navigateTo("home/modview"),
                 (hovered) -> hoverMods = hovered,
                 hoverMods, "Mods");
-
-        // Close → enter play mode (same as the Play button), not back to modview
         drawImageNavButton(gui, "/self/X-closeB.png", bx, byClose,
                 () -> FlyCamToggle.enterPlayMode(),
                 (hovered) -> hoverClose = hovered,
                 hoverClose, "Close / Play");
-
         gui.pop();
     }
 
