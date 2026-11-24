@@ -134,14 +134,10 @@ Example folder names: `mod/LFTsidebar/`, `mod/RHTminimap/`, `mod/BTMhotbar/`.
 > footprint small — a coordinate readout or a hotbar strip, not a full
 > dashboard.
 >
-> Also worth remembering: `setEnabled(packName, false)` from the mods menu
-> still fully disables an always-on pack (tick/draw/click all stop) — the
-> prefix bypasses the *screen-path* gating, not the enable/disable toggle.
+> Also worth remembering, if user disables the mod from the mods menu
+> still fully disables an always-on pack.
 > Players annoyed by a heavy always-on HUD can always turn it off there.
-
-Non-prefixed packs are unaffected by any of this — normal `home`-only /
-`modview`-only gating applies exactly as described in the rest of this
-page.
+> This can poteintially be stoped by running malicious java code with the janino(java) api.
 
 </details>
 
@@ -154,7 +150,7 @@ page.
 
 Seven objects are injected into every script automatically, fresh per pack
 (each pack gets its own instances, not shared references).
-You cannot access arbitrary Java classes — only what is listed here.
+You can not access arbitrary Java classes directly in js (you can access java classes only via compiling a java class with janino).
 
 | Global   | Purpose                                              |
 |----------|-------------------------------------------------------|
@@ -168,7 +164,7 @@ You cannot access arbitrary Java classes — only what is listed here.
 | `Mod`    | Send messages to other loaded packs                     |
 | `ws`     | Make websocket connections and servers in mods          |
 | `Matrix` | Stores relevant info on coordinates between mods, Define new blocks |
-
+| `Java` | Compile Java source at runtime via janino and call compiled static methods (requires permission from user) |
 Note: `Scene` node handles, `Gui` element handles, and tick tags are only
 valid **within the pack that created them**. A handle created in `gameplay`
 means nothing to a script in `ui` — there's no cross-pack handoff mechanism
@@ -699,6 +695,62 @@ Notes & compatibility
 
 </details>
 
+<details>
+<summary><strong>Java - well this game is obviously in java but mods can compile it with this api via janino</strong></summary>
+
+### Java — compile and run Java code
+
+The `Java` global exposes Janino's runtime Java compiler. It allows a mod to compile Java source code and invoke public static methods from JavaScript.
+
+**Java compilation is disabled by default.** Each mod pack has its own **Allow Java** permission, which can be enabled in the mod settings. Disabling it clears that pack's compiled-class registry.
+
+```js
+// Java.compile(source, className) -> number | null
+// Compiles a complete Java source file and returns a handle.
+// className must be the fully-qualified class name.
+
+const id = Java.compile(`
+package example;
+
+public class MathHelper {
+    public static int add(int a, int b) {
+        return a + b;
+    }
+
+    public static String greet(String name) {
+        return "Hello, " + name;
+    }
+}
+`, "example.MathHelper");
+
+// Java.call(handle, methodName, argumentsArray) -> result
+const sum = Java.call(id, "add", [10, 20]);
+console.log(sum); // 30
+
+const greeting = Java.call(id, "greet", ["Player"]);
+console.log(greeting); // Hello, Player
+
+// Java.free(handle) -> boolean
+// Removes the compiled class from this pack's registry.
+Java.free(id); // Yeah, its not auto GC :(
+```
+
+**Supported method calls:**
+- Only public static methods declared directly on the compiled class.
+- Arguments must be passed as a JavaScript array.
+- Supported argument types: `String`, `boolean`, `int`, `long`, `double`, `float`, their wrapper types, and `null` for non-primitive parameters.
+- lambdas are not supported, janino is not updated and current implimentation is from 2021!
+
+**Important limitations and security:**
+
+- Compiled classes are cleared when Java is disabled or the pack shuts down.
+- `Java.compile`, `Java.call`, and `Java.free` return `null` when Java is disabled.
+- This basically allows the mod to: crash the game, hijack your game, destroy your world, waste your computer storage, ect. which is why **IT IS DISABLED AS A DEFAULT**. Only enable Java for mods you completely trust.
+- `Java.free(handle)` releases the registry's references to a compiled class; actual class unloading is handled by the JVM.
+- Again, lambdas are not supported, janino is not updated and current implimentation is from 2021!
+
+</details>
+
 ---
 
 <details>
@@ -762,7 +814,7 @@ inside the game as you walk around.
 <details>
 <summary><strong>Examples</strong></summary>
 
-## Full examples
+## Some random examples that may not work
 
 ### Ground indicator
 
@@ -881,8 +933,10 @@ Engine.onTick(function(tpf, tag) {
   affect edits triggered by any other pack.
 - `Player` moves the camera with no collision checks — it's a teleport, not
   physics-driven movement.
-- No filesystem, or Java class access from scripts (unless I have
-  a sudden urge to add them)(i added websocket now so theres that)
+- Java class access is not directly exposed through the normal JavaScript
+  API. Mods with **Allow Java** enabled can compile and execute Java code
+  through `Java`; this is not sandboxed and should only be enabled for
+  trusted mods.
 - `console.log` output appears in the game's standard output (currently
   only accessible by players via running with terminal).
 
@@ -1007,6 +1061,19 @@ Ws (WebSocket client + host):
   Threading: It is highly recomended to use this with a MAIN mod for better performace (takes a few seconds for a mod not on main thread to see anything)
 
 Matrix: Matrix.addNew(name, builderType, propertiesJson) -> int Matrix.addNew(name, builderType, propertiesJson, dr,dg,db,da, sr,sg,sb,sa, shininess) -> int Matrix.getId(name, modPackName) -> Integer|null Matrix.getBlockNameMod(blockId) -> [name, modPack] | null Matrix.getProperties(name, modPackName) -> string Matrix.setValue(x,y,z,key,value) Matrix.getValue(x,y,z,key) -> string|null
+
+Java (Janino runtime compiler; per-pack permission required, OFF by default):
+  Java.compile(source, fullyQualifiedClassName) -> number | null
+    Compiles complete Java source and returns a handle.
+  Java.call(handle, methodName, argumentsArray) -> result | null
+    Invokes a public static method declared on the compiled class.
+  Java.free(handle) -> boolean | null
+    Releases the compiled class handle.
+
+  Supported arguments: null, String, boolean, int, long, double, float
+  (including wrappers). No varargs; ambiguous overloads are rejected.
+  Java calls require the pack's Allow Java permission.
+  Compiled Java is NOT sandboxed and runs with JVM permissions.
 
 Packs whose **folder name ends with `MAIN`** (case-sensitive), e.g.
 `hudMAIN`, `trackerMAIN`, run on the **render / main thread** instead of a
