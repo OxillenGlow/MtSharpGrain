@@ -7,6 +7,7 @@ import com.jme3.scene.Node;
 import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
 import com.mtsharpgrain.gui.Inventory;
+import com.mtsharpgrain.storage.WorldData;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -415,6 +416,27 @@ public final class ModPackManager {
             if (!name.equals(fromPack) && !disabledPacks.contains(name)) {
                 entry.getValue().deliverMessage(data, fromPack);
             }
+        }
+    }
+
+    public boolean isJavaEnabled(String packName) {
+        return "ON".equals(WorldData.get("MODJAVA-" + packName, "OFF"));
+    }
+
+    /** Persists the per-pack Java permission and applies it on that pack's owner thread. */
+    public void setJavaEnabled(String packName, boolean enabled) {
+        if (!packs.containsKey(packName)) return;
+        WorldData.set("MODJAVA-" + packName, enabled ? "ON" : "OFF");
+
+        JSModifier modifier = packs.get(packName);
+        if (modifier == null || !modifier.isInitialized()) return;
+
+        Runnable change = () -> modifier.setJavaEnabledOnOwnerThread(enabled);
+        if (modifier.isMainThreadMode()) {
+            if (engineAccess != null) engineAccess.post(change);
+        } else {
+            ModBridge bridge = bridges.get(packName);
+            if (bridge != null) bridge.submitTask(change);
         }
     }
 
