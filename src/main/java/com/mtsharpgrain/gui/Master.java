@@ -387,6 +387,15 @@ public class Master {
         if (modPackManager.getMod(packName) == null) {
             gui.textColor(ColorRGBA.Red);
             gui.text("This mod pack no longer exists.", 0.05f, 0.80f, (event, arg) -> true);
+        } else {
+            boolean javaEnabled = modPackManager.isJavaEnabled(packName);
+            gui.textColor(javaEnabled ? ColorRGBA.Green : ColorRGBA.Gray);
+            gui.text("Allow Java: [" + (javaEnabled ? "ON" : "OFF") + "]", 0.05f, 0.80f, (event, arg) -> {
+                if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                    modPackManager.setJavaEnabled(packName, !modPackManager.isJavaEnabled(packName));
+                }
+                return true;
+            });
         }
     }
     

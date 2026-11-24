@@ -42,12 +42,13 @@ public class JsApiBootstrap {
     private final BlockLoaderRegistry blockLoaderRegistry = new BlockLoaderRegistry();
     private final MatrixApi matrixApiForPack;
     private final WsApi wsApi;
+    private final JavaCompilerApi javaApi;
      
     
     public JsApiBootstrap(AssetManager assetManager, WorldAccessor worldAccessor, BlockApi blockApi,
                           Camera cam, Node rootNode, Path packDir, String packName,
                           ModPackManager modPackManager, Inventory inventory, EngineAccess engine, TimerManager timerManager,
-                          boolean mainThread, ModBridge bridge) {
+                          boolean mainThread, ModBridge bridge, boolean javaEnabled) {
         // Init all APIs
         this.sceneDelegate = new SceneApi(nodeRegistry, assetManager, worldAccessor, rootNode);
         this.sceneApi = new EngineSceneApi(sceneDelegate, engine);
@@ -57,6 +58,7 @@ public class JsApiBootstrap {
         this.matrixApiForPack = new MatrixApi(packName);
         this.timerManager = timerManager;
         this.wsApi = new WsApi(mainThread, bridge, engine);
+        this.javaApi = new JavaCompilerApi(javaEnabled);
         
             
         HostAccess access = HostAccess.newBuilder(HostAccess.EXPLICIT)
@@ -89,6 +91,7 @@ public class JsApiBootstrap {
         context.getBindings("js").putMember("__BlockLoaderRegistry", blockLoaderRegistry);
         context.getBindings("js").putMember("Player", new PlayerApi(cam, rootNode, engine));
         context.getBindings("js").putMember("Ws", wsApi);
+        context.getBindings("js").putMember("Java", javaApi);
         context.eval("js",
             "globalThis.Block = {\n" +
             "  place: function(x, y, z, blockId) { __BlockApi.placeBlock(x, y, z, blockId); },\n" +
@@ -159,5 +162,9 @@ public class JsApiBootstrap {
     
     public WsApi getWsApi() {
         return wsApi;
+    }
+
+    public JavaCompilerApi getJavaApi() {
+        return javaApi;
     }
 }

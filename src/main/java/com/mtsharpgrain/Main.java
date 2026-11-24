@@ -33,6 +33,8 @@ import com.mtsharpgrain.storage.WorldGit;
 import static java.lang.System.out;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Locale;
+import com.tools.SystemStats;
 
 public class Main extends SimpleApplication {
 
@@ -65,6 +67,8 @@ public class Main extends SimpleApplication {
     private String pendingPath;
     private SquareIGui gui;
     private ModPackManager modPackManager;
+    private float statsRefreshTimer;
+    private String statsLine = "FPS: --  CPU: --  RAM: --  Screen: --";
     
     
     public static void main(String[] args) throws IOException {
@@ -90,7 +94,7 @@ public class Main extends SimpleApplication {
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
-        gui.textScreen("MtSharpGrain " + version, 1f, 0f, true);
+        gui.textScreen("MtSharpGrain-" + version, 1f, 0.045f, true);
 
         gui.imageSize(0.06f, 0.06f).imageAlpha(true)
                 .imageHAlign("center").imageVAlign("center");
@@ -216,6 +220,7 @@ public class Main extends SimpleApplication {
         if (gui == null) return;
         if (!loaded) {
             com.mtsharpgrain.gui.Master.tic(gui, null, null);
+            drawSystemStats(tpf);
             if (sunObject != null) sunObject.update(tpf, cam.getLocation());
             return;
         }
@@ -234,6 +239,7 @@ public class Main extends SimpleApplication {
         }
 
         com.mtsharpgrain.gui.Master.tic(gui, modPackManager, inventory);
+        drawSystemStats(tpf);
         for (int[] change : worldAccess.drainCommittedChanges()) {
             renderManagermg.onBlockChanged(change[0], change[1], change[2]);
         }
@@ -250,6 +256,26 @@ public class Main extends SimpleApplication {
         currentFov += (targetFov - currentFov) * Math.min(1f, tpf * FOV_LERP_SPEED);
         float aspect = (float) cam.getWidth() / (float) cam.getHeight();
         cam.setFrustumPerspective(currentFov, aspect, 0.5f, 5000.0f);
+    }
+
+    private void drawSystemStats(float tpf) {
+        statsRefreshTimer += tpf;
+        if (statsRefreshTimer >= 0.25f) {
+            float fps = tpf > 0f ? 1f / tpf : 0f;
+            float cpu = SystemStats.processCpuPercent();
+            String cpuText = cpu < 0f ? "--" : String.format(Locale.ROOT, "%.0f%%", cpu);
+            statsLine = String.format(Locale.ROOT,
+                    "fps: %.0f  cpu: %s  ram: %d/%d MB  screen: %dx%d",
+                    fps, cpuText, SystemStats.usedRamMb(), SystemStats.totalRamMb(),
+                    cam.getWidth(), cam.getHeight());
+            statsRefreshTimer = 0f;
+        }
+
+        gui.textFont("DotGothic16/DotGothic16.fnt");
+        gui.textFontStyle("bold");
+        gui.textSize(0.011f).textColor(ColorRGBA.White)
+                .textHAlign("right").textVAlign("bottom");
+        gui.textScreen(statsLine, 1f, 0.012f);
     }
 
     @Override
@@ -271,7 +297,7 @@ public class Main extends SimpleApplication {
         gui.textFont("DotGothic16/DotGothic16.fnt");
         gui.textFontStyle("bold");
         gui.textSize(0.02f).textColor(ColorRGBA.Blue).textHAlign("right").textVAlign("bottom");
-        gui.textScreen("MtSharpGrain " + version, 1f, 0f, true);
+        gui.textScreen("MtSharpGrain-" + version, 1f, 0.045f, true);
         gui.textSize(0.02f).textColor(ColorRGBA.White).textHAlign("center").textVAlign("top");
         gui.text("Press [F] to exit full screen [Escape] to close game.", 0.5f, 1f, true);
         gui.imageSize(0.06f, 0.06f).imageAlpha(true)

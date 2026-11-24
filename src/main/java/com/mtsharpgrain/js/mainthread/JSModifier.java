@@ -7,6 +7,7 @@ import com.mtsharpgrain.RenderManager;
 import com.mtsharpgrain.WorldAccess;
 import com.mtsharpgrain.gui.Inventory;
 import com.mtsharpgrain.js.BlockApi;
+import com.mtsharpgrain.storage.WorldData;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
@@ -41,6 +42,8 @@ public final class JSModifier {
     private final ConcurrentLinkedQueue<PendingMessage> pendingMessages =
             new ConcurrentLinkedQueue<>();
     private TimerManager timerManager;
+    private EngineAccess engineAccess;
+    private volatile boolean contextClosed;
     private record PendingMessage(String data, String fromPack) {}
 
     public JSModifier(boolean mainThreadMode) {
@@ -67,13 +70,16 @@ public final class JSModifier {
                      Inventory inventory, EngineAccess engineAccess) {
         this.ownerManager = modPackManager;
         this.packName = packName;
+        this.engineAccess = engineAccess;
+        this.contextClosed = false;
         WorldAccessor worldAccessor = new RealWorldAccessor(worldAccess);
         BlockApi blockApi = new BlockApi(worldAccess, renderManager, engineAccess);
         this.timerManager = new TimerManager(bridge);
         JsApiBootstrap created = new JsApiBootstrap(
             assetManager, worldAccessor, blockApi, cam, rootNode, packDir,
             packName, modPackManager, inventory, engineAccess, timerManager,
-            mainThreadMode, bridge);
+            mainThreadMode, bridge,
+            "ON".equals(WorldData.get("MODJAVA-" + packName, "OFF")));
         created.getNodeRegistry().registerFixed(0L, rootNode);
         bootstrap = created;
         initialized = true;
@@ -129,16 +135,7 @@ public final class JSModifier {
                 }
             }
         } finally {
-            try {
-                if (bootstrap != null) bootstrap.getDataApi().save();
-            } catch (Throwable error) {
-                System.err.println("[JSModifier] failed to save data: " + error.getMessage());
-            }
-            try {
-                if (bootstrap != null) bootstrap.getContext().close();
-            } catch (Throwable error) {
-                System.err.println("[JSModifier] failed to close context: " + error.getMessage());
-            }
+            closeContextOnOwnerThread();
         }
     }
 
@@ -269,6 +266,13 @@ public final class JSModifier {
         });
     }
 
+    /** Must run on this pack's Graal owner thread. */
+    public void setJavaEnabledOnOwnerThread(boolean enabled) {
+        requireRuntimeThread();
+        JsApiBootstrap current = bootstrap;
+        if (current != null && !contextClosed) current.getJavaApi().setEnabled(enabled);
+    }
+
     public GuiApi getGuiApi() {
         JsApiBootstrap current = bootstrap;
         return current == null ? null : current.getGuiApi();
@@ -311,15 +315,39 @@ public final class JSModifier {
         if (current != null && current.getWsApi() != null) {
             current.getWsApi().shutdown();
         }
+        // MAIN packs have no mailbox loop finalizer, so close their Context on
+        // the render thread (or enqueue the close there).
+        if (mainThreadMode && current != null && !contextClosed && engineAccess != null) {
+            engineAccess.post(this::closeContextOnOwnerThread);
+        }
+    }
+
+    /** Closes the API and Context on their owning thread. */
+    private void closeContextOnOwnerThread() {
+        if (contextClosed) return;
+        JsApiBootstrap current = bootstrap;
+        if (current == null) return;
+        try {
+            current.getDataApi().save();
+        } catch (Throwable error) {
+            System.err.println("[JSModifier] failed to save data: " + error.getMessage());
+        }
+        try {
+            current.getJavaApi().close();
+        } catch (Throwable error) {
+            System.err.println("[JSModifier] failed to close Java API: " + error.getMessage());
+        }
+        try {
+            current.getContext().close();
+        } catch (Throwable error) {
+            System.err.println("[JSModifier] failed to close context: " + error.getMessage());
+        }
+        contextClosed = true;
     }
 
     /** Closes a context when startup failed before the mailbox loop began. */
     void abortStartup() {
-        try {
-            if (bootstrap != null) bootstrap.getContext().close();
-        } catch (Throwable error) {
-            System.err.println("[JSModifier] failed to close startup context: " + error.getMessage());
-        }
+        closeContextOnOwnerThread();
     }
 
     private void requireRuntimeThread() {
