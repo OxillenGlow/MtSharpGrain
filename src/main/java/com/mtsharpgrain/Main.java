@@ -265,7 +265,7 @@ public class Main extends SimpleApplication {
             float cpu = SystemStats.processCpuPercent();
             String cpuText = cpu < 0f ? "--" : String.format(Locale.ROOT, "%.0f%%", cpu);
             statsLine = String.format(Locale.ROOT,
-                    "FPS: %.0f  CPU: %s  RAM: %d/%d MB  Screen: %dx%d",
+                    "fps: %.0f  cpu: %s  ram: %d/%d MB  screen: %dx%d",
                     fps, cpuText, SystemStats.usedRamMb(), SystemStats.totalRamMb(),
                     cam.getWidth(), cam.getHeight());
             statsRefreshTimer = 0f;
