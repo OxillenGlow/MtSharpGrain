@@ -144,64 +144,68 @@ public class Master {
     }
 
     private static void drawPersistentNav(SquareIGui gui, String path) {
-        gui.push(false);
-
-        // Refined placement: slightly inset from the right edge, evenly spaced
         float bx = 1.03f;
         float byHome  = 0.97f;
         float byMods  = 0.92f;
         float byClose = 0.87f;
-
-        drawImageNavButton(gui, "/self/HomeB.png", bx, byHome,
-                () -> GameState.navigateTo("home"),
-                (hovered) -> hoverHome = hovered,
-                hoverHome, "Home");
-        drawImageNavButton(gui, "/self/CodeB.png", bx, byMods,
-                () -> GameState.navigateTo("home/modview"),
-                (hovered) -> hoverMods = hovered,
-                hoverMods, "Mods");
-        drawImageNavButton(gui, "/self/X-closeB.png", bx, byClose,
-                () -> FlyCamToggle.enterPlayMode(),
-                (hovered) -> hoverClose = hovered,
-                hoverClose, "Close / Play");
-        gui.pop();
-    }
-
-    private static void drawImageNavButton(SquareIGui gui, String image,
-                                           float x, float y,
-                                           Runnable action,
-                                           Consumer<Boolean> hoverSetter,
-                                           boolean isHovered,
-                                           String tip) {
+        gui.push(false);
         gui.imageSize(0.03f, 0.03f).imageAlpha(true)
            .imageHAlign("center").imageVAlign("center");
-
-        // Slightly stronger panel when hovered
-        ColorRGBA panelTint = isHovered
-                ? new ColorRGBA(0.15f, 0.18f, 0.22f, 0.72f)
-                : new ColorRGBA(0f, 0f, 0f, 0.42f);
-        pixelPanel(gui, x, y, 0.034f, 0.034f, panelTint);
-
-        gui.image(image, x, y, (event, arg) -> {
+        gui.image("/self/HomeB.png", bx,  byHome, (event, arg) -> {
             if (event == IGuiMouseEvent.MOUSE_IN) {
-                hoverSetter.accept(true);
-                return true;
+                hoverHome = true;
             }
             if (event == IGuiMouseEvent.MOUSE_OUT) {
-                hoverSetter.accept(false);
-                return true;
+                hoverHome = false;
             }
             if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
-                action.run();
-                return true;
+                GameState.navigateTo("home");
             }
             return true;
         });
 
-        if (isHovered) {
-            // Tooltip sits just to the left of the button
-            tooltip(gui, tip, x, y);
+        if (hoverHome) {
+            tooltip(gui,"Home ▇█▇",bx, byHome);
         }
+        
+        gui.imageSize(0.03f, 0.03f).imageAlpha(true)
+           .imageHAlign("center").imageVAlign("center");
+        gui.image("/self/CodeB.png", bx,  byMods, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_IN) {
+                hoverMods = true;
+            }
+            if (event == IGuiMouseEvent.MOUSE_OUT) {
+                hoverMods = false;
+            }
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                GameState.navigateTo("home/modview");
+            }
+            return true;
+        });
+
+        if (hoverMods) {
+            tooltip(gui,"Open simple mods manager",bx, byMods);
+        }
+        
+        gui.imageSize(0.03f, 0.03f).imageAlpha(true)
+           .imageHAlign("center").imageVAlign("center");
+        gui.image("/self/X-closeB.png", bx, byClose, (event, arg) -> {
+            if (event == IGuiMouseEvent.MOUSE_IN) {
+                hoverClose = true;
+            }
+            if (event == IGuiMouseEvent.MOUSE_OUT) {
+                hoverClose = false;
+            }
+            if (event == IGuiMouseEvent.MOUSE_PRESSED_LEFT) {
+                FlyCamToggle.enterPlayMode();
+            }
+            return true;
+        });
+
+        if (hoverClose) {
+            tooltip(gui,"Close/Return",bx, byClose);
+        }
+        gui.pop();
     }
 
     private static void pixelPanel(SquareIGui gui, float x, float y, float width, float height, ColorRGBA tint) {
